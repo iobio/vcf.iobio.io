@@ -1,0 +1,34 @@
+{
+  "name": "vcf.iobio.io",
+  "version": "0.0.0",
+  "authors": [
+    "tonyads@genetics.utah.edu"
+  ],
+  "description": "VCF iobio app, showing stats of a VCF file.",
+  "main": "app/app.js",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "bioinformatics",
+    "iobio",
+    "vcf"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.4.11",
+    "flat-ui": "*",
+    "jquery": "~2.1.1",
+    "queue-async": "https://github.com/mbostock/queue.git#~1.0.7",
+    "nprogress": "~0.1.6",
+    "socket.io": "~1.0.6"
+  }
+}

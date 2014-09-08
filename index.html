@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>vcf.iobio.io</title>
+
+        <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
+		<link href="components/flat-ui/css/flat-ui.css" rel="stylesheet" type='text/css'>
+		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
+		<link href="assets/css/iobio.css" rel="stylesheet" type='text/css'>
+		<link href="assets/css/vcf.iobio.css" rel="stylesheet" type='text/css'/>
+
+		<script type="text/javascript" src="components/d3/d3.js"></script>
+        <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="components/nprogress/nprogress.js"></script>
+        <script type="text/javascript" src="assets/js/class.js"></script>
+        <script type="text/javascript" src="assets/js/rdp.js"></script>
+        <script type="text/javascript" src="assets/js/binary.js"></script>
+
+	</head>
+	<body>
+        <div class="tooltip"></div>
+        <div id="header-panel">
+            <header ><a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
+            </header>
+
+            <div id="small-total-reads"  >
+                <div style="font-size:18px">Variants Processed</div>
+                <div id="value" style="font-size:4vw; color:#2687BE;">0
+                    <img title="Sample More" style="width:20px;cursor:pointer" src="assets/images/more_sampling.png"></img>
+                </div>
+                <div id="base" ></div>
+                <span id="number" ></span>
+            </div>
+        </div>
+                  
+        <div id="page">
+            <section id="top">
+				<div id="chromosome-picker" class="panel">
+					<div class="title">Chromosomes</div>
+                    <div class="samplingLoader">Sampling <img src="assets/images//loading_dots.gif"/></div>
+				</div>
+				<div id="variant-density" class="panel">
+					<div class="title">Variant Density</div>
+				</div>
+				<div id="total-reads" class="panel">
+                   <div class="title">Variants Processed</div>
+                    <div id="value" style="font-size:7vw; color:#2687BE; text-align:center;padding-left:8px;">0</div>
+                    <div id="base" style="font-size:1.4vw;padding-left:28px; letter-spacing:3px; color:#2687BE; text-align:center;margin-top:-17px">
+                        <span id="number"></span>
+                        <img title="Sample More" style="width:20px;margin-bottom:-3px;margin-left:-7px;cursor:pointer" 
+                        src="assets/images/more_sampling.png"></img>
+                    </div>
+
+				</div>
+			</section>
+			<section id="middle">
+				<div id="percents">
+					<div id="transition-transversion-ratio" class="percent panel">Transition Transversion Ratio                      
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                    </div>
+                    <div id="mapped_reads" class="percent panel">SNP Class                        
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                    </div>
+                    <div  class="percent panel">                     
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                    </div>
+                    <div  class="percent panel">                     
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                    </div>
+                    <div  class="percent panel">                     
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                    </div>
+                    <div  class="percent panel">                     
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                    </div>
+                </div>
+                <div id="distributions" >
+                	<div id="alelle-frequency-distribution" class="distribution panel">
+                		<div>Allele Frequency Distribution</div>
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                    </div>
+                	<div id="mutation-spectrum" class="distribution panel">
+                		<div>Mutation Spectrum</div>
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                    </div>
+                	<div id="quality-score-distribution" class="distribution panel">
+                		<div>Quality Score Distribution</div>
+                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                    </div>
+                </div>				
+			</section>			
+		</div>
+
+
+        <script type="text/javascript" src="app/dataManager.d3.js"></script>
+        <script type="text/javascript" src="app/donutChooser.d3.js"></script>
+        <script type="text/javascript" src="app/line.d3.js"></script>
+        <script type="text/javascript" src="app/app.js"></script>
+
+	</body>
+</html>

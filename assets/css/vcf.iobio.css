@@ -1,0 +1,264 @@
+#top {
+     -webkit-flex-flow: row;     
+             flex-flow: row;
+      justify-content: center;     
+}
+
+#page {
+     -webkit-flex-flow: row;     
+             flex-flow: row;
+      justify-content: center;
+      margin-right: 15px;
+}
+
+section {
+    margin:  0px;
+    padding: 0px;
+    display: -webkit-flex;
+    display:         flex;
+    display: -ms-flexbox;
+    -webkit-flex-flow: row;
+            flex-flow: row;
+
+}
+
+.panel {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid rgb(230,230,230);
+    border-radius: 2pt;
+    text-align: center;
+}
+
+#header-panel {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 5px;
+  margin-right: 25px; 
+}
+.panel#chromosome-picker {
+    -webkit-flex:  1 1 20%;
+            flex:  1 1 20%;
+    -webkit-order: 1;
+            order: 1;
+    
+    position:relative;
+}
+.panel#variant-density {
+    -webkit-flex:  3 1 65%;
+            flex:  3 1 65%;
+    -webkit-order: 2;
+            order: 2;
+
+   
+    position:relative;
+}
+
+.panel#total-reads {
+    -webkit-flex:  1 2 15%;
+            flex:  1 2 15%;
+    -webkit-order: 3;
+            order: 3;
+}
+
+#small-total-reads {
+    display: flex;
+    border: 1px solid rgb(230,230,230);
+    justify-content: center;
+    flex-direction: column;
+    align-content: center;
+    height: 90px;
+    width: 110px;
+    text-align: center;
+    padding: 5px;
+    display: none;
+}
+
+
+g.arcs {
+  pointer-events: all;
+}
+
+.tick text {
+  font-size: 12px;
+}
+
+
+
+@media all and (max-width: 1024px) {
+    .panel .title {
+      font-size: 24px;
+    }
+}
+
+@media all and (max-width: 875px) {
+    .panel .title {
+      font-size: 20px;
+    }
+}
+
+@media all and (max-width: 875px) {
+    .panel .title {
+      font-size: 18px;
+    }
+}
+
+@media all and (max-width: 800px) {
+
+ 
+
+    section#top {
+        -webkit-flex-flow: row;
+                flex-flow: row;
+        -webkit-flex-wrap: wrap;
+               -flex-wrap: wrap;
+        justify-content: center;
+        align-content: space-between;
+    }
+
+    .panel#chromosome-picker {
+       webkit-flex:  1 1 20%;
+             flex:   1 1 20%;
+      -webkit-order: 1;
+              order: 1;
+    }
+    .panel#variant-density {
+      webkit-flex:   1 2 60%;
+             flex:   1 2 60%;
+      -webkit-order: 2;
+              order: 2;
+    }
+    .panel#total-reads {
+      display: none;
+    }
+    #small-total-reads {
+      display: flex;
+    }
+}
+
+@media all and (max-width: 600px) {
+
+    #page {
+        -webkit-flex-flow: column;
+                flex-flow: column;
+    }
+
+    section#top {
+        -webkit-flex-flow: row;
+                flex-flow: row;
+        -webkit-flex-wrap: wrap;
+               -flex-wrap: wrap;
+        justify-content: center;
+        align-content: stretch;
+    }
+
+
+    #small-total-reads {
+      display: none;
+    }
+
+
+    .panel#chromosome-picker {
+       webkit-flex:  1 1 30%;
+             flex:   1 1 43%;
+      -webkit-order: 1;
+              order: 1;
+
+
+
+    }
+
+   
+    .panel#total-reads {
+      display: block;
+      webkit-flex:   1 1 30%;
+             flex:   1 1 30%;
+      -webkit-order: 2;
+              order: 2;
+
+    
+    }
+    .panel#variant-density {
+      webkit-flex:   1 1 100%;
+             flex:   1 1 100%;
+      -webkit-order: 3;
+              order: 3;
+
+    
+    }
+
+
+    .panel .title {
+      font-size: 20px;
+    }
+
+
+
+    section#middle {
+        -webkit-flex-flow: row;
+                flex-flow: row;
+        justify-content: center;
+        align-content: stretch;
+        flex-wrap: wrap;
+
+    }
+
+    #distributions {
+       webkit-flex:  1 1 100%;
+             flex:   1 1 100%;
+      -webkit-order: 1;
+              order: 1;
+    }
+
+    #percents {
+       webkit-flex:  1 1 100%;
+             flex:   1 1 100%;
+      -webkit-order: 2;
+              order: 2;
+    }
+    #percents .percent {
+      -webkit-flex: 1 1 20%;
+      flex: 1 1 20%;
+    }
+}
+
+
+
+
+
+
+text.chartlabel {
+	
+	font-size: 9px;
+	fill: white;
+}
+
+text.chartlabelSelected {
+  
+  font-size: 13px;
+  color: white;
+  fill: white;
+  font-weight: bold;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+path.line {
+	stroke: steelblue;
+	stroke-width: 1;
+	fill: none;
+}
+
+
+
+.area {
+  fill: url(#area-gradient);
+  stroke-width: 05px;
+}
+
+ 
