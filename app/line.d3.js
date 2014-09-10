@@ -47,7 +47,7 @@ lineD3 = function module() {
       svg.enter()
         .append("svg")
         .attr("width", "100%")
-        .attr("height", "100%")
+        .attr("height", "80%")
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
         .attr("preserveAspectRatio", "xMidYMid meet")
         
