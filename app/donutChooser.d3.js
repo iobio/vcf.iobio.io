@@ -55,8 +55,8 @@ donutChooserD3 = function module() {
       // Otherwise, create the skeletal exports.
       var g = svg.enter()
         .append("svg")
-        .attr("width", "100%")
-        .attr("height", "100%") 
+        .attr("width", "80%")
+        .attr("height", "80%") 
         .attr('viewBox', "-" + radiusOffset + " -" + radiusOffset + " " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
         .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
