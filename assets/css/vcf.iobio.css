@@ -132,8 +132,8 @@ section#middle {
 
     .panel#total-reads {
         display: block;
-        -webkit-flex: 1 0 100px;
-                flex: 1 0 100px;
+        -webkit-flex: 1 0 120px;
+                flex: 1 0 120px;
         -webkit-order: 3;
                 order: 3;
        
