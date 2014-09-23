@@ -23,73 +23,68 @@
         <div class="tooltip"></div>
         
 
-        <div class="page" >
-            <header ><a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
-            </header>
+        <div id="page" >
             <section id="top">
-				<div id="chromosome-picker" class="panel">
-					<div class="title">Chromosomes</div>
-                    <div class="samplingLoader">Sampling <img src="assets/images//loading_dots.gif"/></div>
-				</div>
-				<div id="variant-density" class="panel">
-					<div class="title">Variant Density</div>
-				</div>
-				<div id="total-reads" class="panel">
-                   <div class="title">Variants Processed</div>
-                    <div id="value" style="font-size:7vw; color:#2687BE; text-align:center;padding-left:8px;">0</div>
-                    <div id="base" style="font-size:1.4vw;padding-left:28px; letter-spacing:3px; color:#2687BE; text-align:center;margin-top:-17px">
-                        <span id="number"></span>
-                        <img title="Sample More" style="width:20px;margin-bottom:-3px;margin-left:-7px;cursor:pointer" 
-                        src="assets/images/more_sampling.png"></img>
+				
+                <div id="top-header">
+                    <header ><a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
+                    </header>
+                </div>
+				
+                <div id="total-reads" class="panelTop">
+                    
+                    <div id="value" style="line-height: 1.0;font-size:5vw; color:#2687BE; text-align: right;padding-right: 0px;display:  inline;margin-right: 0px;">0
                     </div>
-
-				</div>
+                    <div id="base" style="line-height: 1.3;font-size:1.4vw;padding-left: 0px; letter-spacing:3px; color:#2687BE; text-align:center;margin-top:-5px;margin-left:  -10px;display:  inline;">
+                        <span id="number"></span>
+                        <img title="Sample More" style="width:20px;/* margin-bottom:-3px; *//* margin-left:-7px; */cursor:pointer" src="assets/images/more_sampling.png">
+                    </div>
+                    <div style="line-height: 1;font-size: 2vw;padding-left: 4px;/* display:  inline; */vertical-align: top;">Variants Sampled
+                    </div>
+                </div>
 			</div>
 
         
    
           
-			<section id="middle">
-				<div id="percents">
-					<div id="transition-transversion-ratio" class="percent panel">Transition Transversion Ratio                      
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+			<section id="middle" >
+                <div id="genome-stats" >
+                <div id="chromosome-picker" class="panel">
+                    <div class="title">Chromosomes</div>
+                    <div class="samplingLoader">Sampling <img src="assets/images//loading_dots.gif"/></div>
+                </div>
+
+                    <div id="tstv-ratio" class="panel">
+                        <div class="title">TSTV Ratio</div>
+                        <span id="ratio-value">1.8</span>
                     </div>
-                    <div id="mapped_reads" class="percent panel">SNP Class                        
+                    <div id="allele-freq" class="panel">
+                         <div class="title">Allele Frequency</div>
                         <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                        <svg id="allele-freq-chart">
+                        </svg>                         
                     </div>
-                    <div  class="percent panel">                     
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
-                    </div>
-                    <div  class="percent panel">                     
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
-                    </div>
-                    <div  class="percent panel">                     
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
-                    </div>
-                    <div  class="percent panel">                     
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                        <svg viewBox="0 0 225 149" preserveAspectRatio="xMidYMid"></svg>
+                    <div id="mut-spectrum" class="panel">
+                         <div class="title">Mutation Spectrum</div>
                     </div>
                 </div>
-                <div id="distributions" >
-                	<div id="alelle-frequency-distribution" class="distribution panel">
-                		<div>Allele Frequency Distribution</div>
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+
+                <div id="ref-stats" >
+                    <div id="variant-density" class="panel">
+                        <div class="title">Variant Density</div>
                     </div>
-                	<div id="mutation-spectrum" class="distribution panel">
-                		<div>Mutation Spectrum</div>
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                    <div id="tstv-ratio" class="panel">
+                         <div class="title">TSTV Ratio</div>
+                        <span id="ratio-value">2.4</span>
                     </div>
-                	<div id="quality-score-distribution" class="distribution panel">
-                		<div>Quality Score Distribution</div>
-                        <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                    <div id="allele-freq" class="panel">
+                         <div class="title">Allele Frequency</div>
                     </div>
-                </div>				
+                    <div id="mut-spectrum" class="panel">
+                         <div class="title">Mutation Spectrum</div>
+                    </div>
+                </div>
+			
 			</section>		
     
 		</div>
@@ -98,6 +93,8 @@
         <script type="text/javascript" src="app/dataManager.d3.js"></script>
         <script type="text/javascript" src="app/donutChooser.d3.js"></script>
         <script type="text/javascript" src="app/line.d3.js"></script>
+        <script type="text/javascript" src="app/histogram.d3.js"></script>
+        <script type="text/javascript" src="app/groupedBar.d3.js"></script>
         <script type="text/javascript" src="app/app.js"></script>
 
 	</body>
