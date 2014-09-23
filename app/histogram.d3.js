@@ -16,8 +16,16 @@ function histogramD3() {
     options = $.extend(defaults,options);
     var innerHeight = height - margin.top - margin.bottom;
     selection.each(function(data) {
-       // set svg element
-       var svg = d3.select(this);
+      // set svg element
+      var svg = d3.select(this);
+
+      svg.attr("width", "95%")
+        .attr("height", "100%") 
+        .attr('viewBox', "0 0 " + 
+                         (parseInt(width) +  parseInt(margin.left) + parseInt(margin.right)) + " " + 
+                         (parseInt(height) + parseInt(margin.top) +  parseInt(margin.bottom)))
+        .attr("preserveAspectRatio", "xMidYMid meet");
+       
 
       // Convert data to standard representation greedily;
       // this is needed for nondeterministic accessors.
@@ -55,9 +63,7 @@ function histogramD3() {
       gEnter.append("g").attr("class", "y axis");
       gEnter.append("g").attr("class", "x brush")      
 
-      // Update the outer dimensions.
-      svg .attr("width", width)
-          .attr("height", height);
+      
 
       // Update the inner dimensions.
       g.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
