@@ -4,7 +4,9 @@ dataManagerD3 = function module() {
     dispatch = d3.dispatch('dataReady', 'dataLoading'),
     data;
 
-  //Create a method to load the csv file, and apply cleaning function asynchronously.
+  /**
+  * Create a method to load the csv file, and apply cleaning function asynchronously.
+  */
   exports.loadCsvData = function(_file, _cleaningFunc) {
 
     //Create the csv request using d3.csv.
@@ -31,6 +33,36 @@ dataManagerD3 = function module() {
   };
 
 
+  /**
+  * Create a method to load the json file, and apply cleaning function asynchronously.
+  */
+  exports.loadJsonData = function(_file, _cleaningFunc) {
+
+    // Create the json request using d3.json.
+    var loadJson = d3.json(_file);
+
+
+    loadJson.get( function(_error, _response) {
+        if (_cleaningFunc) {
+          //Apply the cleaning function supplied in the _cleaningFunc parameter.
+          _response.forEach(function (d) {
+            _cleaningFunc(d);
+          });
+
+        }
+        //Assign the cleaned response to our data variable.
+        data = _response;
+
+        //Dispatch our custom dataReady event passing in the cleaned data.
+        dispatch.dataReady(_response);
+     });
+
+  }
+
+
+  /**
+  * Create a method to load random data points
+  */
   exports.loadRandomPointData = function(_maxPoints) {
     data = [];
     _pos = 1;
@@ -50,6 +82,27 @@ dataManagerD3 = function module() {
     dispatch.dataReady(data);
   }
 
+  exports.jsonToArray = function(_obj, keyAttr, valueAttr) {
+    var theArray = [];
+    for (prop in _obj) {
+      var o = new Object();
+      o[keyAttr] = prop;
+      o[valueAttr] = _obj[prop];
+      theArray.push(o);
+    }
+    return theArray;
+  }
+
+  exports.jsonToArray2D = function(_obj) {
+    var theArray = [];
+    for (prop in _obj) {
+      var row = [];
+      row[0] =  +prop;
+      row[1] =  +_obj[prop];
+      theArray.push(row);
+    }
+    return theArray;
+  }
 
   function _randomNumber(minimum, maximum){
     return Math.floor( Math.random() * (maximum - minimum) + minimum);
