@@ -3,8 +3,15 @@
 */
 var chromosomeChart;
 var chromosomeDataManager;
+
 var variantDensityChart;
 var variantDensityDataMgr;
+
+var statsAliveDataMgr;
+
+var alleleFreqChart;
+var mutSpectrumChart;
+
 
 var chromosomeIndex = 0;
 
@@ -14,18 +21,18 @@ var chromosomeIndex = 0;
 $(document).ready( function(){
 	//d3BrowserAdjustments();
 
-	loadTopCharts();
+	init();
 
 });
 
 /*
 *
-* loadTopCharts
+* init
 *
 *  Load the chromsome picker radial chart.  Load the first chromosome's variant density.
 *
 */
-function loadTopCharts() {
+function init() {
 	// Create the chromosome picker chart. Listen for the click event on one of the arcs.
 	// This event is dispatched when the user clicks on a particular chromosome.
 	chromosomeChart = donutChooserD3()
@@ -33,7 +40,7 @@ function loadTopCharts() {
 		                .height(220)
 						.on("d3click", function(d, i) {
 							chromosomeIndex = i;
-							loadVariantDensityChart(i);
+							onChromosomeSelected(i);
 						 });
 
 	// Create the data manager						
@@ -45,11 +52,11 @@ function loadTopCharts() {
 
 	// Create the variant density chart
 	variantDensityChart = lineD3()
-	                                .width("700")
-	                                .height("180")
-	                                .kind("line")
-									.margin( {left: 30, right: 20, top: 30, bottom: 40})
-									.showYAxis(false);
+                            .width("700")
+                            .height("180")
+                            .kind("line")
+							.margin( {left: 30, right: 20, top: 30, bottom: 40})
+							.showYAxis(false);
 
 	// Create variant density data manager
 	variantDensityDataMgr = dataManagerD3();
@@ -68,7 +75,7 @@ function loadTopCharts() {
 		chromosomeChart(d3.select("#chromosome-picker").datum(chromosomeDataMgr.getCleanedData()));	
 		chromosomeIndex = 0;
 		chromosomeChart.clickSlice(chromosomeIndex);
-		loadVariantDensityChart(chromosomeIndex);
+		onChromosomeSelected(chromosomeIndex);
 
 
 	});
@@ -96,14 +103,109 @@ function loadTopCharts() {
 		});
 		
 	});
+
+
+
+	// Allele Frequency chart
+	alleleFreqChart = histogramD3()
+                        .width("700")
+                        .height("180")
+						.margin( {left: 50, right: 20, top: 30, bottom: 0});
+
+
+
+
+
+	// Mutation spectrum grouped barchart
+	mutSpectrumChart = groupedBarD3();
+
+	mutSpectrumChart.width("700")
+                        .height("260")
+						.margin( {left: 50, right: 20, top: 20, bottom: 30});
+	
+
+
+	// Initialize the stats alive data manager
+	statsAliveDataMgr = new dataManagerD3();
+
+	// Create the data manager for the chromosome picker chart
+	statsAliveDataMgr.loadJsonData("data/sample5.json");
+
+	// Listen for data ready even
+	statsAliveDataMgr.on("dataReady", function(data) {
+		var numberOfIterations = statsAliveDataMgr.getCleanedData().length;
+		simulateServerData(numberOfIterations, 1);
+	});
+
 }
 
+function simulateServerData(numberOfIterations, delaySeconds) {
+	var i = 1;                   
 
+	function simulateDataRead() {           
+	   setTimeout(function () {   
+	   	  var globalStats = statsAliveDataMgr.getCleanedData()[i];
+	      renderGlobalStats(globalStats);         
+	      i++;                     
+	      if (i < numberOfIterations) { 
+	      	 // Recursive call
+	         simulateDataRead();           
+	      }                       
+	   }, delaySeconds * 1000) // Delay for n milliseconds after executing function.
+	}
+
+	simulateDataRead();
+}
+
+function onChromosomeSelected(i) {
+	loadVariantDensityChart(i);
+
+	renderStats(i);
+
+}
 
 function loadVariantDensityChart(i) {
 	// Load the variant density data with random data points
 	var ch = chromosomeDataMgr.getCleanedData()[i];
 	variantDensityDataMgr.loadRandomPointData(+ch.value);
+
+}
+
+function renderGlobalStats(globalStats) {
+
+	// # of Variants sampled
+	var totalReads = globalStats.TotalRecords;
+	d3.select("#total-reads")
+			.select("#value")
+			.text(totalReads);
+
+
+	// TsTv Ratio
+	var tstvRatio = globalStats.TsTvRatio;
+	d3.select("#genome-stats")
+			.select("#tstv-ratio")
+			.select("#ratio-value")
+			.text(tstvRatio.toFixed(2));
+
+	// Alelle Frequency
+	var afObj = globalStats.af_hist;
+	var afData = statsAliveDataMgr.jsonToArray2D(afObj);
+	var afSelection = d3.select("#genome-stats")
+					    .select("#allele-freq-chart")
+					    .datum(afData);
+	alleleFreqChart(afSelection);	
+
+	// Mutation Spectrum
+	var msObj = globalStats.mut_spec;
+	var msArray = statsAliveDataMgr.jsonToArray(msObj, "category", "values");
+	var msSelection = d3.select("#genome-stats")
+	                    .select("#mut-spectrum").datum(msArray);
+	mutSpectrumChart(msSelection);
+
+
+}
+
+function renderStats(i) {
 
 }
 
