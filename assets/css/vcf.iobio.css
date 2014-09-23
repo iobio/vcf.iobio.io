@@ -6,6 +6,14 @@ g.arcs {
   font-size: 12px;
 }
 
+#mut-spectrum .x .tick text {
+    font-size: 22px;
+    font-weight: bold;
+}
+#mut-spectrum .category text {
+    font-size: 16px;
+    font-weight: bold;
+}
 
 
 text.chartlabel {
@@ -42,23 +50,27 @@ path.line {
 }
 
 
+#page {
+}
 section {
     margin: 0px;
     padding: 0px;
     display: -webkit-flex;
     display:         flex;
     display: -ms-flexbox;
+}
+
+section#top {
     -webkit-flex-flow: row;
             flex-flow: row;
 }
 
-section#top {
-    min-height: 300px;
-}
-
 section#middle {
     margin-top: 15px;
-    min-height: 600px;
+    margin-right: 15px;
+    
+    -webkit-flex-flow: col;
+            flex-flow: col;
 }
 
 .panel {
@@ -69,12 +81,16 @@ section#middle {
     text-align: center;
 }
 
+.panelTop {
+    text-align: center;
+}
+
 .panel > .title { font-size: 26px}
 
 .panel#chromosome-picker {
     -webkit-flex: 1 5 30%;
             flex: 1 5 30%;
-    -webkit-order: 1;
+    -webkit-order: 1;ß
             order: 1;
     height: 250px;                        
 }
@@ -88,14 +104,65 @@ section#middle {
     position:relative;
 }
 
-.panel#total-reads {
-    -webkit-flex: 1 5 20%;
-            flex: 1 5 20%;
-    -webkit-order: 3;
-            order: 3;
-    height: 250px;         
+
+#top-header {
+    -webkit-flex: 1 1 auto;
+            flex: 1 1 auto;
+    -webkit-order: 1;
+            order: 1;
+}    
+#total-reads {
+    -webkit-flex: 1 1;
+            flex: 1 1;
+    -webkit-order: 2;
+            order: 2;
+}
+
+#genome-stats {
+    -webkit-flex: 1 0 40%;
+            flex: 1 0 40%;
+    -webkit-order: 1;
+            order: 1;
+}
+
+#ref-stats {
+    -webkit-flex: 1 0 40%;
+            flex: 1 0 40%;
+    -webkit-order: 2;
+            order: 2;
 
 }
+
+.panel#tstv-ratio {
+    -webkit-flex: 1 0 20%;
+            flex: 1 0 20%;
+    -webkit-order: 1;
+            order: 1;
+}
+
+.panel#alelle-freq {
+    -webkit-flex: 1 0 40%;
+            flex: 1 0 40%;
+    -webkit-order: 2;
+            order: 2;
+     height: 250px;                               
+}
+
+.panel#mut-spectrum {
+    -webkit-flex: 1 0 40%;
+            flex: 1 0 40%;
+    -webkit-order: 3;
+            order: 3;
+
+}
+
+#ratio-value {
+    font-size:  5vw; 
+    color:      #2687BE; 
+    text-align: center;
+    padding-left:8px;
+}
+
 
 
 @media screen and (max-device-width:800px), screen and (max-width:800px) {
