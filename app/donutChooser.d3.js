@@ -55,8 +55,8 @@ donutChooserD3 = function module() {
       // Otherwise, create the skeletal exports.
       var g = svg.enter()
         .append("svg")
-        .attr("width", "80%")
-        .attr("height", "80%") 
+        .attr("width", "100%")
+        .attr("height", "100%") 
         .attr('viewBox', "-" + radiusOffset + " -" + radiusOffset + " " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
         .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
@@ -197,7 +197,7 @@ donutChooserD3 = function module() {
                       .translate(+theSlice.getAttribute("cx"),
                                  +theSlice.getAttribute("cy"));
           // position tooltip
-          _tooltip().html("ch" + name(d.data))
+          _tooltip().html(name(d.data))
             .style("left", (matrix.e + centroid[0]) + "px")
             .style("top", (matrix.f + centroid[1]- 18) + "px");
 
