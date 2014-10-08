@@ -71,7 +71,7 @@ groupedBarD3 = function module() {
 
         
       });
-      console.log(data);
+    
 
 
       var x0 = d3.scale.ordinal()
@@ -156,7 +156,6 @@ groupedBarD3 = function module() {
           .style("fill", function(d,i) {               
             var colorScheme =  colorSchemeNucleotide[d.category]; 
             var c = colorScheme[i];
-            console.log(d);
             return c;
            });
        bars.exit().remove();
