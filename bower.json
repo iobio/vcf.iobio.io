@@ -25,7 +25,6 @@
   ],
   "dependencies": {
     "d3": "~3.4.11",
-    "flat-ui": "*",
     "jquery": "~2.1.1",
     "queue-async": "https://github.com/mbostock/queue.git#~1.0.7",
     "nprogress": "~0.1.6",
