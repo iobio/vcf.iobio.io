@@ -47,9 +47,34 @@ lineD3 = function module() {
       svg.enter()
         .append("svg")
         .attr("width", "100%")
-        .attr("height", "80%")
+        .attr("height", "100%")
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
-        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+      
+      if (kind == KIND_AREA) {
+          var defs = svg.selectAll("defs").data([data]).enter()
+                        .append("defs");
+
+          var lg = defs.selectAll("linearGradient").data([data]).enter()
+                 .append("linearGradient")
+                 .attr("id", "area-chart-gradient")
+                 .attr("x1", "0")
+                 .attr("x2", "0")
+                 .attr("y1", "0")
+                 .attr("y2", "1");
+
+           lg.selectAll("stop.area-chart-gradient-top").data([data]).enter()
+             .append("stop")
+             .attr("class", "area-chart-gradient-top")
+             .attr("offset", "60%");
+
+           lg.selectAll("stop.area-chart-gradient-bottom").data([data]).enter()
+             .append("stop")
+             .attr("class", "area-chart-gradient-bottom")
+             .attr("offset", "100%");
+      }
+  
         
       var svgGroup =  svg.selectAll("g.group").data([data]).enter()
         .append("g")
@@ -88,38 +113,20 @@ lineD3 = function module() {
           .orient("left");
 
 
-      var areaOrLine;
+      var line = d3.svg.line()
+          .interpolate("linear")
+          .x(function(d,i) { return x(_pos(d)); })
+          .y(function(d) { return y(_depth(d)); });
+
+      var area;
 
       if (kind == KIND_AREA) {
-        areaOrLine = d3.svg.area()
+        area = d3.svg.area()
           .interpolate("linear")
           .x(function(d) { return x(_pos(d)); })
           .y0(height)
           .y1(function(d) { return y(_depth(d)); });
-      } else {
-        areaOrLine = d3.svg.line()
-          .interpolate("linear")
-          .x(function(d,i) { return x(_pos(d)); })
-          .y(function(d) { return y(_depth(d)); });
-      }
-
-      if (kind == KIND_AREA) {
-        svgGroup.selectAll("#area-gradient").data([data]).enter()
-          .append("linearGradient")
-          .attr("id", "area-gradient")
-          .attr("gradientUnits", "userSpaceOnUse")
-          .attr("x1", "0%").attr("y1", "0%")
-          .attr("x2", "0%").attr("y2", "100%")
-          .selectAll("stop")
-          .data([
-            {offset: "0%", color: "lightsteelblue"},
-            {offset: "100%", color: "steelblue"}
-           ])
-          .enter().append("stop")
-          .attr("offset", function(d) { return d.offset; })
-          .attr("stop-color", function(d) { return d.color; });
-      }
-
+      } 
 
       svgGroup = svg.selectAll("g.group")
       svgGroup.selectAll("g.x").remove();
@@ -144,13 +151,13 @@ lineD3 = function module() {
       // "placeholder", so we will just select the group again
       // to remove the path and then add the new one.
       svgGroup = svg.selectAll("g.group")
-      svgGroup.select("#area-chart-path").remove();
+      svgGroup.select("#line-chart-path").remove();
       
       svgGroup.append("path")
         .datum(data)
-        .attr("id", "area-chart-path")
-        .attr("class", kind)
-        .attr("d", areaOrLine(data))
+        .attr("id", "line-chart-path")
+        .attr("class", "line")
+        .attr("d", line(data))
         .transition()
         .duration(3000)
         .attrTween('d', function() {
@@ -161,10 +168,33 @@ lineD3 = function module() {
 
             return function(t) {
                 var interpolatedArea = data.slice(0, interpolate(t));
-                return areaOrLine(interpolatedArea);
+                return line(interpolatedArea);
             }
           }
         });
+
+        if (kind == KIND_AREA) {
+          svgGroup.select("#area-chart-path").remove();
+          svgGroup.append("path")
+            .datum(data)
+            .attr("id", "area-chart-path")
+            .attr("class", "area-chart")
+            .attr("d", area(data))
+            .transition()
+            .duration(3000)
+            .attrTween('d', function() {
+              {
+                var interpolate = d3.scale.quantile()
+                    .domain([0,1])
+                    .range(d3.range(1, data.length + 1));
+
+                return function(t) {
+                    var interpolatedArea = data.slice(0, interpolate(t));
+                    return area(interpolatedArea);
+                }
+              }
+            });
+         }
 
         svgGroup.append("g")
             .attr("class", "x brush")
