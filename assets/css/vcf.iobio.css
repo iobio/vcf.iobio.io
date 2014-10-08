@@ -43,10 +43,14 @@ path.line {
 	fill: none;
 }
 
+.area-chart-gradient-top {
+  stop-color: #006BB2;
+  stop-opacity: 0.1;
+}
 
-.area {
-  fill: url(#area-gradient);
-  stroke-width: 05px;
+.area-chart-gradient-bottom {
+  stop-color: #006BB2;
+  stop-opacity: 0.6;
 }
 
 
@@ -63,10 +67,19 @@ section {
 section#top {
     -webkit-flex-flow: row;
             flex-flow: row;
+   margin-right: 15px;         
+   
+   
 }
 
 section#middle {
-    margin-top: 15px;
+    margin-right: 15px;
+    
+    -webkit-flex-flow: row;
+            flex-flow: row;
+}
+
+section#bottom {
     margin-right: 15px;
     
     -webkit-flex-flow: col;
@@ -74,7 +87,7 @@ section#middle {
 }
 
 .panel {
-    margin: 20px;
+    margin: 10px;
     padding: 5px;
     border: 1px solid rgb(230,230,230);
     border-radius: 2pt;
@@ -88,16 +101,24 @@ section#middle {
 .panel > .title { font-size: 26px}
 
 .panel#chromosome-picker {
-    -webkit-flex: 1 5 30%;
-            flex: 1 5 30%;
-    -webkit-order: 1;ß
+    -webkit-flex: 1 0 30%;
+            flex: 1 0 30%;
+    -webkit-order: 1;
             order: 1;
     height: 250px;                        
 }
 
+#primary-references {
+    height: 200px;
+    padding: 0px;
+    margin: 0px;    
+}
+#other-references {
+    display: none;
+}
 .panel#variant-density {
-    -webkit-flex: 3 1 50%;
-            flex: 3 1 50%;
+    -webkit-flex: 1 0 60%;
+            flex: 1 0 60%;
     -webkit-order: 2;
            order: 2;
     height: 250px;
@@ -116,31 +137,18 @@ section#middle {
             flex: 1 1;
     -webkit-order: 2;
             order: 2;
+    display: none;
 }
 
-#genome-stats {
-    -webkit-flex: 1 0 40%;
-            flex: 1 0 40%;
-    -webkit-order: 1;
-            order: 1;
-}
-
-#ref-stats {
-    -webkit-flex: 1 0 40%;
-            flex: 1 0 40%;
-    -webkit-order: 2;
-            order: 2;
-
-}
 
 .panel#tstv-ratio {
-    -webkit-flex: 1 0 20%;
-            flex: 1 0 20%;
+    -webkit-flex: 1 0 10%;
+            flex: 1 0 10%;
     -webkit-order: 1;
             order: 1;
 }
 
-.panel#alelle-freq {
+.panel#allele-freq {
     -webkit-flex: 1 0 40%;
             flex: 1 0 40%;
     -webkit-order: 2;
@@ -157,67 +165,16 @@ section#middle {
 }
 
 #ratio-value {
-    font-size:  5vw; 
+    font-size:  4vw; 
     color:      #2687BE; 
     text-align: center;
     padding-left:8px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
 
-@media screen and (max-device-width:800px), screen and (max-width:800px) {
 
-    .panel#total-reads {
-        display: none;
-    }
-
-
-}
-
-@media screen and (max-device-width:500px), screen and (max-width:500px) {
-
-    .panel#chromosome-picker {
-        -webkit-flex: 1 0 auto;
-                flex: 1 0 auto;
-        -webkit-order: 1;
-                order: 1;
-
-                  
-    }
-
-    .panel#variant-density {
-        -webkit-flex: 1 0 auto;
-                flex: 1 0 auto;
-        -webkit-order: 2;
-                order: 2;
-        
-        position:relative;
-      
-    }
-
-
-
-    .panel#total-reads {
-        display: block;
-        -webkit-flex: 1 0 120px;
-                flex: 1 0 120px;
-        -webkit-order: 3;
-                order: 3;
-       
-         
-    }
-
-    section {
-        margin:  0px;
-        padding: 0px;
-        display: -webkit-flex;
-        display:         flex;
-        display: -ms-flexbox;
-        -webkit-flex-flow: column;
-                flex-flow: column;
-    }
-
-    section#top {
- 
-    }
-}

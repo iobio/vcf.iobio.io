@@ -1,16 +1,3 @@
-body {
-    font-family: Quicksand;
-    font-weight: 300;  
-    width: 100% ; 
-}            
-header {
-   font-size: 46px;
-   color:#2d8fc1;
-   text-align: left;               
-}
-header a:visited {color:none;}
-header a {text-decoration:none; color:#2d8fc1;}
-            
 .file {
   width: 250px;
   text-align:center;
@@ -38,19 +25,35 @@ header a {text-decoration:none; color:#2d8fc1;}
   cursor: pointer;
 } 
 
-.bedfile-button{
-    position:absolute;
-    right:15px;
-    top:20px;
-    font-size:13px;
-    color: rgb(60,60,60);
-    cursor: pointer;
-    border-bottom: 1px solid rgb(180,180,180);
+
+body {
+    font-family: Quicksand;
+    font-weight: 300;  
+    width: 100% ; 
+}            
+header {
+   font-size: 46px;
+   color:#2d8fc1;
+   text-align: left;               
 }
-#bedfile {
-  visibility:hidden;
-  display:none;
-}       
+header a:visited {color:none;}
+header a {text-decoration:none; color:#2d8fc1;}
+
+#footer {
+     margin-top: 200px;
+     width: 170px;                   
+     margin-left: auto;
+     margin-right: auto;
+     font-size: 18px;
+}
+#footer a {
+    color: rgb(110,110,110);
+}
+#license { float:left;}
+#browser-compatability { float:right;}
+
+
+      
 #showData {
     visibility: hidden;
 }            
@@ -77,34 +80,6 @@ section#top {
 
 
 
-#percents {
-    margin-right: 20px;
-    -webkit-flex: 1 4 40%;
-       flex: 1 4 40%;
-    -webkit-order: 1;
-       order: 1;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-    flex-flow: row wrap;
-}
-
-
-#distributions {
-    -webkit-flex: 1 2 60%;
-       flex: 1 2 60%;
-    -webkit-order: 2;
-       order: 2;
-    display: -webkit-flex;
-/*                display: flex;*/
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-}
 
 
 .checkbox.checked, .checkbox.checked .icons{ color: #267FAD;}
@@ -116,9 +91,6 @@ section#top {
 }
 
 
-#percents .percent {-webkit-flex: 1 1 30%; flex: 1 1 30%; position:relative}
-#percents .percent svg { width: 100%; height:180px }            
-#distributions .distribution {-webkit-flex: 1 1 100%; flex: 1 1 100%; height:200px; position:relative; /*padding: 0px 15px 0px 15px*/}
 
 .bar rect {
   fill: #2d8fc1;
@@ -162,19 +134,7 @@ section#top {
 .arc .fill {fill: #2d8fc1}             
 .alpha {fill: rgba(45,143,193,0.2);}
 
-.arc .percent {
-    fill : rgb(100,100,100);
-    color: rgb(100,100,100);
-    font-size: 23px;
-}
 
-.arc .total {
-    font-size: 10px;
-    letter-spacing: 3px;
-    font-weight: 400;
-    fill : rgb(200,200,200);
-    color: rgb(200,200,200);
-}
 
 .arrow_box {
     position: relative;
@@ -236,31 +196,21 @@ section#top {
 .chart-chooser .selected {color:#2d8fc1; border-bottom: 1px solid #2d8fc1}
 .chart-chooser span { margin: 0px 5px 0px 5px; padding-bottom: 3px; cursor:pointer;}
 
-#seq-list {
-    overflow-x: auto;
-    list-style-type:none;
-    margin:0;
-    padding:0;                
+.area-chart {
+  fill: url(#area-chart-gradient);
+}
+
+.area-chart-gradient-top {
+  stop-color: #6bb7c7;
+  stop-opacity: 0.1;
+}
+
+.area-chart-gradient-bottom {
+  stop-color: #6bb7c7;
+  stop-opacity: 0.6;
 }
 
 
-.seq-buttons {
-    display: inline;
-    margin-right: 6px;
-    padding: 0px 20px 0px 20px;
-    border-radius: 3px;
-    color: #2d8fc1;
-    font-family: helvetica;
-    font-size: 0.6em;
-    border: 1px solid #2d8fc1;
-    cursor:pointer;
-    cursor: hand;
-}   
-
-.seq-buttons.selected {
-    background: #2d8fc1;
-    color: white;
-}
 
 .samplingLoader {
     font-size:14px;
