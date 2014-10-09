@@ -55,22 +55,26 @@
         <div  id="showData">
 
             <div id="page" >
-                <section id="top">
+                <section id="banner">
     				
-                    <div id="top-header">
-                        <header ><a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
-                        </header>
+                    <div id="banner-title" >
+                        <header><a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
+                    </div>
+
+                    <div id="banner-middle">
                     </div>
     				
-                    <div id="total-reads" class="panelTop">
+                    <div id="total-reads" >
                         
-                        <div id="value" style="line-height: 1.0;font-size:5vw; color:#2687BE; text-align: right;padding-right: 0px;display:  inline;margin-right: 0px;">0
+                        <div >
+                            <span id="value"> 0</span>
                         </div>
-                        <div id="base" style="line-height: 1.3;font-size:1.4vw;padding-left: 0px; letter-spacing:3px; color:#2687BE; text-align:center;margin-top:-5px;margin-left:  -10px;display:  inline;">
-                            <span id="number"></span>
-                            <img title="Sample More" style="width:20px;/* margin-bottom:-3px; *//* margin-left:-7px; */cursor:pointer" src="assets/images/more_sampling.png">
+                        <div style="padding-left: 4px" >
+                            <div id="number"></div>
+                            <div id="label">variants sampled</div>
                         </div>
-                        <div style="line-height: 1;font-size: 2vw;padding-left: 4px;/* display:  inline; */vertical-align: top;">Variants Sampled
+                        <div style="padding-left: 10px">
+                            <img style="width: 20px; height: 20px;"  title="Sample More" src="assets/images/more_sampling.png"></img>
                         </div>
                     </div>
     			</div>

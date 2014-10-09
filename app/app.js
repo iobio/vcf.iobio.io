@@ -101,6 +101,8 @@ function onFilesSelected(event) {
 		d3.select("#showData")
 		  .style("visibility", "visible");
 
+		//d3.selectAll(".samplingLoader").style("display", "block");       
+
 		indexDataMgr.loadIndex(onReferencesLoaded);
 
 	});
@@ -172,7 +174,7 @@ function loadVariantDensityData(ref, i) {
 }
 
 function loadStats(ref, i) {
-	d3.select("#total-reads").style("display", "block");
+	
 	d3.select("#total-reads")
 			.select("#value")
 			.text(0);
@@ -233,11 +235,14 @@ function simulateServerData(numberOfIterations, delaySeconds) {
 
 function renderStats(stats) {
 
-	// # of Variants sampled
-	var totalReads = stats.TotalRecords;
+	// # of Variants sampled	
+	var readParts = shortenNumber(stats.TotalRecords);
 	d3.select("#total-reads")
 			.select("#value")
-			.text(totalReads);
+			.text(readParts[0]);
+	d3.select("#total-reads")
+			.select("#number")
+			.text(readParts[1] || "");
 
 
 	// TsTv Ratio
@@ -292,6 +297,14 @@ function d3BrowserAdjustments() {
 	}
 }
 
+function shortenNumber(num) {
+    if(num.toString().length <= 3)
+        return [num];
+    else if (num.toString().length <= 6)
+        return [Math.round(num/1000), "thousand"];
+    else
+        return [Math.round(num/1000000), "million"];
+}
 
 
 

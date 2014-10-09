@@ -198,6 +198,7 @@ donutChooserD3 = function module() {
                                  +theSlice.getAttribute("cy"));
           // position tooltip
           _tooltip().html(name(d.data))
+            .style("visibility", "visible")
             .style("left", (matrix.e + centroid[0]) + "px")
             .style("top", (matrix.f + centroid[1]- 18) + "px");
 

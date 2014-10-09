@@ -64,8 +64,9 @@ section {
     display: -webkit-flex;
     display:         flex;
     display: -ms-flexbox;
+
     -webkit-flex-flow: row;
-    flex-flow: row;
+           -flex-flow: row;
 }
 
 section#top {
@@ -235,6 +236,7 @@ div.tooltip {
   background: rgb(80,80,80);   
   border: 0px;      
   border-radius: 4px;           
-  pointer-events: none;         
+  pointer-events: none; 
+  visibility: hidden;        
 }
 

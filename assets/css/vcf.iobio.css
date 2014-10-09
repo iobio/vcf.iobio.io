@@ -64,6 +64,11 @@ section {
     display: -ms-flexbox;
 }
 
+section#banner {
+    -webkit-flex-flow: row;
+            flex-flow: row;
+}
+
 section#top {
     -webkit-flex-flow: row;
             flex-flow: row;
@@ -94,9 +99,7 @@ section#bottom {
     text-align: center;
 }
 
-.panelTop {
-    text-align: center;
-}
+
 
 .panel > .title { font-size: 26px}
 
@@ -126,19 +129,54 @@ section#bottom {
 }
 
 
-#top-header {
-    -webkit-flex: 1 1 auto;
-            flex: 1 1 auto;
+#banner-title {
+    -webkit-flex: 0 0 auto;
+            flex: 0 0 auto;
     -webkit-order: 1;
             order: 1;
 }    
-#total-reads {
-    -webkit-flex: 1 1;
-            flex: 1 1;
+#banner-middle {
+    -webkit-flex: 1;
+            flex: 1;
     -webkit-order: 2;
             order: 2;
-    display: none;
 }
+
+
+#total-reads {
+    -webkit-flex: 0 0 auto;
+            flex: 0 0 auto;
+    -webkit-order: 3;
+            order: 3;
+    margin-right: 20px;
+
+    display: -webkit-flex;
+    display:         flex;
+    display: -ms-flexbox;
+    -webkit-flex-flow: col;
+            flex-flow: col;
+    -webkit-justify-content: center;        
+            justify-content: center;
+    -webkit-align-items: center;
+           align-items: center;
+
+
+
+}
+#total-reads #value {
+    font-size: 4vw;
+    color:#2687BE;
+}
+#total-reads #number {
+    font-size: 1.4vw;
+    color:#2687BE;
+}
+#total-reads #base {
+    line-height: 1.3;
+    font-size:1.4vw;
+    color:#2687BE; 
+}
+
 
 
 .panel#tstv-ratio {

@@ -178,7 +178,7 @@ lineD3 = function module() {
           svgGroup.append("path")
             .datum(data)
             .attr("id", "area-chart-path")
-            .attr("class", "area-chart")
+            .style("fill", "url(#area-chart-gradient)")
             .attr("d", area(data))
             .transition()
             .duration(3000)
