@@ -18,9 +18,9 @@ groupedBarD3 = function module() {
 
   var tooltipSelector = ".tooltip";
 
-  var colorA = "#5254a3";
-  var colorG = "#8ca252";
-  var colorC = "#e7ba52";
+  var colorA = "#8ca252";
+  var colorG = "#e7ba52";
+  var colorC = "#1f77b4";
   var colorT = "#ad494a";
 
   // agct green,black,blue,red
@@ -31,7 +31,6 @@ groupedBarD3 = function module() {
      C: [colorA, colorG, colorT],
      T: [colorA, colorG, colorC]
    };
-
   var lookupNucleotide = {
      A: ["G", "C", "T"],
      G: ["A", "C", "T"],
@@ -75,7 +74,7 @@ groupedBarD3 = function module() {
 
 
       var x0 = d3.scale.ordinal()
-          .rangeRoundBands([0, width], .1);
+          .rangeRoundBands([0, width], .5);
 
       var x1 = d3.scale.ordinal();
 
@@ -108,6 +107,9 @@ groupedBarD3 = function module() {
         .attr("height", "100%")
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
         .attr("preserveAspectRatio", "xMidYMid meet");
+
+      var defs = svg.selectAll("defs").data([data]).enter()
+                        .append("defs");
 
       var svgGroup = svg.selectAll("g.group").data([data]).enter()
         .append("g")
@@ -153,10 +155,12 @@ groupedBarD3 = function module() {
           .attr("x", function(d) { return x1(name(d)); })
           .attr("y", function(d){  return y(value(d)); })
           .attr("height", function(d) { return height - y(value(d)); })
-          .style("fill", function(d,i) {               
+          .style("fill", function(d,i) {      
+            
             var colorScheme =  colorSchemeNucleotide[d.category]; 
             var c = colorScheme[i];
             return c;
+  
            });
        bars.exit().remove();
 

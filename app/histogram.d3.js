@@ -7,14 +7,22 @@ function histogramD3() {
       yValue = function(d) { return d[1]; },
       x = d3.scale.linear(),
       y = d3.scale.linear(),
-      xAxis = d3.svg.axis().scale(x).orient("bottom"),
+      xAxis = d3.svg.axis().scale(x).orient("bottom");
       yAxis = d3.svg.axis().scale(y).orient("left").ticks(6),
       brush = d3.svg.brush().x(x);
+
+
+  var formatXTick = null;
       
   function chart(selection, options) {
     // merge options and defaults
     options = $.extend(defaults,options);
     var innerHeight = height - margin.top - margin.bottom;
+
+    if (formatXTick) {
+      xAxis.tickFormat(formatXTick);
+    }
+
     selection.each(function(data) {
       // set svg element
       var svg = d3.select(this);
@@ -248,6 +256,12 @@ function histogramD3() {
     yAxis = _;
     return chart; 
   };  
+
+  chart.formatXTick = function(_) {
+    if (!arguments.length) return formatXTick;
+    formatXTick = _;
+    return chart;
+  }
   
   chart.brush = function(_) {
     if (!arguments.length) return brush;

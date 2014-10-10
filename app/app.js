@@ -56,30 +56,50 @@ function init() {
 
 	// Create the variant density chart
 	variantDensityChart = lineD3()
-                            .width("700")
-                            .height("180")
+                            .width("800")
+                            .height("120")
                             .kind("area")
 							.margin( {left: 30, right: 20, top: 30, bottom: 40})
-							.showYAxis(false);
-
+							.showYAxis(false)
+   							.pos( function(d) { return d[0] })
+					   		.depth( function(d) { return d[1] });
 
 
 	// Allele Frequency chart
+	/*
 	alleleFreqChart = histogramD3()
                         .width("700")
                         .height("180")
 						.margin( {left: 50, right: 20, top: 30, bottom: 0});
+	alleleFreqChart.xValue( function(d,i) {
+		return i.toString();
+	});
 
-
+	alleleFreqChart.formatXTick( function(d,i) {
+		return (d * 2) + '%';
+	});
+   */
+    alleleFreqChart = lineD3()
+                       .kind("area")
+                       .width("500")
+                       .height("110")
+					   .margin( {left: 40, right: 10, top: 10, bottom: 10})
+					   .showTransition(false)
+					   .pos( function(d) { return d[0] })
+					   .depth( function(d) { return d[1] });
+	alleleFreqChart.formatXTick( function(d,i) {
+		return (d * 2) + '%';
+	});
+	
 
 
 
 	// Mutation spectrum grouped barchart
 	mutSpectrumChart = groupedBarD3();
 
-	mutSpectrumChart.width("700")
-                        .height("260")
-						.margin( {left: 50, right: 20, top: 20, bottom: 30});
+	mutSpectrumChart.width("570")
+                        .height("200")
+						.margin( {left: 50, right: 10, top: 10, bottom: 20});
 	
 
 
@@ -151,7 +171,8 @@ function onReferenceSelected(ref, i) {
 
 function loadVariantDensityData(ref, i) {
 	
-	var variantDensityData = indexDataMgr.getEstimatedDensity(ref.name);
+	var removeOutliers = true;
+	var variantDensityData = indexDataMgr.getEstimatedDensity(ref.name, removeOutliers);
 
 	
 
@@ -212,25 +233,6 @@ function simulateServerData(numberOfIterations, delaySeconds) {
 	    i++;     
 	}
 
-/*
-	var i = 1;      
-
-	
-	simulation = new function() {           
-	   setTimeout(function () {   
-	   	  var stats = statsAliveDataMgr.getCleanedData()[i];
-	      renderStats(stats);         
-	      i++;                     
-	      if (i < numberOfIterations) { 
-	      	 // Recursive call
-	         simulation();           
-	      }                       
-	   }, delaySeconds * 1000) // Delay for n milliseconds after executing function.
-	}
-
-	simulateDataRead();
-
-	*/
 }
 
 function renderStats(stats) {
@@ -256,7 +258,7 @@ function renderStats(stats) {
 	var afObj = stats.af_hist;
 	var afData = statsAliveDataMgr.jsonToArray2D(afObj);
 	var afSelection = d3.select(".genome-stats")
-					    .select("#allele-freq-chart")
+					    .select("#allele-freq")
 					    .datum(afData);
 	alleleFreqChart(afSelection);	
 

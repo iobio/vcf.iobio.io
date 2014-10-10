@@ -197,20 +197,16 @@ section#top {
 .chart-chooser .selected {color:#2d8fc1; border-bottom: 1px solid #2d8fc1}
 .chart-chooser span { margin: 0px 5px 0px 5px; padding-bottom: 3px; cursor:pointer;}
 
-.area-chart {
-  fill: url(#area-chart-gradient);
-}
 
 .area-chart-gradient-top {
-  stop-color: #6bb7c7;
+  stop-color: #006BB2;
   stop-opacity: 0.1;
 }
 
 .area-chart-gradient-bottom {
-  stop-color: #6bb7c7;
+  stop-color: #006BB2;
   stop-opacity: 0.6;
 }
-
 
 
 .samplingLoader {

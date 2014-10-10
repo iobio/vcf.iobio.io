@@ -50,8 +50,11 @@ indexDataManager = function module() {
 
       for (var i = 0; i < tbiIdx.tabixContent.head.n_ref; i++) {
         var ref   = tbiIdx.tabixContent.head.names[i];
+
+        var indexseq = tbiIdx.tabixContent.indexseq[i];
+        var refLength = indexseq.n_intv * size16kb;
+
         var bhash = tbiIdx.bhash[i];
-        
         var points = [];
         for (var bin in bhash) {
           if (bin >= start16kbBinid && bin <= end16kbBinid) {
@@ -62,25 +65,23 @@ indexDataManager = function module() {
               depth += range[1] - range[0];
             }
             var position = (bin - start16kbBinid) * size16kb;
-            var point = {"pos": position, "depth": depth};
+            var point = [position, depth];
             points.push(point);
           }
         }
-
         // Load the reference density data.  Exclude reference if 0 points.
-        if (points.length > 0) {
-          var lastPoint = points[points.length - 1];
-          if (lastPoint.pos > 0) {
-            refDensity[ref] = {"idx": i, "points": points, "lastPos": lastPoint.pos};
-            refData.push( {"name": ref, "value": lastPoint.pos, "idx": i});
-          }
+        if (points.length > 0 ) {
+            refDensity[ref] = {"idx": i, "points": points};
+            refData.push( {"name": ref, "value": refLength, "idx": i});
         }
+
 
       }
       callback.call(this, refData);
 
     });
   }
+
 
   exports.getReferences = function(minLengthPercent, maxLengthPercent) {
     var references = [];
@@ -106,9 +107,45 @@ indexDataManager = function module() {
   }
 
 
-  exports.getEstimatedDensity = function(ref) {
-    return refDensity[ref].points;
+  exports.getEstimatedDensity = function(ref, removeTheOutliers) {
+    var points = null;
+    if (removeTheOutliers) {
+      points = removeOutliers(refDensity[ref].points);
+    } else {
+      points = refDensity[ref].points;
+    }
+    return points;
   }
+
+  function removeOutliers(data) {
+      var q1 = quantile(data, 0.25); 
+      var q3 = quantile(data, 0.75);
+      var iqr = (q3-q1) * 1.5; //
+      return data.filter(function(d) { 
+        return (d[1]>=(Math.max(q1-iqr,0)) && d[1]<=(q3+iqr)) 
+      });
+   }
+    
+   function quantile(arr, p) {
+      var length = arr.reduce(function(previousValue, currentValue, index, array){
+         return previousValue + currentValue[1];
+      }, 0) - 1;
+      var H = length * p + 1, 
+      h = Math.floor(H);
+
+      var hValue, hMinus1Value, currValue = 0;
+      for (var i=0; i < arr.length; i++) {
+         currValue += arr[i][1];
+         if (hMinus1Value == undefined && currValue >= (h-1))
+            hMinus1Value = arr[i][0];
+         if (hValue == undefined && currValue >= h) {
+            hValue = arr[i][0];
+            break;
+         }
+      } 
+      var v = +hMinus1Value, e = H - h;
+      return e ? v + e * (hValue - v) : v;
+   } 
 
 
   d3.rebind(exports, dispatch, 'on');

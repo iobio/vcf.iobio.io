@@ -2,8 +2,15 @@ g.arcs {
   pointer-events: all;
 }
 
-.tick text {
+#variant-density .tick text {
   font-size: 12px;
+}
+
+#allele-freq  .x .tick text {
+    font-size: 10px;
+}
+#allele-freq .y .tick text {
+    font-size: 8px;
 }
 
 #mut-spectrum .x .tick text {
@@ -184,33 +191,45 @@ section#bottom {
             flex: 1 0 10%;
     -webkit-order: 1;
             order: 1;
+    height: 240px;
+
+
 }
 
 .panel#allele-freq {
-    -webkit-flex: 1 0 40%;
-            flex: 1 0 40%;
+    -webkit-flex: 1 0 50%;
+            flex: 1 0 50%;
     -webkit-order: 2;
             order: 2;
-     height: 250px;                               
+     height: 240px;                               
 }
 
 .panel#mut-spectrum {
-    -webkit-flex: 1 0 40%;
-            flex: 1 0 40%;
+    -webkit-flex: 1 0 30%;
+            flex: 1 0 30%;
     -webkit-order: 3;
             order: 3;
+    height: 240px;
 
 }
 
 #ratio-value {
     font-size:  4vw; 
     color:      #2687BE; 
-    text-align: center;
-    padding-left:8px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    
+    display: -webkit-flex;
+    display:         flex;
+    display: -ms-flexbox;
+
+    -webkit-flex-flow: col;
+            flex-flow: col;
+    -webkit-justify-content: center;        
+            justify-content: center;
+    -webkit-align-items: center;
+           align-items: center;  
+
+    height: 100%;  
+
 }
 
 

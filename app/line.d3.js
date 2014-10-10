@@ -9,6 +9,7 @@ lineD3 = function module() {
 
   var pos    = function(d) { return d.pos };
   var depth  = function(d) { return d.depth };
+  var formatXTick = null;
 
   // accessor after RDP conversion
   var _pos   = function(d) { return d[0] };
@@ -23,6 +24,7 @@ lineD3 = function module() {
 
   var showTooltip = true;
   var showYAxis = true;
+  var showTransition = true;
 
   var tooltipSelector = ".tooltip";
 
@@ -32,7 +34,7 @@ lineD3 = function module() {
       
   function exports(selection) {
 
-    
+   
     selection.each(function(data) {
 
       var epsilonRate = 0.3;
@@ -107,6 +109,10 @@ lineD3 = function module() {
              return d;            
           })
           .orient("bottom");
+      if (formatXTick) {
+        xAxis.tickFormat(formatXTick);
+      }
+
 
       var yAxis = d3.svg.axis()
           .scale(y)
@@ -153,47 +159,54 @@ lineD3 = function module() {
       svgGroup = svg.selectAll("g.group")
       svgGroup.select("#line-chart-path").remove();
       
-      svgGroup.append("path")
+      var linePath = svgGroup.append("path")
         .datum(data)
         .attr("id", "line-chart-path")
         .attr("class", "line")
-        .attr("d", line(data))
-        .transition()
-        .duration(3000)
-        .attrTween('d', function() {
-          {
-            var interpolate = d3.scale.quantile()
-                .domain([0,1])
-                .range(d3.range(1, data.length + 1));
+        .attr("d", line(data));
 
-            return function(t) {
-                var interpolatedArea = data.slice(0, interpolate(t));
-                return line(interpolatedArea);
+      if (showTransition) {
+        linePath.transition()
+          .duration(3000)
+          .attrTween('d', function() {
+            {
+              var interpolate = d3.scale.quantile()
+                  .domain([0,1])
+                  .range(d3.range(1, data.length + 1));
+
+              return function(t) {
+                  var interpolatedArea = data.slice(0, interpolate(t));
+                  return line(interpolatedArea);
+              }
             }
-          }
-        });
+           });
+      }
+
 
         if (kind == KIND_AREA) {
           svgGroup.select("#area-chart-path").remove();
-          svgGroup.append("path")
+          var areaPath = svgGroup.append("path")
             .datum(data)
             .attr("id", "area-chart-path")
             .style("fill", "url(#area-chart-gradient)")
-            .attr("d", area(data))
-            .transition()
-            .duration(3000)
-            .attrTween('d', function() {
-              {
-                var interpolate = d3.scale.quantile()
-                    .domain([0,1])
-                    .range(d3.range(1, data.length + 1));
+            .attr("d", area(data));
 
-                return function(t) {
-                    var interpolatedArea = data.slice(0, interpolate(t));
-                    return area(interpolatedArea);
-                }
-              }
-            });
+            if (showTransition) {
+              areaPath.transition()
+                 .duration(3000)
+                 .attrTween('d', function() {
+                    { 
+                      var interpolate = d3.scale.quantile()
+                          .domain([0,1])
+                          .range(d3.range(1, data.length + 1));
+
+                      return function(t) {
+                          var interpolatedArea = data.slice(0, interpolate(t));
+                          return area(interpolatedArea);
+                      }
+                    }
+                  });
+            }
          }
 
         svgGroup.append("g")
@@ -274,6 +287,18 @@ lineD3 = function module() {
     if (!arguments.length) return showYAxis;
     showYAxis = _;
     return exports; 
+  }
+  
+  exports.formatXTick = function(_) {
+    if (!arguments.length) return formatXTick;
+    formatXTick = _;
+    return exports;
+  }
+
+  exports.showTransition = function(_) {
+    if (!arguments.length) return showTransition;
+    showTransition = _;
+    return exports;
   }
 
   // This adds the "on" methods to our custom exports
