@@ -1,36 +1,18 @@
 groupedBarD3 = function module() {
 
- 
-  var category    = function(d) { return d.category; };
-  var name        = function(d) { return d.name; };
-  var value       = function(d) { return d.value; };
-
-
   var margin = {left: 30, right: 30, top: 10, bottom: 30};
 
   var width = 600 - margin.left - margin.right;
   var height = 220 - margin.top - margin.bottom;
   
+  // default colors
+  var colorScale = d3.scale.category20();
+
+
+
+
   var categories = ["1", "2", "3"];
 
-
-  var showTooltip = true;
-
-  var tooltipSelector = ".tooltip";
-
-  var colorA = "#8ca252";
-  var colorG = "#e7ba52";
-  var colorC = "#1f77b4";
-  var colorT = "#ad494a";
-
-  // agct green,black,blue,red
-  var colorSchemeNucleotide = 
-   {
-     A: [colorG, colorC, colorT],
-     G: [colorA, colorC, colorT],
-     C: [colorA, colorG, colorT],
-     T: [colorA, colorG, colorC]
-   };
   var lookupNucleotide = {
      A: ["G", "C", "T"],
      G: ["A", "C", "T"],
@@ -39,8 +21,61 @@ groupedBarD3 = function module() {
    };
 
 
+  /*
+  * The default function for getting the category from the data.
+  * Category is the field that the bars are grouped by.
+  */
+  function category(d) {
+    return d.category;
+  }
 
-      
+  /*
+  * The default function for getting the name from the data.
+  * Name is the field that represents the individual bar.
+  */
+  function name(d) {
+    return d.name;
+  }
+
+  /*
+  * The default function for getting the value from the data.
+  * Value is the field that represents the height of the
+  * individual bar.
+  */
+  function value(d) {
+    return d.value;
+  }
+
+
+  /*
+  * The default function for filling the individual
+  * bar.  We use the category to map 
+  * to a particular color in a color scale.
+  */
+  function fill(d,i) {
+    return colorScale(name(d));
+  }
+
+
+  /*
+  *  The default function for creating a scale for the x-axis.
+  */
+  function scale(x) {
+    return range[((index.get(x) || (ranger.t === "range" ? index.set(x, domain.push(x)) : NaN)) - 1) % range.length];
+  }
+
+
+
+  /*
+  *  The main function to render a grouped bar chart.
+  *  It takes one argument, the d3 selected parent(s),
+  *  primed with the data.  For each parent (typically
+  *  just one), the function will create an SVG object,
+  *  a grouped bar chart.  This function should be callled
+  *  each time the data changes. Subsequent calls after
+  *  the first call will remove and recreate the axis as well 
+  *  as the individual bars.
+  */      
   function exports(selection) {
 
     
@@ -67,8 +102,6 @@ groupedBarD3 = function module() {
           var valueObj = {category: d.category, name: catName, value: +d.values[i]}; 
           return valueObj;
         });
-
-        
       });
     
 
@@ -155,13 +188,8 @@ groupedBarD3 = function module() {
           .attr("x", function(d) { return x1(name(d)); })
           .attr("y", function(d){  return y(value(d)); })
           .attr("height", function(d) { return height - y(value(d)); })
-          .style("fill", function(d,i) {      
-            
-            var colorScheme =  colorSchemeNucleotide[d.category]; 
-            var c = colorScheme[i];
-            return c;
-  
-           });
+          .style("fill", fill);
+
        bars.exit().remove();
 
        barGroup.selectAll("text")
@@ -186,15 +214,14 @@ groupedBarD3 = function module() {
   }
 
 
-  function scale(x) {
-    return range[((index.get(x) || (ranger.t === "range" ? index.set(x, domain.push(x)) : NaN)) - 1) % range.length];
-  }
 
-  function _tooltip() {
-     return d3.select(tooltipSelector);
-  }
-
-
+  /*
+  *
+  *  All functions in this section allow the grouped bar chart widget to be
+  *  customized, using the "chained" approach, a "shorthand" style for
+  *  calling functions, one after another.
+  *
+  */
   exports.showTooltip = function(_) {
     if (!arguments.length) return showTooltip;
     showTooltip = _;
@@ -251,6 +278,26 @@ groupedBarD3 = function module() {
     categories = _;
     return exports;
   }
+
+  exports.fill = function(_) {
+    if (!arguments.length) return fill;
+    fill = _;
+    return exports;
+  }
+
+  exports.colorList = function(_) {
+    if (!arguments.length) return colorList;
+    colorList = _;
+    colorScale = d3.scale.ordinal().range(colorList);
+    return exports;
+  }
+
+  exports.colorScale = function(_) {
+    if (!arguments.length) return colorScale;
+    colorScale = _;
+    return exports;
+  }
+
 
   return exports;
 }

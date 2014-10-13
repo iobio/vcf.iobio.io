@@ -2,21 +2,31 @@
 *  Global variables
 */
 var indexDataMgr;
-
 var chromosomeChart;
-
 var variantDensityChart;
-var variantDensityDataMgr;
+
 
 var statsAliveDataMgr;
-
 var alleleFreqChart;
 var mutSpectrumChart;
 
 var serverSimulator = null;
 
-
 var chromosomeIndex = 0;
+
+ 
+var colorSchemeMS = {
+	 	A: [1, 2, 3],
+	 	G: [0, 2, 3],
+	 	C: [0, 1, 3],
+	 	T: [0, 1, 2]
+ };
+ var colorMS = [
+   "#8ca252", 
+   "#e7ba52", 
+   "#1f77b4", 
+   "#ad494a"
+ ]; 
 
 
 /*
@@ -89,7 +99,12 @@ function init() {
 
 	mutSpectrumChart.width("570")
                         .height("200")
-						.margin( {left: 50, right: 10, top: 10, bottom: 20});
+						.margin( {left: 50, right: 10, top: 10, bottom: 20})
+						.fill( function(d, i) {
+						    var colorScheme =  colorSchemeMS[d.category]; 
+						    var colorIdx = colorScheme[i];
+						    return colorMS[colorIdx];
+						 });
 	
 
 
