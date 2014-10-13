@@ -212,8 +212,7 @@ section#top {
 .samplingLoader {
     font-size:14px;
     color:#2687BE;
-    position:absolute;
-    width:100%;
+    position:relative;
     margin-top: 70px;
     margin-left:-6px;
     display:none;

@@ -37,6 +37,10 @@ $(document).ready( function(){
 *
 */
 function init() {
+	d3.selectAll("svg").style("display", "none");
+	d3.selectAll(".svg-alt").style("display", "none");
+	d3.selectAll(".samplingLoader").style("display", "block");
+
 	indexDataMgr = new indexDataManager();
 
 
@@ -65,20 +69,6 @@ function init() {
 					   		.depth( function(d) { return d[1] });
 
 
-	// Allele Frequency chart
-	/*
-	alleleFreqChart = histogramD3()
-                        .width("700")
-                        .height("180")
-						.margin( {left: 50, right: 20, top: 30, bottom: 0});
-	alleleFreqChart.xValue( function(d,i) {
-		return i.toString();
-	});
-
-	alleleFreqChart.formatXTick( function(d,i) {
-		return (d * 2) + '%';
-	});
-   */
     alleleFreqChart = lineD3()
                        .kind("area")
                        .width("500")
@@ -121,7 +111,7 @@ function onFilesSelected(event) {
 		d3.select("#showData")
 		  .style("visibility", "visible");
 
-		//d3.selectAll(".samplingLoader").style("display", "block");       
+		
 
 		indexDataMgr.loadIndex(onReferencesLoaded);
 
@@ -129,6 +119,10 @@ function onFilesSelected(event) {
 }
 
 function onReferencesLoaded(refData) {
+    d3.selectAll("section#top svg").style("display", "block");
+    d3.selectAll("section#top .svg-alt").style("display", "block");
+	d3.selectAll("section#top .samplingLoader").style("display", "none");
+
 
 	var pieChartRefData = indexDataMgr.getReferences(.01, 1);
 	
@@ -163,10 +157,20 @@ function onReferencesLoaded(refData) {
 
 
 function onReferenceSelected(ref, i) {
-	loadVariantDensityData(ref, i);
 
-	loadStats(ref, i);
+	 loadVariantDensityData(ref, i);
 
+	 d3.selectAll("section#middle svg").style("visibility", "hidden");
+	 d3.selectAll("section#middle .svg-alt").style("display", "none");
+	 d3.selectAll("section#middle .samplingLoader").style("display", "block");
+}
+
+function onVariantDensityChartRendered() {
+	d3.selectAll("section#middle svg").style("visibility", "visible");
+	d3.selectAll("section#middle .svg-alt").style("display", "block");
+   	d3.selectAll("section#middle .samplingLoader").style("display", "none");
+
+   	loadStats(chromosomeIndex);
 }
 
 function loadVariantDensityData(ref, i) {
@@ -177,7 +181,7 @@ function loadVariantDensityData(ref, i) {
 	
 
 	// Load the variant density chart with the data
-	variantDensityChart(d3.select("#variant-density").datum(variantDensityData));
+	variantDensityChart(d3.select("#variant-density").datum(variantDensityData), onVariantDensityChartRendered);
 
 	// Listen for the brush event.  This will select a subsection of the x-axis on the variant
 	// density chart, allowing the user to zoom in to a particular region to sample that specific
@@ -190,11 +194,15 @@ function loadVariantDensityData(ref, i) {
 		}
 	});	
 
+	// Listen for finished event which is dispatched after line is drawn.  If chart has
+	// transitions, event is dispatched after transitions have occurred.
+	variantDensityChart.on("d3rendered", onVariantDensityChartRendered);
+
 
 
 }
 
-function loadStats(ref, i) {
+function loadStats(i) {
 	
 	d3.select("#total-reads")
 			.select("#value")
@@ -220,7 +228,7 @@ function simulateServerData(numberOfIterations, delaySeconds) {
 
 	if (window.serverSimulator) {
 		window.clearInterval(window.serverSimulator);
-	}
+	} 
 
 	serverSimulator = setInterval(function () {doStats()}, delaySeconds * 1000);
 	

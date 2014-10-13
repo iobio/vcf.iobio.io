@@ -122,7 +122,11 @@ indexDataManager = function module() {
       var q3 = quantile(data, 0.75);
       var iqr = (q3-q1) * 1.5; //
       return data.filter(function(d) { 
-        return (d[1]>=(Math.max(q1-iqr,0)) && d[1]<=(q3+iqr)) 
+        var keep = (d[1]>=(Math.max(q1-iqr,0)) && d[1]<=(q3+iqr));
+        if (!keep) {
+          console.log("throwing out " + d[0] + " " + d[1]);
+        }
+        return keep;
       });
    }
     

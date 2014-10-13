@@ -1,6 +1,6 @@
 lineD3 = function module() {
 
-  var dispatch = d3.dispatch("d3brush");
+  var dispatch = d3.dispatch("d3brush", "d3rendered");
 
   var KIND_LINE = "line";
   var KIND_AREA = "area";
@@ -28,11 +28,10 @@ lineD3 = function module() {
 
   var tooltipSelector = ".tooltip";
 
-  var dispatch = d3.dispatch("d3brush");
 
 
       
-  function exports(selection) {
+  function exports(selection, cb) {
 
    
     selection.each(function(data) {
@@ -169,54 +168,61 @@ lineD3 = function module() {
         linePath.transition()
           .duration(3000)
           .attrTween('d', function() {
-            {
-              var interpolate = d3.scale.quantile()
-                  .domain([0,1])
-                  .range(d3.range(1, data.length + 1));
+              {
+                var interpolate = d3.scale.quantile()
+                    .domain([0,1])
+                    .range(d3.range(1, data.length + 1));
 
-              return function(t) {
-                  var interpolatedArea = data.slice(0, interpolate(t));
-                  return line(interpolatedArea);
+                return function(t) {
+                    var interpolatedArea = data.slice(0, interpolate(t));
+                    return line(interpolatedArea);
+                }
               }
-            }
-           });
+            })
+          .each("end", function(d) {
+              dispatch.d3rendered();
+          });
+          
       }
 
 
-        if (kind == KIND_AREA) {
-          svgGroup.select("#area-chart-path").remove();
-          var areaPath = svgGroup.append("path")
-            .datum(data)
-            .attr("id", "area-chart-path")
-            .style("fill", "url(#area-chart-gradient)")
-            .attr("d", area(data));
+      if (kind == KIND_AREA) {
+        svgGroup.select("#area-chart-path").remove();
+        var areaPath = svgGroup.append("path")
+          .datum(data)
+          .attr("id", "area-chart-path")
+          .style("fill", "url(#area-chart-gradient)")
+          .attr("d", area(data));
 
-            if (showTransition) {
-              areaPath.transition()
-                 .duration(3000)
-                 .attrTween('d', function() {
-                    { 
-                      var interpolate = d3.scale.quantile()
-                          .domain([0,1])
-                          .range(d3.range(1, data.length + 1));
+          if (showTransition) {
+            areaPath.transition()
+               .duration(3000)
+               .attrTween('d', function() {
+                  { 
+                    var interpolate = d3.scale.quantile()
+                        .domain([0,1])
+                        .range(d3.range(1, data.length + 1));
 
-                      return function(t) {
-                          var interpolatedArea = data.slice(0, interpolate(t));
-                          return area(interpolatedArea);
-                      }
+                    return function(t) {
+                        var interpolatedArea = data.slice(0, interpolate(t));
+                        return area(interpolatedArea);
                     }
-                  });
-            }
-         }
+                  }
+                });
+               
+          }
+       }
 
-        svgGroup.append("g")
-            .attr("class", "x brush")
-            .call(brush)
-            .selectAll("rect")
-            .attr("y", -6)
-            .attr("height", height + 6);
+      svgGroup.append("g")
+          .attr("class", "x brush")
+          .call(brush)
+          .selectAll("rect")
+          .attr("y", -6)
+          .attr("height", height + 6);
 
-
+      if (!showTransition) {
+        dispatch.d3rendered();
+      }
 
 
   });
