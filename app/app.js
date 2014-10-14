@@ -8,13 +8,18 @@ var variantDensityChart;
 
 var statsAliveDataMgr;
 var alleleFreqChart;
+var tstvChart;
 var mutSpectrumChart;
+
 
 var serverSimulator = null;
 
 var chromosomeIndex = 0;
 
- 
+
+//
+//  Mutation spectrum variables
+// 
 var colorSchemeMS = {
 	 	A: [1, 2, 3],
 	 	G: [0, 2, 3],
@@ -27,6 +32,12 @@ var colorSchemeMS = {
    "#1f77b4", 
    "#ad494a"
  ]; 
+var lookupNucleotide = {
+ A: ["G", "C", "T"],
+ G: ["A", "C", "T"],
+ C: ["A", "G", "T"],
+ T: ["A", "G", "C"]
+};
 
 
 /*
@@ -47,8 +58,8 @@ $(document).ready( function(){
 *
 */
 function init() {
-	d3.selectAll("svg").style("display", "none");
-	d3.selectAll(".svg-alt").style("display", "none");
+	d3.selectAll("svg").style("visibility", "hidden");
+	d3.selectAll(".svg-alt").style("visibility", "hidden");
 	d3.selectAll(".samplingLoader").style("display", "block");
 
 	indexDataMgr = new indexDataManager();
@@ -70,8 +81,8 @@ function init() {
 
 	// Create the variant density chart
 	variantDensityChart = lineD3()
-                            .width("800")
-                            .height("120")
+                            .width(800)
+                            .height(120)
                             .kind("area")
 							.margin( {left: 30, right: 20, top: 30, bottom: 40})
 							.showYAxis(false)
@@ -81,8 +92,8 @@ function init() {
 
     alleleFreqChart = lineD3()
                        .kind("area")
-                       .width("500")
-                       .height("110")
+                       .width(500)
+                       .height(110)
 					   .margin( {left: 40, right: 10, top: 10, bottom: 10})
 					   .showTransition(false)
 					   .pos( function(d) { return d[0] })
@@ -90,22 +101,40 @@ function init() {
 	alleleFreqChart.formatXTick( function(d,i) {
 		return (d * 2) + '%';
 	});
-	
 
+
+	// TSTV grouped barchart (to show ratio)
+	tstvChart = groupedBarD3();
+	var tstvCategories =  ["TS", "TV"];
+	tstvChart.width(150)
+	    .height(120)
+		.margin( {left: 0, right: 0, top: 20, bottom: 0})
+		.showXAxis(false)
+		.showYAxis(false)
+		.categories( tstvCategories )
+		.showBarLabel(true)
+		.barLabel( function(d,i) {
+	        return tstvCategories[i]
+		 });
 
 
 	// Mutation spectrum grouped barchart
 	mutSpectrumChart = groupedBarD3();
 
-	mutSpectrumChart.width("570")
-                        .height("200")
-						.margin( {left: 50, right: 10, top: 10, bottom: 20})
-						.fill( function(d, i) {
-						    var colorScheme =  colorSchemeMS[d.category]; 
-						    var colorIdx = colorScheme[i];
-						    return colorMS[colorIdx];
-						 });
-	
+	mutSpectrumChart.width(570)
+	    .height(180)
+		.margin( {left: 50, right: 10, top: 10, bottom: 20})
+		.categories( ["1", "2", "3"] )
+		.fill( function(d, i) {
+		    var colorScheme =  colorSchemeMS[d.category]; 
+		    var colorIdx = colorScheme[i];
+		    return colorMS[colorIdx];
+		 })
+		.barLabel( function(d) {
+			var nucleotide = lookupNucleotide[d.category];
+	        return nucleotide[+d.name - 1]
+		 });
+
 
 
 	// Initialize the stats alive data manager
@@ -176,13 +205,13 @@ function onReferenceSelected(ref, i) {
 	 loadVariantDensityData(ref, i);
 
 	 d3.selectAll("section#middle svg").style("visibility", "hidden");
-	 d3.selectAll("section#middle .svg-alt").style("display", "none");
+	 d3.selectAll("section#middle .svg-alt").style("visibility", "hidden");
 	 d3.selectAll("section#middle .samplingLoader").style("display", "block");
 }
 
 function onVariantDensityChartRendered() {
 	d3.selectAll("section#middle svg").style("visibility", "visible");
-	d3.selectAll("section#middle .svg-alt").style("display", "block");
+	d3.selectAll("section#middle .svg-alt").style("visibility", "visible");
    	d3.selectAll("section#middle .samplingLoader").style("display", "none");
 
    	loadStats(chromosomeIndex);
@@ -277,6 +306,16 @@ function renderStats(stats) {
 			.select("#ratio-value")
 			.text(tstvRatio.toFixed(2));
 
+	var tstvData = [
+	  {category: "tstv", values: [tstvRatio.toFixed(2), "1"] }
+	];		
+	// This is the parent object for the chart
+	var tstvSelection = d3.select(".genome-stats")
+	                      .select("#ratio-panel").datum(tstvData);
+	// Render the mutation spectrum chart with the data
+	tstvChart(tstvSelection);
+
+
 	// Alelle Frequency
 	var afObj = stats.af_hist;
 	var afData = statsAliveDataMgr.jsonToArray2D(afObj);
@@ -288,8 +327,22 @@ function renderStats(stats) {
 	// Mutation Spectrum
 	var msObj = stats.mut_spec;
 	var msArray = statsAliveDataMgr.jsonToArray(msObj, "category", "values");
+	// Exclude the 0 value as this is the base that that represents the
+	// "category"  Example:  For mutations for A, keep values for G, C, T,
+	// but exclude 0 value for A.
+	msArray.forEach(function(d) {
+        d.values = d.values.filter( function(val) {
+          if (val == 0) {
+            return false;
+          } else {
+            return true;
+          }
+      	});
+    }); 
+    // This is the parent object for the chart
 	var msSelection = d3.select(".genome-stats")
 	                    .select("#mut-spectrum").datum(msArray);
+	// Render the mutation spectrum chart with the data
 	mutSpectrumChart(msSelection);
 
 

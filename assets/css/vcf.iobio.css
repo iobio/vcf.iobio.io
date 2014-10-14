@@ -22,6 +22,9 @@ g.arcs {
     font-weight: bold;
 }
 
+#tstv-ratio #ratio-panel text {
+    font-size: 9px;
+}
 
 text.chartlabel {
 	
@@ -214,8 +217,10 @@ section#bottom {
 }
 
 #ratio-value {
-    font-size:  4vw; 
+    font-size:  2.5vw; 
     color:      #2687BE; 
+
+    margin-top: 20px;
     
     display: -webkit-flex;
     display:         flex;
@@ -227,9 +232,6 @@ section#bottom {
             justify-content: center;
     -webkit-align-items: center;
            align-items: center;  
-
-    height: 100%;  
-
 }
 
 

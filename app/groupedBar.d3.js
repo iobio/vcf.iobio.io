@@ -8,18 +8,14 @@ groupedBarD3 = function module() {
   // default colors
   var colorScale = d3.scale.category20();
 
+  var showXAxis = true;
+  var showYAxis = true;
+  var yAxisLabel = null;
+  var showBarLabel = true;
+  var categories = null;
 
 
-
-  var categories = ["1", "2", "3"];
-
-  var lookupNucleotide = {
-     A: ["G", "C", "T"],
-     G: ["A", "C", "T"],
-     C: ["A", "G", "T"],
-     T: ["A", "G", "C"]
-   };
-
+  
 
   /*
   * The default function for getting the category from the data.
@@ -56,6 +52,14 @@ groupedBarD3 = function module() {
     return colorScale(name(d));
   }
 
+  /*
+  * The default function for the category label.  We
+  * use the name (associated with the value).
+  */
+  function barLabel(d,i) {
+    return d.name;
+  }
+
 
   /*
   *  The default function for creating a scale for the x-axis.
@@ -81,25 +85,20 @@ groupedBarD3 = function module() {
     
     selection.each(function(data) {
 
+      // Make sure we have categories
+      if (!categories) {
+        console.log("ERROR - cannot create groupedBarD3 because categories were not provided.")
+        return;
+      }
+
 
       // Add a property to the JSON object called "values" that contains an array of objects 
       // example value: [{name: cat1, value: 50}, {name: cat2, value: 33}]
       // Exclude the value that has 0 as this is the base that is the category. (e.g. 
       // exclude A value for A: )
       data.forEach(function(d) {
-
-        // TODO: Exclude based on position, for example
-        // if A record, exlude pos 0, G record, exclude pos 2
-        d.values = d.values.filter( function(val) {
-          if (val == 0) {
-            return false;
-          } else {
-            return true;
-          }
-        }); 
-
         d.values = categories.map(function(catName, i) { 
-          var valueObj = {category: d.category, name: catName, value: +d.values[i]}; 
+          var valueObj = {category: category(d), name: catName, value: +d.values[i]}; 
           return valueObj;
         });
       });
@@ -114,16 +113,19 @@ groupedBarD3 = function module() {
       var y = d3.scale.linear()
           .range([height, 0]);
 
-      var color = d3.scale.category20b();
+      if (showXAxis) {
+        var xAxis = d3.svg.axis()
+            .scale(x0)
+            .orient("bottom");
+      }
+      
+      if (showYAxis) {
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format(".2s"));
+      }   
 
-      var xAxis = d3.svg.axis()
-          .scale(x0)
-          .orient("bottom");
-         
-      var yAxis = d3.svg.axis()
-          .scale(y)
-          .orient("left")
-          .tickFormat(d3.format(".2s"));
 
       x0.domain(data.map(function(d) { return category(d); }));
       x1.domain(categories).rangeRoundBands([0, x0.rangeBand()]);
@@ -137,7 +139,7 @@ groupedBarD3 = function module() {
       svg.enter()
         .append("svg")
         .attr("width", "100%")
-        .attr("height", "100%")
+        .attr("height", "90%")
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
         .attr("preserveAspectRatio", "xMidYMid meet");
 
@@ -149,26 +151,33 @@ groupedBarD3 = function module() {
         .attr("class", "group")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      svgGroup = svg.selectAll("g.group");
-      svgGroup.selectAll("g.x").remove();
-      svgGroup.selectAll("g.x").data([data]).enter()
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+      if (showXAxis) {
+        svgGroup = svg.selectAll("g.group");
+        svgGroup.selectAll("g.x").remove();
+        svgGroup.selectAll("g.x").data([data]).enter()
+          .append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+      }
 
-      svgGroup.selectAll("g.y").remove();
-      svgGroup.selectAll("g.y").data([data]).enter()
-            .append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
+      if (showYAxis) {
+        svgGroup.selectAll("g.y").remove();
+        svgGroup.selectAll("g.y").data([data]).enter()
+          .append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+        if (yAxisLabel) {
+          svgGroup.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .attr("font-size", "10px")
-            .text("Mutation Frequency");
+            .text(yAxisLabel);
+
+        }      
+      }
 
 
       svgGroup.selectAll("g.category").remove();
@@ -192,21 +201,17 @@ groupedBarD3 = function module() {
 
        bars.exit().remove();
 
-       barGroup.selectAll("text")
-          .data(function(d) { return d.values; })
-          .enter()
-          .append("text").text(function(d){ 
-            var nucleotide = lookupNucleotide[d.category];
-            return nucleotide[+d.name - 1]
-          })
-          .attr("x", function(d) { return x1(name(d))  + (x1.rangeBand() / 2); })
-          .attr("y", function(d) { 
-            return y(value(d)) - 5; 
-          })
-          .attr("text-anchor", "middle")
-          .attr("font-size", "13px")
-          .attr("font-weight", "bold")
-          .attr("fill", "black");
+       if (showBarLabel) {
+         barGroup.selectAll("text")
+            .data(function(d) { return d.values; })
+            .enter()
+            .append("text").text( barLabel )
+            .attr("x", function(d) { return x1(name(d))  + (x1.rangeBand() / 2); })
+            .attr("y", function(d) { 
+              return y(value(d)) - 5; 
+            })
+            .attr("text-anchor", "middle")
+        }
 
        
 
@@ -243,14 +248,12 @@ groupedBarD3 = function module() {
   exports.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    width = width - margin.left - margin.right;
     return exports;
   };
 
   exports.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    height = height - margin.top - margin.bottom;
     return exports;
   };
 
@@ -297,6 +300,38 @@ groupedBarD3 = function module() {
     colorScale = _;
     return exports;
   }
+
+  exports.showBarLabel = function(_) {
+    if (!arguments.length) return showBarLabel;
+    showBarLabel = _;
+    return exports;
+  };
+
+  exports.barLabel = function(_) {
+    if (!arguments.length) return barLabel;
+    barLabel = _;
+    return exports;
+  }
+
+  exports.showXAxis = function(_) {
+    if (!arguments.length) return showXAxis;
+    showXAxis = _;
+    return exports;
+  }
+
+  exports.showYAxis = function(_) {
+    if (!arguments.length) return showYAxis;
+    showYAxis = _;
+    return exports;
+  }
+
+  exports.yAxisLabel = function(_) {
+    if (!arguments.length) return yAxisLabel;
+    yAxisLabel = _;
+    return exports;
+  }
+  
+
 
 
   return exports;
