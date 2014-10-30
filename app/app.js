@@ -4,6 +4,7 @@
 var indexDataMgr;
 var chromosomeChart;
 var variantDensityChart;
+var variantDensityVF;
 
 
 var statsAliveDataMgr;
@@ -82,20 +83,31 @@ function init() {
 	// Create the variant density chart
 	variantDensityChart = lineD3()
                             .width(800)
-                            .height(120)
+                            .height(110)
                             .kind("area")
-							.margin( {left: 30, right: 20, top: 30, bottom: 40})
+							.margin( {left: 30, right: 20, top: 10, bottom: 20})
 							.showYAxis(false)
    							.pos( function(d) { return d[0] })
-					   		.depth( function(d) { return d[1] });
+					   		.depth( function(d) { return d[1] })
 
+
+	variantDensityVF = lineD3()
+                            .width(800)
+                            .height(20)
+                            .kind("area")
+							.margin( {left: 30, right: 20, top: 0, bottom: 20})
+							.showYAxis(false)
+   							.pos( function(d) { return d[0] })
+					   		.depth( function(d) { return d[1] })
+					   		.showGradient(false);
 
     alleleFreqChart = lineD3()
                        .kind("area")
                        .width(500)
-                       .height(110)
-					   .margin( {left: 40, right: 10, top: 10, bottom: 10})
+                       .height(100)
+					   .margin( {left: 40, right: 10, top: 10, bottom: 30})
 					   .showTransition(false)
+					   .showYAxis(true)
 					   .pos( function(d) { return d[0] })
 					   .depth( function(d) { return d[1] });
 	alleleFreqChart.formatXTick( function(d,i) {
@@ -107,7 +119,7 @@ function init() {
 	tstvChart = groupedBarD3();
 	var tstvCategories =  ["TS", "TV"];
 	tstvChart.width(150)
-	    .height(120)
+	    .height(80)
 		.margin( {left: 0, right: 0, top: 20, bottom: 0})
 		.showXAxis(false)
 		.showYAxis(false)
@@ -122,7 +134,7 @@ function init() {
 	mutSpectrumChart = groupedBarD3();
 
 	mutSpectrumChart.width(570)
-	    .height(180)
+	    .height(210)
 		.margin( {left: 50, right: 10, top: 10, bottom: 20})
 		.categories( ["1", "2", "3"] )
 		.fill( function(d, i) {
@@ -220,21 +232,26 @@ function onVariantDensityChartRendered() {
 function loadVariantDensityData(ref, i) {
 	
 	var removeOutliers = true;
-	var variantDensityData = indexDataMgr.getEstimatedDensity(ref.name, removeOutliers);
 
-	
+	var data = indexDataMgr.getEstimatedDensity(ref.name, removeOutliers);
+	var smoothedData = sumData(data, d3.round(data.length / 800) * 3, function (d) { return d[0] }, function(d) { return d[1]} );
 
 	// Load the variant density chart with the data
-	variantDensityChart(d3.select("#variant-density").datum(variantDensityData), onVariantDensityChartRendered);
+	variantDensityChart(d3.select("#variant-density").datum(data), onVariantDensityChartRendered);
+	variantDensityVF(d3.select("#variant-density-vf").datum(smoothedData), onVariantDensityChartRendered);
 
 	// Listen for the brush event.  This will select a subsection of the x-axis on the variant
 	// density chart, allowing the user to zoom in to a particular region to sample that specific
 	// region rather than the entire chromosome.
-	variantDensityChart.on("d3brush", function(brush) {
+	variantDensityVF.on("d3brush", function(brush) {
 		if (!brush.empty()) {
-			var start = parseInt(brush.extent()[0]);
-			var end = parseInt(brush.extent()[1]);
-			alert("d3brush start=" + start + " end=" + end);
+			var data = indexDataMgr.getEstimatedDensity(ref.name, removeOutliers);
+
+			var filteredData = data.filter(function(d) { return (d[0] >= brush.extent()[0] && d[0] <= brush.extent()[1]) });
+
+			variantDensityChart(d3.select("#variant-density").datum(filteredData), onVariantDensityChartRendered);
+
+
 		}
 	});	
 
@@ -245,6 +262,26 @@ function loadVariantDensityData(ref, i) {
 
 
 }
+
+function sumData (data, factor, xvalue, yvalue) {
+    var i, j, results = [], sum = 0, length = data.length, avgWindow;
+
+    if (!factor || factor <= 0) {
+        factor = 1;
+    }
+
+    // Create a sliding window of averages
+    for(i = 0; i < length; i+= factor) {
+        // Slice from i to factor
+        avgWindow = data.slice(i, i+factor);
+        for (j = 0; j < avgWindow.length; j++) {
+            sum += d3.round(yvalue(avgWindow[j]));
+        }
+        results.push([xvalue(data[i]), sum])
+        sum = 0;
+    }
+    return results;
+};
 
 function loadStats(i) {
 	

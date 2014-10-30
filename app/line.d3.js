@@ -25,6 +25,7 @@ lineD3 = function module() {
   var showTooltip = true;
   var showYAxis = true;
   var showTransition = true;
+  var showGradient = true;
 
   var tooltipSelector = ".tooltip";
 
@@ -53,7 +54,7 @@ lineD3 = function module() {
         .attr("preserveAspectRatio", "xMidYMid meet");
 
       
-      if (kind == KIND_AREA) {
+      if (kind == KIND_AREA && showGradient) {
           var defs = svg.selectAll("defs").data([data]).enter()
                         .append("defs");
 
@@ -191,26 +192,29 @@ lineD3 = function module() {
         var areaPath = svgGroup.append("path")
           .datum(data)
           .attr("id", "area-chart-path")
-          .style("fill", "url(#area-chart-gradient)")
           .attr("d", area(data));
 
-          if (showTransition) {
-            areaPath.transition()
-               .duration(3000)
-               .attrTween('d', function() {
-                  { 
-                    var interpolate = d3.scale.quantile()
-                        .domain([0,1])
-                        .range(d3.range(1, data.length + 1));
+        if (showGradient) {
+          areaPath.style("fill", "url(#area-chart-gradient)");
+        }
 
-                    return function(t) {
-                        var interpolatedArea = data.slice(0, interpolate(t));
-                        return area(interpolatedArea);
-                    }
+        if (showTransition) {
+          areaPath.transition()
+             .duration(3000)
+             .attrTween('d', function() {
+                { 
+                  var interpolate = d3.scale.quantile()
+                      .domain([0,1])
+                      .range(d3.range(1, data.length + 1));
+
+                  return function(t) {
+                      var interpolatedArea = data.slice(0, interpolate(t));
+                      return area(interpolatedArea);
                   }
-                });
-               
-          }
+                }
+              });
+             
+        }
        }
 
       svgGroup.append("g")
@@ -254,14 +258,12 @@ lineD3 = function module() {
   exports.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    width = width - margin.left - margin.right;
     return exports;
   };
 
   exports.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    height = height - margin.top - margin.bottom;
     return exports;
   };
  
@@ -304,6 +306,12 @@ lineD3 = function module() {
   exports.showTransition = function(_) {
     if (!arguments.length) return showTransition;
     showTransition = _;
+    return exports;
+  }
+
+  exports.showGradient = function(_) {
+    if (!arguments.length) return showGradient;
+    showGradient = _;
     return exports;
   }
 

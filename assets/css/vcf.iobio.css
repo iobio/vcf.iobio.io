@@ -1,13 +1,34 @@
+.chart rect {
+  fill: steelblue;
+}
+
+#variant-density-vf #area-chart-path {
+    fill: lightgrey;
+}
+#variant-density-vf #line-chart-path {
+    stroke: grey;
+    stroke-width: 1;
+    fill: none;
+}
+
+
+
+
 g.arcs {
   pointer-events: all;
 }
 
-#variant-density .tick text {
-  font-size: 12px;
+.tick  text {
+  font-size: 10px;
+}
+
+
+#variant-density  .global .tick text {
+  font-size: 9px;
 }
 
 #allele-freq  .x .tick text {
-    font-size: 10px;
+    font-size: 9px;
 }
 #allele-freq .y .tick text {
     font-size: 8px;
@@ -20,6 +41,11 @@ g.arcs {
 #mut-spectrum .category text {
     font-size: 16px;
     font-weight: bold;
+}
+#mut-spectrum .category rect {
+    opacity: .75;
+    stroke-width: 1;
+    stroke: rgb(0, 0, 0);
 }
 
 #tstv-ratio #ratio-panel text {
@@ -52,6 +78,8 @@ path.line {
 	stroke-width: 1;
 	fill: none;
 }
+
+
 
 .area-chart-gradient-top {
   stop-color: #006BB2;
@@ -129,14 +157,16 @@ section#bottom {
 #other-references {
     display: none;
 }
-.panel#variant-density {
+#variant-density-panel {
     -webkit-flex: 1 0 60%;
             flex: 1 0 60%;
     -webkit-order: 2;
            order: 2;
     height: 250px;
     position:relative;
+
 }
+
 
 
 #banner-title {

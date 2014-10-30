@@ -5,7 +5,7 @@
 		<title>vcf.iobio.io</title>
 
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
-		<link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
+        <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
 		<link href="assets/css/iobio.css" rel="stylesheet" type='text/css'>
 		<link href="assets/css/vcf.iobio.css" rel="stylesheet" type='text/css'/>
@@ -94,9 +94,13 @@
                              </select>
                         </div>                    
                     </div>
-                    <div id="variant-density" class="panel">
+                    <div id="variant-density-panel" class="panel">
                         <div class="title">Variant Density</div>
                         <div class="samplingLoader">Sampling <img src="assets/images//loading_dots.gif"/></div>
+                        <div id="variant-density">
+                        </div>    
+                        <div id="variant-density-vf">
+                        </div>
                     </div>
 
 
@@ -131,6 +135,7 @@
         <script type="text/javascript" src="app/dataManager.d3.js"></script>
         <script type="text/javascript" src="app/donutChooser.d3.js"></script>
         <script type="text/javascript" src="app/line.d3.js"></script>
+        <script type="text/javascript" src="app/barChart.d3.js"></script>
         <script type="text/javascript" src="app/histogram.d3.js"></script>
         <script type="text/javascript" src="app/groupedBar.d3.js"></script>
         <script type="text/javascript" src="app/app.js"></script>
