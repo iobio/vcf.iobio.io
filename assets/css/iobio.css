@@ -235,3 +235,10 @@ div.tooltip {
   visibility: hidden;        
 }
 
+svg g text {
+  fill: black;
+  font-size: 20px;
+}
+
+
+

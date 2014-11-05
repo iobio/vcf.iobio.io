@@ -4,6 +4,8 @@ groupedBarD3 = function module() {
 
   var width = 600 - margin.left - margin.right;
   var height = 220 - margin.top - margin.bottom;
+
+  var categoryPadding = .4;
   
   // default colors
   var colorScale = d3.scale.category20();
@@ -11,6 +13,7 @@ groupedBarD3 = function module() {
   var showXAxis = true;
   var showYAxis = true;
   var yAxisLabel = null;
+  var showXTicks = true;
   var showBarLabel = true;
   var categories = null;
 
@@ -106,7 +109,7 @@ groupedBarD3 = function module() {
 
 
       var x0 = d3.scale.ordinal()
-          .rangeRoundBands([0, width], .5);
+          .rangeRoundBands([0, width], categoryPadding);
 
       var x1 = d3.scale.ordinal();
 
@@ -117,6 +120,9 @@ groupedBarD3 = function module() {
         var xAxis = d3.svg.axis()
             .scale(x0)
             .orient("bottom");
+        if (!showXTicks) {
+          xAxis.tickSize(0);
+        }
       }
       
       if (showYAxis) {
@@ -179,7 +185,7 @@ groupedBarD3 = function module() {
         }      
       }
 
-
+      svgGroup = svg.selectAll("g.group")
       svgGroup.selectAll("g.category").remove();
       var barGroup = svgGroup.selectAll(".category")
             .data(data)
@@ -325,9 +331,21 @@ groupedBarD3 = function module() {
     return exports;
   }
 
+  exports.showXTicks = function(_) {
+    if (!arguments.length) return showXTicks;
+    showXTicks = _;
+    return exports;
+  }
+
   exports.yAxisLabel = function(_) {
     if (!arguments.length) return yAxisLabel;
     yAxisLabel = _;
+    return exports;
+  }
+
+  exports.categoryPadding = function(_) {
+    if (!arguments.length) return categoryPadding;
+    categoryPadding = _;
     return exports;
   }
   

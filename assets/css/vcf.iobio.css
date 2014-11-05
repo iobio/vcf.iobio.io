@@ -11,7 +11,9 @@
     fill: none;
 }
 
-
+#variant-density-panel .hint {
+  font-size: 14px;
+}
 
 
 g.arcs {
@@ -23,17 +25,27 @@ g.arcs {
 }
 
 
-#variant-density  .global .tick text {
-  font-size: 9px;
+#variant-density .tick text {
+  font-size: 12px;
 }
+
+#variant-density-vf .tick text {
+  font-size: 8px;
+}
+
+
 
 #allele-freq  .x .tick text {
-    font-size: 9px;
+    font-size: 10px;
 }
 #allele-freq .y .tick text {
-    font-size: 8px;
+    font-size: 10px;
 }
 
+#mut-spectrum .y .tick text {
+    font-size: 12px;
+    font-weight: normal;
+}
 #mut-spectrum .x .tick text {
     font-size: 22px;
     font-weight: bold;
@@ -48,8 +60,29 @@ g.arcs {
     stroke: rgb(0, 0, 0);
 }
 
-#tstv-ratio #ratio-panel text {
+#var-type .tick text {
     font-size: 9px;
+    font-weight: normal;
+}
+
+#var-type .category text {
+    font-size: 10px;
+    font-weight: bold;
+}
+#var-type .category rect {
+    opacity: .75;
+    stroke-width: 1;
+    stroke: rgb(0, 0, 0);
+}
+
+#tstv-ratio #ratio-panel text {
+    font-size: 10px;
+    font-weight: bold;
+}
+#tstv-ratio .category rect {
+    opacity: .75;
+    stroke-width: 1;
+    stroke: rgb(0, 0, 0);
 }
 
 text.chartlabel {
@@ -60,7 +93,7 @@ text.chartlabel {
 
 text.chartlabelSelected {
   
-  font-size: 13px;
+  font-size: 11px;
   color: white;
   fill: white;
   font-weight: bold;
@@ -105,6 +138,8 @@ section {
 section#banner {
     -webkit-flex-flow: row;
             flex-flow: row;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 section#top {
@@ -142,11 +177,11 @@ section#bottom {
 .panel > .title { font-size: 26px}
 
 .panel#chromosome-picker {
-    -webkit-flex: 1 0 30%;
-            flex: 1 0 30%;
+    -webkit-flex: 1 0 270px;
+            flex: 1 0 270px;
     -webkit-order: 1;
             order: 1;
-    height: 250px;                        
+    height: 270px;                        
 }
 
 #primary-references {
@@ -158,13 +193,16 @@ section#bottom {
     display: none;
 }
 #variant-density-panel {
-    -webkit-flex: 1 0 60%;
-            flex: 1 0 60%;
+    -webkit-flex: 1 0 70%;
+            flex: 1 0 70%;
     -webkit-order: 2;
            order: 2;
-    height: 250px;
+    height: 270px;
     position:relative;
 
+}
+#variant-density-ref-vf {
+    margin-top: -3px;
 }
 
 
@@ -180,12 +218,70 @@ section#bottom {
             flex: 1;
     -webkit-order: 2;
             order: 2;
+
+    margin-left: 20px;
+
+    display: -webkit-flex;
+    display:         flex;
+    display: -ms-flexbox;
+    -webkit-flex-flow: col;
+            flex-flow: col;
+    -webkit-justify-content: center;        
+            justify-content: center;
+    -webkit-align-items: center;
+           align-items: center;        
+}
+
+#vcf_file {
+    webkit-flex: 0 0  auto;
+            flex: 0 0 auto;
+    -webkit-order: 1;
+            order: 1;
+
+}
+#vcf_selection {
+    webkit-flex: 0 0 80%%;
+            flex: 0 0 80%;
+    -webkit-order: 2;
+            order: 2;
+
+    display: -webkit-flex;
+    display:         flex;
+    display: -ms-flexbox;
+    -webkit-flex-flow: colomn;
+            flex-flow: column;
+    -webkit-justify-content: center;        
+            justify-content: center;
+    -webkit-align-items: center;
+           align-items: center;        
 }
 
 
-#total-reads {
-    -webkit-flex: 0 0 auto;
+#reference_selected {
+    webkit-flex: 0 0  auto;
             flex: 0 0 auto;
+    -webkit-order: 1;
+            order: 1;
+
+
+
+    font-size: 26px;
+    color: #2687BE
+    
+}
+#region_selected {
+    webkit-flex: 0 0  auto;
+            flex: 0 0 auto;
+    -webkit-order: 2;
+            order: 2;
+
+
+
+}
+
+#total-reads {
+    -webkit-flex: 0 0 270px;
+            flex: 0 0 270px;
     -webkit-order: 3;
             order: 3;
     margin-right: 20px;
@@ -219,38 +315,48 @@ section#bottom {
 
 
 
+.panel#var-type {
+    -webkit-flex: 1 0 15%;
+            flex: 1 0 15%;
+    -webkit-order: 1;
+            order: 1;
+    height: 250px;
+
+
+}
+
 .panel#tstv-ratio {
     -webkit-flex: 1 0 10%;
             flex: 1 0 10%;
-    -webkit-order: 1;
-            order: 1;
-    height: 240px;
+    -webkit-order: 2;
+            order: 2;
+    height: 250px;
 
 
 }
 
 .panel#allele-freq {
-    -webkit-flex: 1 0 50%;
-            flex: 1 0 50%;
-    -webkit-order: 2;
-            order: 2;
-     height: 240px;                               
+    -webkit-flex: 1 0 35%;
+            flex: 1 0 35%;
+    -webkit-order: 3;
+            order: 3;
+     height: 250px;                               
 }
 
 .panel#mut-spectrum {
     -webkit-flex: 1 0 30%;
             flex: 1 0 30%;
-    -webkit-order: 3;
-            order: 3;
-    height: 240px;
+    -webkit-order: 4;
+            order: 4;
+    height: 250px;
 
 }
 
 #ratio-value {
-    font-size:  2.5vw; 
+    font-size:  30px; 
     color:      #2687BE; 
 
-    margin-top: 20px;
+    margin-top: 10px;
     
     display: -webkit-flex;
     display:         flex;
@@ -264,6 +370,22 @@ section#bottom {
            align-items: center;  
 }
 
+
+#variant-density-ref-vf svg g text {
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#variant-density-ref-vf svg g rect:hover {
+  cursor: pointer;
+}
+
+svg g text.inside:hover {
+  font-weight: bold;
+  cursor: pointer;
+  fill: #4096ee;
+}
 
 
 

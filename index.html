@@ -59,9 +59,15 @@
     				
                     <div id="banner-title" >
                         <header><a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
+                         <span id="vcf_file"></span>
                     </div>
 
                     <div id="banner-middle">
+                       
+                        <span id="vcf_selection">
+                            <span id="reference_selected"></span>
+                            <span id="region_selected"></span>
+                        </span>
                     </div>
     				
                     <div id="total-reads" >
@@ -96,11 +102,18 @@
                     </div>
                     <div id="variant-density-panel" class="panel">
                         <div class="title">Variant Density</div>
+                        <span class="svg-alt hint">(drag bottom chart to select region)</span>
                         <div class="samplingLoader">Sampling <img src="assets/images//loading_dots.gif"/></div>
                         <div id="variant-density">
                         </div>    
                         <div id="variant-density-vf">
+
                         </div>
+                        <div id="variant-density-ref-vf">
+
+                        </div>
+
+
                     </div>
 
 
@@ -114,8 +127,12 @@
                             <div id="ratio-panel" class="svg-alt">
                                 <div id="ratio-value" ></div>
                             </div>  
-
                         </div>
+                          <div id="var-type" class="panel">
+                             <div class="title">Variant Types</div>
+                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        </div>
+
                         <div id="allele-freq" class="panel">
                              <div class="title">Allele Frequency</div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
@@ -135,7 +152,7 @@
         <script type="text/javascript" src="app/dataManager.d3.js"></script>
         <script type="text/javascript" src="app/donutChooser.d3.js"></script>
         <script type="text/javascript" src="app/line.d3.js"></script>
-        <script type="text/javascript" src="app/barChart.d3.js"></script>
+        <script type="text/javascript" src="app/barChartAlt.d3.js"></script>
         <script type="text/javascript" src="app/histogram.d3.js"></script>
         <script type="text/javascript" src="app/groupedBar.d3.js"></script>
         <script type="text/javascript" src="app/app.js"></script>

@@ -93,6 +93,14 @@ dataManagerD3 = function module() {
     return theArray;
   }
 
+  exports.jsonToValueArray = function(_obj) {
+    var theArray = [];
+    for (var key in _obj) {
+      theArray.push(_obj[key]);
+    }
+    return theArray;
+  }
+
   exports.jsonToArray2D = function(_obj) {
     var theArray = [];
     for (prop in _obj) {

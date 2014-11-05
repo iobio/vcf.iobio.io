@@ -1,5 +1,5 @@
 donutChooserD3 = function module() {
-  var dispatch = d3.dispatch("d3click");
+  var dispatch = d3.dispatch("clickslice", "clickall");
 
   var name = function(d) { return d.name };
   var value  = function(d) { return d.value };
@@ -28,11 +28,10 @@ donutChooserD3 = function module() {
   var svg;
   var arc;
   var clickedSlice;
+  var clickedSlices = [];
       
-  function exports(selection, theOptions) {
-    // merge options and defaults
-    options = $.extend(defaults,theOptions);
-
+  function exports(selection) {
+    
 
     radius = Math.min(width, height ) / 2;
     radiusOffset = (radius * .1) / 2;
@@ -75,6 +74,22 @@ donutChooserD3 = function module() {
           return color(i);
         })
         .attr("d", arc);
+
+
+     // ALL link inside of donut chart for selecting all pieces
+     g.append("text")
+      .attr("dy", ".35em")
+      .style("text-anchor", "middle")
+      .attr("class", "inside")
+      .text(function(d) { return 'All'; })
+      .on("click", function(d) { 
+        clickedSlices.length = 0;
+        for (var i = 0; i < data.length; i++) {
+          var theSlice = arcs.selectAll("d.arc")[i].parentNode;
+          _clickSlice(theSlice, theSlice.__data__,  i, false);
+        }
+        dispatch.clickall();    
+      } );
       
       arcs.append("text")
         .attr("class", "chartlabel")
@@ -97,58 +112,7 @@ donutChooserD3 = function module() {
               }
             })
           .on("click", function(d, i) {
-
-                // change the previous clicked slice back to no offset
-                d3.select(clickedSlice)
-                  .select("path")
-                  .transition()
-                  .duration(150).attr("transform", "translate(0,0)"); 
-
-                // change the previous clicked slice label back to normal font
-                d3.select(clickedSlice).selectAll("text").attr("class", "chartlabel");
-                var labelPos = _arcLabelPosition(clickedSlice.__data__, .55);
-
-                // change the previous clicked label back to the normal position
-                d3.select(clickedSlice)
-                  .select("text")
-                  .attr("transform", "rotate(0)")
-                  .transition()
-                  .duration(200)
-                  .attr("transform", "translate("+labelPos+")"); 
-
-                clickedSlice = this;
-
-                // Bold the label of the clicked slice
-                d3.select(this).selectAll("text").attr("class", "chartlabelSelected");
-
-
-                // Offset the arc even more than mouseover offset
-                // Calculate angle bisector
-                var ang = d.startAngle + (d.endAngle - d.startAngle)/2; 
-                // Transformate to SVG space
-                ang = (ang - (Math.PI / 2) ) * -1;
-
-                // Calculate a 10% radius displacement
-                var x = Math.cos(ang) * radius * 0.1;
-                var y = Math.sin(ang) * radius * -0.1;
-
-                d3.select(this)
-                  .select("path")
-                  .attr("transform", "rotate(0)")
-                  .transition()
-                  .duration(200)
-                  .attr("transform", "translate("+x+","+y+")"); 
-
-                d3.select(this)
-                  .select("text")
-                  .attr("transform", "rotate(0)")
-                  .transition()
-                  .duration(200)
-                  .attr("transform", "translate("+_arcLabelPosition(d, .65)+")"); 
-
-                  
-
-                dispatch.d3click(d.data, i);
+              _clickSlice(this, d, i, true);
             });
 
       
@@ -159,7 +123,82 @@ donutChooserD3 = function module() {
      return d3.select(tooltipSelector);
   }
 
-  function _selectSlice(d, i, gNode) {
+  function _clickSlice(theSlice, d, i, singleSelection) {
+    if (singleSelection) {
+      if (clickedSlices.length > 0) {
+        for (var i = 0; i < clickedSlices.length; i++) {
+          _unclickSlice(clickedSlices[i]);
+        }
+        clickedSlices.length = 0;
+
+      } else if (clickedSlice) {
+        _unclickSlice(clickedSlice);
+      }
+
+    } 
+
+
+    // Bold the label of the clicked slice
+    d3.select(theSlice).selectAll("text").attr("class", "chartlabelSelected");
+
+
+    // Offset the arc even more than mouseover offset
+    // Calculate angle bisector
+    var ang = d.startAngle + (d.endAngle - d.startAngle)/2; 
+    // Transformate to SVG space
+    ang = (ang - (Math.PI / 2) ) * -1;
+
+    // Calculate a 10% radius displacement
+    var x = Math.cos(ang) * radius * 0.1;
+    var y = Math.sin(ang) * radius * -0.1;
+
+    d3.select(theSlice)
+      .select("path")
+      .attr("transform", "rotate(0)")
+      .transition()
+      .duration(200)
+      .attr("transform", "translate("+x+","+y+")"); 
+
+    d3.select(theSlice)
+      .select("text")
+      .attr("transform", "rotate(0)")
+      .transition()
+      .duration(200)
+      .attr("transform", "translate("+_arcLabelPosition(d, .65)+")"); 
+
+
+    if (singleSelection) {
+      clickedSlice = theSlice;
+      dispatch.clickslice(d.data, i);    
+    }
+    else {
+      clickedSlices.push(theSlice);
+    }
+
+  }
+
+  function _unclickSlice(clickedSlice) {
+    // change the previous clicked slice back to no offset
+    d3.select(clickedSlice)
+      .select("path")
+      .transition()
+      .duration(150).attr("transform", "translate(0,0)"); 
+
+    // change the previous clicked slice label back to normal font
+    d3.select(clickedSlice).selectAll("text").attr("class", "chartlabel");
+    var labelPos = _arcLabelPosition(clickedSlice.__data__, .55);
+
+    // change the previous clicked label back to the normal position
+    d3.select(clickedSlice)
+      .select("text")
+      .attr("transform", "rotate(0)")
+      .transition()
+      .duration(200)
+      .attr("transform", "translate("+labelPos+")"); 
+
+  }
+
+  function _selectSlice(d, i, gNode, deselectPrevSlice) {
         var theSlice = this; 
 
         // We have a gNode when this function is
@@ -175,14 +214,15 @@ donutChooserD3 = function module() {
           // was auto selected because mouseout
           // event not triggered when leaving first
           // selected slice.
-          if (sliceApiSelected) {
-            d3.select(sliceApiSelected).select("path")
-                .transition()
-                .duration(150)
-                .attr("transform", "translate(0,0)"); 
-              sliceApiSelected = null;
+          if (deselectPrevSlice) {
+            if (sliceApiSelected) {
+              d3.select(sliceApiSelected).select("path")
+                  .transition()
+                  .duration(150)
+                  .attr("transform", "translate(0,0)"); 
+                sliceApiSelected = null;
+            }
           }
-
         }
         
         // show tooltip
@@ -242,6 +282,7 @@ donutChooserD3 = function module() {
 
   exports.clickSlice = function(i) {   
     var theSlice = arcs.selectAll("d.arc")[i].parentNode;
+    _clickSlice(theSlice, theSlice.__data__, i, true);
     _selectSlice(theSlice.__data__,  i, theSlice);
     clickedSlice = theSlice;
     return exports;
@@ -316,6 +357,12 @@ donutChooserD3 = function module() {
   exports.name = function(_) {
     if (!arguments.length) return name;
     name = _;
+    return exports; 
+  }
+
+  exports.options = function(_) {
+    if (!arguments.length) return options;
+    options = _;
     return exports; 
   }
 

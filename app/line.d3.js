@@ -23,6 +23,7 @@ lineD3 = function module() {
   
 
   var showTooltip = true;
+  var showXAxis = true;
   var showYAxis = true;
   var showTransition = true;
   var showGradient = true;
@@ -37,10 +38,6 @@ lineD3 = function module() {
    
     selection.each(function(data) {
 
-      var epsilonRate = 0.3;
-      var epislon = parseInt( epsilonRate * (pos(data[data.length-1]) - pos(data[0])) / width );
-      var points = data.map(function(d) { return [pos(d), depth(d)]; });
-      data = properRDP(points, epislon);
 
       var svg = d3.select(this)
                   .selectAll("svg")
@@ -134,18 +131,19 @@ lineD3 = function module() {
           .y1(function(d) { return y(_depth(d)); });
       } 
 
+      
       svgGroup = svg.selectAll("g.group")
       svgGroup.selectAll("g.x").remove();
+      if (showXAxis) {
+        svgGroup.selectAll("g.x").data([data]).enter()
+          .append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);        
+      }
 
-      svgGroup.selectAll("g.x").data([data]).enter()
-        .append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-
-
+      svgGroup.selectAll("g.y").remove();
       if (showYAxis) {
-        svgGroup.selectAll("g.y").remove();
         svgGroup.selectAll("g.y").data([data]).enter()
             .append("g")
             .attr("class", "y axis")
@@ -288,6 +286,12 @@ lineD3 = function module() {
   exports.kind = function(_) {
     if (!arguments.length) return kind;
     kind = _;
+    return exports; 
+  }
+
+  exports.showXAxis = function(_) {
+    if (!arguments.length) return showXAxis;
+    showXAxis = _;
     return exports; 
   }
 
