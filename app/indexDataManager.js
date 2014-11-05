@@ -54,6 +54,7 @@ indexDataManager = function module() {
         var indexseq = tbiIdx.tabixContent.indexseq[i];
         var refLength = indexseq.n_intv * size16kb;
 
+        // Use the bins to load the density data
         var bhash = tbiIdx.bhash[i];
         var points = [];
         for (var bin in bhash) {
@@ -69,9 +70,22 @@ indexDataManager = function module() {
             points.push(point);
           }
         }
+
+        // Use the linear index to load the estimated density data
+        var intervalPoints = [];
+        for (var x = 0; x < indexseq.n_intv; x++) {
+          var interval = indexseq.intervseq[x];
+          var fileOffset = interval.valueOf();
+          var fileOffsetPrev = x > 0 ? indexseq.intervseq[x - 1].valueOf() : 0;
+          var intervalPos = x * size16kb;
+          intervalPoints.push( [intervalPos, fileOffset - fileOffsetPrev] );
+          
+        }
+
+
         // Load the reference density data.  Exclude reference if 0 points.
         if (points.length > 0 ) {
-            refDensity[ref] = {"idx": i, "points": points};
+            refDensity[ref] = {"idx": i, "points": points, "intervalPoints": intervalPoints};
             refData.push( {"name": ref, "value": refLength, "idx": i});
         }
 
@@ -107,8 +121,8 @@ indexDataManager = function module() {
   }
 
 
-  exports.getEstimatedDensity = function(ref, removeTheDataSpikes, maxPoints, rdpEpsilon) {
-    var points = refDensity[ref].points.concat();
+  exports.getEstimatedDensity = function(ref, useLinearIndex, removeTheDataSpikes, maxPoints, rdpEpsilon) {
+    var points = useLinearIndex ? refDensity[ref].intervalPoints.concat() : refDensity[ref].points.concat();
 
     if (removeTheDataSpikes) {
       var filteredPoints = ceilingTopQuartile(points);

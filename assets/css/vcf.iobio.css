@@ -374,7 +374,7 @@ section#bottom {
 #variant-density-ref-vf svg g text {
   font-weight: bold;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 #variant-density-ref-vf svg g rect:hover {

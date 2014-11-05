@@ -320,14 +320,17 @@ function loadVariantDensityData(ref, i) {
 	
 
 	var data = indexDataMgr.getEstimatedDensity(ref.name, 
-		densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
+		false, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
+
+	var dataLI = indexDataMgr.getEstimatedDensity(ref.name, 
+		true, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 	
 
 	// Load the variant density chart with the data
 	variantDensityChart.showXAxis(true);
 	variantDensityChart.height(100);
-	variantDensityChart(d3.select("#variant-density").datum(data), onVariantDensityChartRendered);
+	variantDensityChart(d3.select("#variant-density").datum(dataLI), onVariantDensityChartRendered);
 	variantDensityVF(d3.select("#variant-density-vf").datum(data), onVariantDensityChartRendered);
 
 	// Listen for the brush event.  This will select a subsection of the x-axis on the variant
@@ -340,7 +343,7 @@ function loadVariantDensityData(ref, i) {
 				d3.format(",")(d3.round(brush.extent()[1])));
 
 			var data = indexDataMgr.getEstimatedDensity(ref.name, 
-				densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
+				true, densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
 
 			var filteredData = data.filter(function(d) { 
 				return (d[0] >= brush.extent()[0] && d[0] <= brush.extent()[1]) 
