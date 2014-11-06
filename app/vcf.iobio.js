@@ -1,5 +1,5 @@
 //Define our data manager module.
-indexDataManager = function module() {
+vcfiobio = function module() {
 
   var exports = {};
   var dispatch = d3.dispatch( 'dataReady', 'dataLoading');
@@ -9,7 +9,23 @@ indexDataManager = function module() {
   var refData = [];
   var refDensity = [];
 
- exports.openVcfFile = function(event, callback) {
+  var vcfURL;
+
+  var SOURCE_TYPE_URL = "URL";
+  var SOURCE_TYPE_FILE = "file";
+
+  var sourceType = "url";
+
+  var vcfstatsAliveServer = "ws://localhost:7070";
+  var tabixServer         = "ws://localhost:7090";
+
+  exports.openVcfUrl = function(url) {
+    sourceType = SOURCE_TYPE_URL;
+    vcfURL = url;
+  }
+
+  exports.openVcfFile = function(event, callback) {
+    sourceType = SOURCE_TYPE_FILE;
                 
     if (event.target.files.length != 2) {
        alert('must select 2 files, both a .vcf.gz and .vcf.gz.tbi file');
@@ -86,7 +102,7 @@ indexDataManager = function module() {
         // Load the reference density data.  Exclude reference if 0 points.
         if (points.length > 0 ) {
             refDensity[ref] = {"idx": i, "points": points, "intervalPoints": intervalPoints};
-            refData.push( {"name": ref, "value": refLength, "idx": i});
+            refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": i});
         }
 
 
@@ -95,6 +111,8 @@ indexDataManager = function module() {
 
     });
   }
+
+  
 
 
   exports.getReferences = function(minLengthPercent, maxLengthPercent) {
@@ -180,6 +198,77 @@ indexDataManager = function module() {
     return allPoints;
   }
 
+  exports.getStats = function(refs, options, callback) {      
+     var regions = [];
+     var bedRegions;
+     for (var j=0; j < refs.length; j++) {
+        var ref      = refData[refs[j]];
+        var start    = options.start;
+        var length   = ref.refLength - start;
+        if ( ref.refLength < options.binSize * options.binNumber) {
+          regions.push({
+            'name' : ref.name,
+            'start': start,
+            'end'  : length    
+          });
+        } else {
+           // create random reference coordinates
+           var regions = [];
+           for (var i=0; i < options.binNumber; i++) {   
+              var s = start + parseInt(Math.random()*length); 
+              regions.push( {
+                 'name' : ref.name,
+                 'start' : s,
+                 'end' : s + options.binSize
+              }); 
+           }
+           // sort by start value
+           regions = regions.sort(function(a,b) {
+              var x = a.start; var y = b.start;
+              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+           });               
+           
+           // intelligently determine exome bed coordinates
+           /*
+           if (options.exomeSampling)
+              options.bed = me._generateExomeBed(options.sequenceNames[0]);
+           
+           // map random region coordinates to bed coordinates
+           if (options.bed != undefined)
+              bedRegions = me._mapToBedCoordinates(SQs[0].name, regions, options.bed)
+            */
+        }
+     }      
+     
+     var client = BinaryClient(vcfstatsAliveServer);
+     var regStr = JSON.stringify(regions.map(function(d) { return {start:d.start,end:d.end,chr:d.name};}));                 
+     var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 3000 ' + encodeURIComponent(this._getVcfRegionsUrl(regions)));
+     var buffer = "";
+     client.on('open', function(stream){
+        var stream = client.createStream({event:'run', params : {'url':url}});
+        stream.on('data', function(data, options) {
+           if (data == undefined) {
+              return;
+           } 
+           var success = true;
+           try {
+             var obj = JSON.parse(buffer + data);
+           } catch(e) {
+             success = false;
+             buffer += data;
+           }
+           if(success) {
+             buffer = "";
+             callback(obj); 
+           }               
+        });
+        stream.on('end', function() {
+           if (options.onEnd != undefined)
+              options.onEnd();
+        });
+     });
+  };  
+
   function reducePoints (data, factor, xvalue, yvalue) {
     if (factor <= 1 ) {
       return data;
@@ -202,7 +291,30 @@ indexDataManager = function module() {
       sum = 0;
     }
     return results;
- };
+  };
+
+
+
+
+
+  exports._getVcfUrl = function(name, start, end) {
+    return this._getVcfRegionsUrl([ {'name':name,'start':start,'end':end} ]);
+  };
+
+  exports._getVcfRegionsUrl = function(regions) {
+    //if ( sourceType == "url") {
+       var regionStr = "";
+       regions.forEach(function(region) { 
+          regionStr += " " + region.name + ":" + region.start + "-" + region.end 
+       });
+       var url = tabixServer + "?cmd=-h " + vcfURL + regionStr + "&encoding=binary";
+    //} else {
+       // creates a url for a new vcf that is sliced 
+       // open connection to iobio webservice that will request this data, since connections can only be opened from browser
+    //}
+    return encodeURI(url);
+  };
+
 
 
   function performRDP(data, epsilon, pos, depth) {
@@ -292,6 +404,10 @@ indexDataManager = function module() {
       var v = +hMinus1Value, e = H - h;
       return e ? v + e * (hValue - v) : v;
    } 
+
+
+
+
 
 
   d3.rebind(exports, dispatch, 'on');

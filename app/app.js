@@ -1,7 +1,7 @@
 /*
 *  Global variables
 */
-var indexDataMgr;
+var vcfiobio;
 var chromosomeChart;
 var variantDensityChart;
 var variantDensityVF;
@@ -30,6 +30,12 @@ var densityRegionOptions = {
     maxPoints: 1000,
     epsilonRDP: null
 }
+
+var statsOptions = {
+	binSize : 40000, 
+    binNumber : 20,
+    start : 1
+};
 
 
 //
@@ -79,7 +85,7 @@ function init() {
 	d3.selectAll(".svg-alt").style("visibility", "hidden");
 	d3.selectAll(".samplingLoader").style("display", "block");
 
-	indexDataMgr = new indexDataManager();
+	vcfiobio = new vcfiobio();
 
 
 	// Setup event handlers for File input
@@ -211,8 +217,20 @@ function init() {
 
 }
 
+function displayVcfUrlBox() {
+    $('#vcf-url').css('visibility','visible');
+    $("#vcf-url").children("input").focus();
+}
+
+function onUrlEntered() {
+    var url = $("#url-input").val();
+    window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + url);
+    vcfiobio.openVcfUrl( url );
+
+}
+
 function onFilesSelected(event) {
-	indexDataMgr.openVcfFile( event, function(vcfFile) {
+	vcfiobio.openVcfFile( event, function(vcfFile) {
 
 		d3.select("#vcf_file").text(vcfFile.name);
 
@@ -225,7 +243,7 @@ function onFilesSelected(event) {
 
 		
 
-		indexDataMgr.loadIndex(onReferencesLoaded);
+		vcfiobio.loadIndex(onReferencesLoaded);
 
 	});
 }
@@ -236,14 +254,14 @@ function onReferencesLoaded(refData) {
 	d3.selectAll("section#top .samplingLoader").style("display", "none");
 
 
-	var pieChartRefData = indexDataMgr.getReferences(.01, 1);
+	var pieChartRefData = vcfiobio.getReferences(.01, 1);
 	
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	chromosomeIndex = 0;
 	chromosomeChart.clickSlice(chromosomeIndex);
 	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 
-	var otherRefData = indexDataMgr.getReferences(0, .01);
+	var otherRefData = vcfiobio.getReferences(0, .01);
 
 	if (otherRefData.length > 0) {
 		var dropdown = d3.select("#other-references-dropdown");
@@ -319,10 +337,10 @@ function onVariantDensityChartRendered() {
 function loadVariantDensityData(ref, i) {
 	
 
-	var data = indexDataMgr.getEstimatedDensity(ref.name, 
+	var data = vcfiobio.getEstimatedDensity(ref.name, 
 		false, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
-	var dataLI = indexDataMgr.getEstimatedDensity(ref.name, 
+	var dataLI = vcfiobio.getEstimatedDensity(ref.name, 
 		true, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 	
@@ -342,7 +360,7 @@ function loadVariantDensityData(ref, i) {
 				' - ' + 
 				d3.format(",")(d3.round(brush.extent()[1])));
 
-			var data = indexDataMgr.getEstimatedDensity(ref.name, 
+			var data = vcfiobio.getEstimatedDensity(ref.name, 
 				true, densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
 
 			var filteredData = data.filter(function(d) { 
@@ -365,7 +383,7 @@ function loadVariantDensityData(ref, i) {
 
 function loadGenomeVariantDensityData(ref, i) {
 	
-	var data = indexDataMgr.getGenomeEstimatedDensity( densityOptions.removeSpikes, 
+	var data = vcfiobio.getGenomeEstimatedDensity( densityOptions.removeSpikes, 
 		densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 	
@@ -373,7 +391,7 @@ function loadGenomeVariantDensityData(ref, i) {
 	variantDensityChart.showXAxis(false);
 	variantDensityChart.height(150);
 	variantDensityChart(d3.select("#variant-density").datum(data), onVariantDensityChartRendered);
-	variantDensityRefVF(d3.select("#variant-density-ref-vf").datum(indexDataMgr.getReferences(.01, 1)));
+	variantDensityRefVF(d3.select("#variant-density-ref-vf").datum(vcfiobio.getReferences(.01, 1)));
 
 	
 
@@ -387,6 +405,13 @@ function loadStats(i) {
 			.select("#value")
 			.text(0);
 
+	var refs = [];
+	refs.push(i);
+	vcfiobio.getStats(refs, statsOptions, function(data) {
+		renderStats(data);
+	});
+
+	/*
 	// Create the data manager for the vcf stats alive
 	statsAliveDataMgr.loadJsonData("data/vcfstatsalive.json");
 			
@@ -395,6 +420,7 @@ function loadStats(i) {
 		var numberOfIterations = statsAliveDataMgr.getCleanedData().length;
 		simulateServerData(numberOfIterations, 1);
 	});
+	*/
 
 
 }

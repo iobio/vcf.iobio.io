@@ -20,6 +20,7 @@
        <script type="text/javascript" src="//jdataview.github.io/dist/jdataview.js"></script>
        <script type="text/javascript" src="assets/js/inflate.js"></script>
        <script type="text/javascript" src="assets/js/binary-vcf.js"></script>
+       <script type="text/javascript" src="assets/js/binary.js"></script>
 
  
         
@@ -43,7 +44,7 @@
                 <div style="clear:both"></div>
             </div>
             <div id='vcf-url' style="margin-top:24px;width:700px;margin-left:auto;margin-right:auto;visibility:hidden" class="arrow_box">
-                <input id="url-input" value="http://s3.amazonaws.com/1000genomes/data/HG04141/alignment/HG04141.mapped.ILLUMINA.bwa.BEB.low_coverage.20130415.bam" ></input><button id="vcf-url-go-button" onClick="openVcfUrl()">Go</button>
+                <input id="url-input" value="http://s3-us-west-2.amazonaws.com/files.vcfstats.test/G15512.HCC1954.vcf.gz" ></input><button id="vcf-url-go-button" onClick="onUrlEntered()">Go</button>
             </div>
             <div id="footer">            
                 <div id="license"><a href="license.html">License</a></div>
@@ -148,7 +149,7 @@
         </div>
 
 
-        <script type="text/javascript" src="app/indexDataManager.js"></script>
+        <script type="text/javascript" src="app/vcf.iobio.js"></script>
         <script type="text/javascript" src="app/dataManager.d3.js"></script>
         <script type="text/javascript" src="app/donutChooser.d3.js"></script>
         <script type="text/javascript" src="app/line.d3.js"></script>
