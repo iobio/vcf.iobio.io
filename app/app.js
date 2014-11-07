@@ -18,6 +18,8 @@ var varTypeChart;
 var serverSimulator = null;
 
 var chromosomeIndex = 0;
+var regionStart = null;
+var regionEnd = null;
 
 var densityOptions = {
 	removeSpikes: true,
@@ -32,8 +34,8 @@ var densityRegionOptions = {
 }
 
 var statsOptions = {
-	binSize : 40000, 
-    binNumber : 20,
+	binSize : 80000, 
+    binNumber : 40,
     start : 1
 };
 
@@ -99,10 +101,14 @@ function init() {
 		                .options({showTooltip: false})
 						.on("clickslice", function(d, i) {
 							chromosomeIndex = i;
+							regionStart = null;
+							regionEnd = null;
 							onReferenceSelected(d, i);
 						})
 						.on("clickall", function() {
-							chromsomeIndex = -1;
+							chromosomeIndex = -1;
+							regionStart = null;
+							regionEnd = null;
 							onAllReferencesSelected();
 						});
 
@@ -225,7 +231,22 @@ function displayVcfUrlBox() {
 function onUrlEntered() {
     var url = $("#url-input").val();
     window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + url);
+
     vcfiobio.openVcfUrl( url );
+
+	d3.select("#vcf_file").text(url);
+
+	d3.select("#selectData")
+	  .style("visibility", "hidden")
+	  .style("display", "none");
+
+	d3.select("#showData")
+	  .style("visibility", "visible");
+
+	
+
+	vcfiobio.loadRemoteIndex(url, onReferencesLoaded);
+
 
 }
 
@@ -331,7 +352,15 @@ function onVariantDensityChartRendered() {
 	d3.selectAll("section#middle .svg-alt").style("visibility", "visible");
    	d3.selectAll("section#middle .samplingLoader").style("display", "none");
 
-   	loadStats(chromosomeIndex);
+   	if (chromosomeIndex == -1) {
+
+   	} else {
+	   	loadStats(chromosomeIndex);
+   	}
+}
+
+function onVariantDensityVFChartRendered() {
+
 }
 
 function loadVariantDensityData(ref, i) {
@@ -349,23 +378,27 @@ function loadVariantDensityData(ref, i) {
 	variantDensityChart.showXAxis(true);
 	variantDensityChart.height(100);
 	variantDensityChart(d3.select("#variant-density").datum(dataLI), onVariantDensityChartRendered);
-	variantDensityVF(d3.select("#variant-density-vf").datum(data), onVariantDensityChartRendered);
+	variantDensityVF(d3.select("#variant-density-vf").datum(data), onVariantDensityVFChartRendered);
 
 	// Listen for the brush event.  This will select a subsection of the x-axis on the variant
 	// density chart, allowing the user to zoom in to a particular region to sample that specific
 	// region rather than the entire chromosome.
 	variantDensityVF.on("d3brush", function(brush) {
 		if (!brush.empty()) {
-			d3.select("#region_selected").text(d3.format(",")(d3.round(brush.extent()[0])) + 
-				' - ' + 
-				d3.format(",")(d3.round(brush.extent()[1])));
+			regionStart = d3.round(brush.extent()[0]);
+			regionEnd   = d3.round(brush.extent()[1]);
+
+			d3.select("#region_selected")
+			   .text(d3.format(",")(regionStart) + ' - ' + d3.format(",")(regionEnd));
 
 			var data = vcfiobio.getEstimatedDensity(ref.name, 
 				true, densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
 
 			var filteredData = data.filter(function(d) { 
-				return (d[0] >= brush.extent()[0] && d[0] <= brush.extent()[1]) 
+				return (d[0] >= regionStart && d[0] <= regionEnd) 
 			});
+
+
 
 			variantDensityChart(d3.select("#variant-density").datum(filteredData), onVariantDensityChartRendered);
 
@@ -406,8 +439,13 @@ function loadStats(i) {
 			.text(0);
 
 	var refs = [];
+	refs.length = 0;
 	refs.push(i);
-	vcfiobio.getStats(refs, statsOptions, function(data) {
+	var options = JSON.parse(JSON.stringify(statsOptions));
+	options.start = regionStart;
+	options.end   = regionEnd;
+
+	vcfiobio.getStats(refs, options, function(data) {
 		renderStats(data);
 	});
 

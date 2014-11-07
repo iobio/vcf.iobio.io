@@ -8,6 +8,7 @@ vcfiobio = function module() {
   var size16kb = Math.pow(2, 14);
   var refData = [];
   var refDensity = [];
+  var refName = "";
 
   var vcfURL;
 
@@ -16,8 +17,9 @@ vcfiobio = function module() {
 
   var sourceType = "url";
 
-  var vcfstatsAliveServer = "ws://localhost:7070";
-  var tabixServer         = "ws://localhost:7090";
+  var vcfstatsAliveServer    = "ws://localhost:7070";
+  var tabixServer            = "ws://localhost:7090";
+  var tabixReadDeptherServer = "ws://localhost:7062";
 
   exports.openVcfUrl = function(url) {
     sourceType = SOURCE_TYPE_URL;
@@ -112,6 +114,50 @@ vcfiobio = function module() {
     });
   }
 
+  exports.loadRemoteIndex = function(theVcfUrl, callback) {
+    vcfURL = theVcfUrl;
+    sourceType = SOURCE_TYPE_URL;
+
+    var client = BinaryClient(tabixReadDeptherServer);
+    var url = encodeURI( tabixReadDeptherServer + '?cmd=-i ' + vcfURL + ".tbi");
+
+    client.on('open', function(stream){
+      var stream = client.createStream({event:'run', params : {'url':url}});
+      var currentSequence;
+      var refName;
+      stream.on('data', function(data, options) {
+         data = data.split("\n");
+         for (var i=0; i < data.length; i++)  {
+            if ( data[i][0] == '#' ) {
+               
+               var refIndex = data[i].substr(1);
+               var tokens = data[i].split("\t");
+               refName = tokens[1];
+               var refLength = tokens[2];
+
+               
+               refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": +refIndex});
+               refDensity[refName] =  {"idx": refIndex, "points": [], "intervalPoints": []};
+            }
+            else {
+               if (data[i] != "") {
+                  var d = data[i].split("\t");
+                  var point = [ parseInt(d[0]), parseInt(d[1]) ];
+                  refDensity[refName].points.push(point);
+                  refDensity[refName].intervalPoints.push(point);
+
+               }
+            }                  
+         }
+      });
+
+      stream.on('end', function() {
+         callback(this, refData);
+      });
+    });
+
+  };
+
   
 
 
@@ -204,8 +250,9 @@ vcfiobio = function module() {
      for (var j=0; j < refs.length; j++) {
         var ref      = refData[refs[j]];
         var start    = options.start;
-        var length   = ref.refLength - start;
-        if ( ref.refLength < options.binSize * options.binNumber) {
+        var end      = options.end ? options.end : ref.refLength;
+        var length   = end - start;
+        if ( length < options.binSize * options.binNumber) {
           regions.push({
             'name' : ref.name,
             'start': start,
@@ -241,7 +288,8 @@ vcfiobio = function module() {
      }      
      
      var client = BinaryClient(vcfstatsAliveServer);
-     var regStr = JSON.stringify(regions.map(function(d) { return {start:d.start,end:d.end,chr:d.name};}));                 
+     var regStr = JSON.stringify(regions.map(function(d) { return {start:d.start,end:d.end,chr:d.name};}));   
+     console.log(regStr);              
      var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 3000 ' + encodeURIComponent(this._getVcfRegionsUrl(regions)));
      var buffer = "";
      client.on('open', function(stream){
