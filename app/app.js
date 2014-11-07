@@ -34,7 +34,7 @@ var densityRegionOptions = {
 }
 
 var statsOptions = {
-	binSize : 80000, 
+	binSize : 40000, 
     binNumber : 40,
     start : 1
 };
@@ -352,11 +352,7 @@ function onVariantDensityChartRendered() {
 	d3.selectAll("section#middle .svg-alt").style("visibility", "visible");
    	d3.selectAll("section#middle .samplingLoader").style("display", "none");
 
-   	if (chromosomeIndex == -1) {
-
-   	} else {
-	   	loadStats(chromosomeIndex);
-   	}
+   	loadStats(chromosomeIndex);
 }
 
 function onVariantDensityVFChartRendered() {
@@ -438,12 +434,21 @@ function loadStats(i) {
 			.select("#value")
 			.text(0);
 
+	var options = JSON.parse(JSON.stringify(statsOptions));
 	var refs = [];
 	refs.length = 0;
-	refs.push(i);
-	var options = JSON.parse(JSON.stringify(statsOptions));
-	options.start = regionStart;
-	options.end   = regionEnd;
+	if (i == -1) {
+		var numReferences = vcfiobio.getReferences(.01, 1).length;
+		for (var x = 0; x < numReferences; x++) {
+			refs.push(x);
+		}
+		options.binNumber = d3.round(statsOptions.binNumber / numReferences);
+
+	} else {
+		refs.push(i);
+		options.start = regionStart;
+		options.end   = regionEnd;
+	}
 
 	vcfiobio.getStats(refs, options, function(data) {
 		renderStats(data);

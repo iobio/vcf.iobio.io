@@ -159,6 +159,9 @@ vcfiobio = function module() {
   };
 
   
+  exports.getRefData = function() {
+    return refData;
+  }
 
 
   exports.getReferences = function(minLengthPercent, maxLengthPercent) {
@@ -260,7 +263,6 @@ vcfiobio = function module() {
           });
         } else {
            // create random reference coordinates
-           var regions = [];
            for (var i=0; i < options.binNumber; i++) {   
               var s = start + parseInt(Math.random()*length); 
               regions.push( {
@@ -288,8 +290,8 @@ vcfiobio = function module() {
      }      
      
      var client = BinaryClient(vcfstatsAliveServer);
-     var regStr = JSON.stringify(regions.map(function(d) { return {start:d.start,end:d.end,chr:d.name};}));   
-     console.log(regStr);              
+     var regStr = JSON.stringify(regions.map(function(d) { return {start:d.start,end:d.end,chr:d.name};}));  
+     console.log(regStr); 
      var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 3000 ' + encodeURIComponent(this._getVcfRegionsUrl(regions)));
      var buffer = "";
      client.on('open', function(stream){
