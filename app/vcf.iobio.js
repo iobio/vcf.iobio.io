@@ -178,7 +178,7 @@ vcfiobio = function module() {
     for (var i = 0; i < refData.length; i++) {
       var refObject = refData[i];
       var lengthPercent = refObject.value / totalLength;
-      if (lengthPercent >= minLengthPercent && lengthPercent < maxLengthPercent) {
+      if (lengthPercent >= minLengthPercent && lengthPercent <= maxLengthPercent) {
         references.push(refObject);
       }
     }
@@ -374,6 +374,9 @@ vcfiobio = function module() {
   }
 
   function ceilingTopQuartile(someArray) {  
+    if (someArray.length < 5) {
+      return someArray;
+    }
 
     // Copy the values, rather than operating on references to existing values
     var values = someArray.concat();
@@ -420,40 +423,7 @@ vcfiobio = function module() {
     return newValues;
 }
 
-  function removeDataSpikes(data) {
-      var q1 = quantile(data, 0.25); 
-      var q3 = quantile(data, 0.75);
-      var iqr = (q3-q1) * 1.5; //
-      console.log("remove DataSpikes " + q1 + " " + q3 + " " + iqr);
-      return data.filter(function(d) { 
-        var keep = (d[1]>=(Math.max(q1-iqr,0)) && d[1]<=(q3+iqr));
-        if (!keep) {
-          //console.log("throwing out " + d[0] + " " + d[1]);
-        }
-        return keep;
-      });
-   }
-    
-   function quantile(arr, p) {
-      var length = arr.reduce(function(previousValue, currentValue, index, array){
-         return previousValue + currentValue[1];
-      }, 0) - 1;
-      var H = length * p + 1, 
-      h = Math.floor(H);
 
-      var hValue, hMinus1Value, currValue = 0;
-      for (var i=0; i < arr.length; i++) {
-         currValue += arr[i][1];
-         if (hMinus1Value == undefined && currValue >= (h-1))
-            hMinus1Value = arr[i][1];
-         if (hValue == undefined && currValue >= h) {
-            hValue = arr[i][1];
-            break;
-         }
-      } 
-      var v = +hMinus1Value, e = H - h;
-      return e ? v + e * (hValue - v) : v;
-   } 
 
 
 

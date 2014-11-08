@@ -237,6 +237,7 @@ section#bottom {
             flex: 0 0 auto;
     -webkit-order: 1;
             order: 1;
+    font-size: 13px;
 
 }
 #vcf_selection {
