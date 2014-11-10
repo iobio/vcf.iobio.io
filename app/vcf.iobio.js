@@ -2,8 +2,20 @@
 vcfiobio = function module() {
 
   var exports = {};
+
   var dispatch = d3.dispatch( 'dataReady', 'dataLoading');
 
+  var SOURCE_TYPE_URL = "URL";
+  var SOURCE_TYPE_FILE = "file";
+  var sourceType = "url";
+
+  var vcfstatsAliveServer    = "ws://localhost:7070";
+  var tabixServer            = "ws://localhost:7090";
+  var tabixReadDeptherServer = "ws://localhost:7062";
+  var catInputServer         = "ws://localhost:7063";
+
+
+  var vcfURL;
   var vcfReader;
   var vcfFile;
   var tabixFile;
@@ -16,17 +28,7 @@ vcfiobio = function module() {
   var regionIndex = 0;
   var stream = null;
 
-  var vcfURL;
 
-  var SOURCE_TYPE_URL = "URL";
-  var SOURCE_TYPE_FILE = "file";
-
-  var sourceType = "url";
-
-  var vcfstatsAliveServer    = "ws://localhost:7070";
-  var tabixServer            = "ws://localhost:7090";
-  var tabixReadDeptherServer = "ws://localhost:7062";
-  var catInputServer         = "ws://localhost:7063";
 
   exports.openVcfUrl = function(url) {
     sourceType = SOURCE_TYPE_URL;
@@ -166,11 +168,6 @@ vcfiobio = function module() {
 
   };
 
-  
-  exports.getRefData = function() {
-    return refData;
-  }
-
 
   exports.getReferences = function(minLengthPercent, maxLengthPercent) {
     var references = [];
@@ -200,7 +197,7 @@ vcfiobio = function module() {
     var points = useLinearIndex ? refDensity[ref].intervalPoints.concat() : refDensity[ref].points.concat();
 
     if (removeTheDataSpikes) {
-      var filteredPoints = ceilingTopQuartile(points);
+      var filteredPoints = this._ceilingTopQuartile(points);
       if (filteredPoints.length > 500) {
         points = filteredPoints;
       }
@@ -210,12 +207,12 @@ vcfiobio = function module() {
     // Reduce point data to to a reasonable number of points for display purposes
     if (maxPoints) {
       var factor = d3.round(points.length / 900);
-      points = reducePoints(points, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+      points = this._reducePoints(points, factor, function(d) { return d[0]; }, function(d) { return d[1]});
     }
 
     // Now perform RDP
     if (rdpEpsilon) {
-      points = performRDP(points, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
+      points = this._performRDP(points, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
     }
 
     return points;
@@ -237,18 +234,18 @@ vcfiobio = function module() {
       offset = offset + refData[i].value;
     }
     if (removeTheDataSpikes) {
-      allPoints = ceilingTopQuartile(allPoints);
+      allPoints = _ceilingTopQuartile(allPoints);
     }
 
     // Reduce point data to to a reasonable number of points for display purposes
     if (maxPoints) {
       var factor = d3.round(allPoints.length / maxPoints);
-      allPoints = reducePoints(allPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+      allPoints = _reducePoints(allPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
     }
 
     // Now perform RDP
     if (rdpEpsilon) {
-      allPoints = performRDP(allPoints, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
+      allPoints = _performRDP(allPoints, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
     }
 
 
@@ -336,7 +333,128 @@ vcfiobio = function module() {
      
   };  
 
-  function reducePoints (data, factor, xvalue, yvalue) {
+ 
+
+  exports._getVcfRegionsUrl = function() {
+    
+    if ( sourceType == SOURCE_TYPE_URL) {
+       // When we are dealing with a remove VCF, we will call the tabix server, passing in the
+       // URL of the vcf along with all of the regions to be parsed from the vcf file.
+       // The output from tabix will be piped to the vcfstatsAliveServer.
+       var regionStr = "";
+       regions.forEach(function(region) { 
+          regionStr += " " + region.name + ":" + region.start + "-" + region.end 
+       });
+
+       var url = tabixServer + "?cmd=-h " + vcfURL + regionStr + "&encoding=binary";
+
+    } else {
+
+      // We we are dealing with a local VCF, we will create a mini-vcf of all of the sampled regions.
+      // This mini-vcf will be streamed to vcfstatsAliveServer.  Then the output from vcfstatsAliveServer
+      // will be piped to a simple catInputServer.  This is a hack until the code is changed to 
+      // handle this as one call to the vcfstatsAliveServer that a) streams the mini-vcf and b) receives
+      // the output in output stream handling code.  I couldn't figure out how minion server does this
+      // in one shot, so for now I am cheating with a "passthrough" catInputServer.
+      regionIndex = 0;
+        
+      // creates a url for for the local vcf 
+      // open connection to iobio webservice that will request this data, since connections can only be opened from browser
+      var me = this;
+      var connectionID = this._makeid();
+      var client = BinaryClient(vcfstatsAliveServer + '?id=', {'connectionID' : connectionID} );
+      client.on('open', function(stream){
+        stream = client.createStream({event:'setID', 'connectionID':connectionID});
+        stream.end();
+      });
+
+      var url = vcfstatsAliveServer + "?protocol=websocket&encoding=binary&cmd= " + encodeURIComponent("http://client?&id="+connectionID);
+      var me = this;
+
+      // send data to samtools when it asks for it         
+      client.on('stream', function(stream, options) {
+
+        // This is the callback function that will get invoked each time a set of vcf records is
+        // returned from the binary parser for a given region.  
+        var onGetRecords = function(records) {
+          var me = this;
+          if (regionIndex == regions.length) {
+            // The executing code should never get there as we should exit the recursion in onGetRecords.
+          } else {
+
+            // Stream the vcf records we just parsed for a region in the vcf, one records at a time
+            if (records) {
+              for (var r = 0; r < records.length; r++) {
+                stream.write(records[r] + "\n");
+              }
+            } else {
+              // This is an error condition.  If vcfRecords can't return any
+              // records, we will hit this point in the code.
+              // Just log it for now and move on to the next region.
+              console.log("WARNING: _getVcfRegionsUrls() unable to create vcf records for region  " + regionIndex);
+            }
+
+            regionIndex++;
+
+            if (regionIndex > regions.length) {
+              return;
+            } else if (regionIndex == regions.length) {
+              // We have streamed all of the regions so now we will end the stream.
+              console.log("stream end");
+              stream.end();
+              return;
+            } else {
+              // There are more regions to obtain vcf records for, so call getVcfRecords now
+              // that regionIndex has been incremented.
+              vcfReader.getRecords(regions[regionIndex].name, 
+                regions[regionIndex].start, 
+                regions[regionIndex].end, 
+                onGetRecords);
+            }      
+
+          }
+        }
+
+        // Build up a local VCF file this is comprised of the regions we are sampling.
+        // Parse out the header records from the vcf
+        vcfReader.getHeaderRecords( function(headerRecords) {
+          for (h = 0; h < headerRecords.length; h++) {
+            stream.write(headerRecords[h] + "\n");
+          }
+
+        // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
+        // so that we parse vcf records one region at a time.
+        vcfReader.getRecords(
+            regions[regionIndex].name, 
+            regions[regionIndex].start, 
+            regions[regionIndex].end, 
+            onGetRecords);
+
+        });
+
+        
+      });
+
+    }
+
+    return encodeURI(url);
+  };
+         
+
+
+  exports._makeid = function(){
+    // make unique string id;
+     var text = "";
+     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+     for( var i=0; i < 5; i++ )
+         text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+     return text;
+  };
+
+
+  exports._reducePoints = function(data, factor, xvalue, yvalue) {
     if (factor <= 1 ) {
       return data;
     }
@@ -360,120 +478,13 @@ vcfiobio = function module() {
     return results;
   };
 
-
-  exports._getVcfRegionsUrl = function() {
-    
-    if ( sourceType == SOURCE_TYPE_URL) {
-       var regionStr = "";
-       regions.forEach(function(region) { 
-          regionStr += " " + region.name + ":" + region.start + "-" + region.end 
-       });
-
-       var url = tabixServer + "?cmd=-h " + vcfURL + regionStr + "&encoding=binary";
-
-    } else {
-
-      regionIndex = 0;
-        
-      // creates a url for for the local vcf 
-      // open connection to iobio webservice that will request this data, since connections can only be opened from browser
-      var me = this;
-      var connectionID = this._makeid();
-      var client = BinaryClient(vcfstatsAliveServer + '?id=', {'connectionID' : connectionID} );
-      client.on('open', function(stream){
-        stream = client.createStream({event:'setID', 'connectionID':connectionID});
-        stream.end();
-      });
-
-      var url = vcfstatsAliveServer + "?protocol=websocket&encoding=binary&cmd= " + encodeURIComponent("http://client?&id="+connectionID);
-      var me = this;
-
-      // send data to samtools when it asks for it         
-      client.on('stream', function(stream, options) {
-
-        var onGetRecords = function(records) {
-          var me = this;
-          if (regionIndex == regions.length) {
-            console.log("stopping this nonsense " + regionIndex);
-          } else {
-
-            if (records) {
-              console.log("  streaming vcf records " + records.length + " for region " + regionIndex);
-
-              for (var r = 0; r < records.length; r++) {
-                stream.write(records[r] + "\n");
-              }
-
-            } else {
-              console.log("  skipping vcf records " + " for region " + regionIndex);
-            }
-
-            regionIndex++;
-
-            if (regionIndex > regions.length) {
-              console.log("what? " + regionIndex + " " + regions.length);
-              return;
-            } else if (regionIndex == regions.length) {
-              console.log("stream end" + regionIndex + " " + regions.length);
-              stream.end();
-              return;
-            } else {
-              console.log("  about to invoke getRecords " + regionIndex);
-              vcfReader.getRecords(regions[regionIndex].name, 
-                regions[regionIndex].start, 
-                regions[regionIndex].end, 
-                onGetRecords);
-            }      
-
-          }
-        }
-
-        // Build up a local VCF file this is comprised of the regions we are sampling.
-        vcfReader.getHeaderRecords( function(headerRecords) {
-          console.log("streaming header records " + headerRecords.length);
-          for (h = 0; h < headerRecords.length; h++) {
-            stream.write(headerRecords[h] + "\n");
-          }
-
-        vcfReader.getRecords(
-            regions[regionIndex].name, 
-            regions[regionIndex].start, 
-            regions[regionIndex].end, 
-            onGetRecords);
-
-        });
-
-        
-      });
-
-
-
-    }
-
-    return encodeURI(url);
-  };
-         
-
-
-  exports._makeid = function(){
-    // make unique string id;
-     var text = "";
-     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-     for( var i=0; i < 5; i++ )
-         text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-     return text;
-  };
-
-
-  function performRDP(data, epsilon, pos, depth) {
+  exports._performRDP = function(data, epsilon, pos, depth) {
     var smoothedData = properRDP(data, epsilon);
     console.log("rdp " + data.length + " reduced to " + smoothedData.length);
     return smoothedData;
   }
 
-  function ceilingTopQuartile(someArray) {  
+  exports._ceilingTopQuartile = function(someArray) {  
     if (someArray.length < 5) {
       return someArray;
     }
@@ -521,16 +532,14 @@ vcfiobio = function module() {
     console.log("filter top quartile changes " + changeCount);
     // Then return
     return newValues;
-}
+  }
 
 
-
-
-
-
-
-
+  // Allow on() method to be invoked on this class
+  // to handle data events
   d3.rebind(exports, dispatch, 'on');
 
+  // Return this scope so that all subsequent calls
+  // will be made on this scope.
   return exports;
 };
