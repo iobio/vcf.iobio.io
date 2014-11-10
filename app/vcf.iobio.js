@@ -3,12 +3,18 @@ vcfiobio = function module() {
 
   var exports = {};
   var dispatch = d3.dispatch( 'dataReady', 'dataLoading');
+
+  var vcfReader;
   var vcfFile;
   var tabixFile;
   var size16kb = Math.pow(2, 14);
   var refData = [];
   var refDensity = [];
   var refName = "";
+
+  var regions = [];
+  var regionIndex = 0;
+  var stream = null;
 
   var vcfURL;
 
@@ -20,6 +26,7 @@ vcfiobio = function module() {
   var vcfstatsAliveServer    = "ws://localhost:7070";
   var tabixServer            = "ws://localhost:7090";
   var tabixReadDeptherServer = "ws://localhost:7062";
+  var catInputServer         = "ws://localhost:7063";
 
   exports.openVcfUrl = function(url) {
     sourceType = SOURCE_TYPE_URL;
@@ -62,7 +69,7 @@ vcfiobio = function module() {
 
   exports.loadIndex = function(callback) {
  
-    var vcfR = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
+    vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
       var tbiIdx = tbiR;
       refDensity.length = 0;
 
@@ -113,6 +120,7 @@ vcfiobio = function module() {
 
     });
   }
+
 
   exports.loadRemoteIndex = function(theVcfUrl, callback) {
     vcfURL = theVcfUrl;
@@ -248,7 +256,8 @@ vcfiobio = function module() {
   }
 
   exports.getStats = function(refs, options, callback) {      
-     var regions = [];
+     regions.length = 0;
+
      var bedRegions;
      for (var j=0; j < refs.length; j++) {
         var ref      = refData[refs[j]];
@@ -289,34 +298,42 @@ vcfiobio = function module() {
         }
      }      
      
-     var client = BinaryClient(vcfstatsAliveServer);
-     var regStr = JSON.stringify(regions.map(function(d) { return {start:d.start,end:d.end,chr:d.name};}));  
-     console.log(regStr); 
-     var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 3000 ' + encodeURIComponent(this._getVcfRegionsUrl(regions)));
-     var buffer = "";
-     client.on('open', function(stream){
-        var stream = client.createStream({event:'run', params : {'url':url}});
-        stream.on('data', function(data, options) {
-           if (data == undefined) {
-              return;
-           } 
-           var success = true;
-           try {
-             var obj = JSON.parse(buffer + data);
-           } catch(e) {
-             success = false;
-             buffer += data;
-           }
-           if(success) {
-             buffer = "";
-             callback(obj); 
-           }               
-        });
-        stream.on('end', function() {
-           if (options.onEnd != undefined)
-              options.onEnd();
-        });
-     });
+
+      var server     = sourceType == SOURCE_TYPE_FILE ? catInputServer : vcfstatsAliveServer;
+      var serverArgs = sourceType == SOURCE_TYPE_FILE ? '?cmd= '       : '?cmd=-u 3000 ';
+     
+      var client = BinaryClient(server);
+      var regStr = JSON.stringify(regions.map(function(d) { return {start:d.start,end:d.end,chr:d.name};}));  
+      var url = encodeURI( server + serverArgs + encodeURIComponent(this._getVcfRegionsUrl()));
+
+       var buffer = "";
+       client.on('open', function(stream){
+          var stream = client.createStream({event:'run', params : {'url':url}});
+
+          stream.on('data', function(data, options) {
+             if (data == undefined) {
+                return;
+             } 
+             var success = true;
+             try {
+               var obj = JSON.parse(buffer + data);
+             } catch(e) {
+               success = false;
+               buffer += data;
+             }
+             if(success) {
+               buffer = "";
+               callback(obj); 
+             }               
+          });
+          stream.on('end', function() {
+             if (options.onEnd != undefined)
+                options.onEnd();
+          });
+       });
+
+
+     
   };  
 
   function reducePoints (data, factor, xvalue, yvalue) {
@@ -344,27 +361,110 @@ vcfiobio = function module() {
   };
 
 
-
-
-
-  exports._getVcfUrl = function(name, start, end) {
-    return this._getVcfRegionsUrl([ {'name':name,'start':start,'end':end} ]);
-  };
-
-  exports._getVcfRegionsUrl = function(regions) {
-    //if ( sourceType == "url") {
+  exports._getVcfRegionsUrl = function() {
+    
+    if ( sourceType == SOURCE_TYPE_URL) {
        var regionStr = "";
        regions.forEach(function(region) { 
           regionStr += " " + region.name + ":" + region.start + "-" + region.end 
        });
+
        var url = tabixServer + "?cmd=-h " + vcfURL + regionStr + "&encoding=binary";
-    //} else {
-       // creates a url for a new vcf that is sliced 
-       // open connection to iobio webservice that will request this data, since connections can only be opened from browser
-    //}
+
+    } else {
+
+      regionIndex = 0;
+        
+      // creates a url for for the local vcf 
+      // open connection to iobio webservice that will request this data, since connections can only be opened from browser
+      var me = this;
+      var connectionID = this._makeid();
+      var client = BinaryClient(vcfstatsAliveServer + '?id=', {'connectionID' : connectionID} );
+      client.on('open', function(stream){
+        stream = client.createStream({event:'setID', 'connectionID':connectionID});
+        stream.end();
+      });
+
+      var url = vcfstatsAliveServer + "?protocol=websocket&encoding=binary&cmd= " + encodeURIComponent("http://client?&id="+connectionID);
+      var me = this;
+
+      // send data to samtools when it asks for it         
+      client.on('stream', function(stream, options) {
+
+        var onGetRecords = function(records) {
+          var me = this;
+          if (regionIndex == regions.length) {
+            console.log("stopping this nonsense " + regionIndex);
+          } else {
+
+            if (records) {
+              console.log("  streaming vcf records " + records.length + " for region " + regionIndex);
+
+              for (var r = 0; r < records.length; r++) {
+                stream.write(records[r] + "\n");
+              }
+
+            } else {
+              console.log("  skipping vcf records " + " for region " + regionIndex);
+            }
+
+            regionIndex++;
+
+            if (regionIndex > regions.length) {
+              console.log("what? " + regionIndex + " " + regions.length);
+              return;
+            } else if (regionIndex == regions.length) {
+              console.log("stream end" + regionIndex + " " + regions.length);
+              stream.end();
+              return;
+            } else {
+              console.log("  about to invoke getRecords " + regionIndex);
+              vcfReader.getRecords(regions[regionIndex].name, 
+                regions[regionIndex].start, 
+                regions[regionIndex].end, 
+                onGetRecords);
+            }      
+
+          }
+        }
+
+        // Build up a local VCF file this is comprised of the regions we are sampling.
+        vcfReader.getHeaderRecords( function(headerRecords) {
+          console.log("streaming header records " + headerRecords.length);
+          for (h = 0; h < headerRecords.length; h++) {
+            stream.write(headerRecords[h] + "\n");
+          }
+
+        vcfReader.getRecords(
+            regions[regionIndex].name, 
+            regions[regionIndex].start, 
+            regions[regionIndex].end, 
+            onGetRecords);
+
+        });
+
+        
+      });
+
+
+
+    }
+
     return encodeURI(url);
   };
+         
 
+
+  exports._makeid = function(){
+    // make unique string id;
+     var text = "";
+     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+     for( var i=0; i < 5; i++ )
+         text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+     return text;
+  };
 
 
   function performRDP(data, epsilon, pos, depth) {
