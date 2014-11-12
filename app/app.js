@@ -8,11 +8,12 @@ var variantDensityVF;
 var variantDensityRefVF;
 
 
-var statsAliveDataMgr;
-var alleleFreqChart;
 var tstvChart;
+var alleleFreqChart;
 var mutSpectrumChart;
 var varTypeChart;
+var qcChart;
+var indelLengthChart; 
 
 
 var serverSimulator = null;
@@ -164,9 +165,9 @@ function init() {
 	// TSTV grouped barchart (to show ratio)
 	tstvChart = groupedBarD3();
 	var tstvCategories =  ["TS", "TV"];
-	tstvChart.width(150)
-	    .height(100)
-		.margin( {left: 0, right: 0, top: 40, bottom: 10})
+	tstvChart.width(200)
+	    .height(120)
+		.margin( {left: 10, right: 10, top: 25, bottom: 20})
 		.showXAxis(true)
 		.showYAxis(false)
 		.showXTicks(false)
@@ -198,7 +199,6 @@ function init() {
 
 	// Mutation spectrum grouped barchart
 	mutSpectrumChart = groupedBarD3();
-
 	mutSpectrumChart.width(570)
 	    .height(210)
 		.margin( {left: 50, right: 10, top: 10, bottom: 20})
@@ -214,11 +214,15 @@ function init() {
 		 });
 
 
+	// Indel length chart
+	indelLengthChart = histogramD3();
+	indelLengthChart.width(500)
+		.height(210)
+		.margin( {left: 50, right: 10, top: 10, bottom: 20})
+		.xValue( function(d) { return d[0] })
+		.yValue( function(d) { return d[1] });
 
-	// Initialize the stats alive data manager
-	statsAliveDataMgr = new dataManagerD3();
 
-	
 
 
 }
@@ -323,6 +327,12 @@ function onReferenceSelected(ref, i) {
 	 d3.selectAll("section#middle svg").style("visibility", "hidden");
 	 d3.selectAll("section#middle .svg-alt").style("visibility", "hidden");
 	 d3.selectAll("section#middle .samplingLoader").style("display", "block");
+
+
+	 d3.selectAll("section#bottom svg").style("visibility", "hidden");
+	 d3.selectAll("section#bottom .svg-alt").style("visibility", "hidden");
+	 d3.selectAll("section#bottom .samplingLoader").style("display", "block");
+
 }
 
 function onAllReferencesSelected() {
@@ -343,6 +353,10 @@ function onAllReferencesSelected() {
 	 d3.selectAll("section#middle .svg-alt").style("visibility", "hidden");
 	 d3.selectAll("section#middle .samplingLoader").style("display", "block");
 
+
+	 d3.selectAll("section#bottom svg").style("visibility", "hidden");
+	 d3.selectAll("section#bottom .svg-alt").style("visibility", "hidden");
+	 d3.selectAll("section#bottom .samplingLoader").style("display", "block");
 }
 
 function onVariantDensityChartRendered() {
@@ -351,6 +365,13 @@ function onVariantDensityChartRendered() {
 	d3.selectAll("section#middle svg").style("visibility", "visible");
 	d3.selectAll("section#middle .svg-alt").style("visibility", "visible");
    	d3.selectAll("section#middle .samplingLoader").style("display", "none");
+
+
+	d3.selectAll("section#bottom svg").style("visibility", "visible");
+	d3.selectAll("section#bottom .svg-alt").style("visibility", "visible");
+   	d3.selectAll("section#bottom .samplingLoader").style("display", "none");
+
+
 
    	loadStats(chromosomeIndex);
 }
@@ -454,44 +475,9 @@ function loadStats(i) {
 		renderStats(data);
 	});
 
-	/*
-	// Create the data manager for the vcf stats alive
-	statsAliveDataMgr.loadJsonData("data/vcfstatsalive.json");
-			
-	// Listen for data ready even
-	statsAliveDataMgr.on("dataReady", function(data) {
-		var numberOfIterations = statsAliveDataMgr.getCleanedData().length;
-		simulateServerData(numberOfIterations, 1);
-	});
-	*/
-
 
 }
 
-
-
-function simulateServerData(numberOfIterations, delaySeconds) {
-	var i = 0;
-	var numberOfInterations = numberOfInterations;
-
-	if (window.serverSimulator) {
-		window.clearInterval(window.serverSimulator);
-	} 
-
-	serverSimulator = setInterval(function () {doStats()}, delaySeconds * 1000);
-	
-	function doStats() {
-		if (i > numberOfInterations) {
-			window.clearInterval(serverSimulator);
-		}
-    	var stats = statsAliveDataMgr.getCleanedData()[i];
-    	if (stats && stats.TotalRecords) {
-		    renderStats(stats);
-	}
-	    i++;     
-	}
-
-}
 
 function renderStats(stats) {
 
@@ -507,10 +493,9 @@ function renderStats(stats) {
 
 	// TsTv Ratio
 	var tstvRatio = stats.TsTvRatio;
-	d3.select(".genome-stats")
-			.select("#tstv-ratio")
-			.select("#ratio-value")
-			.text(tstvRatio.toFixed(2));
+	d3.select("#tstv-ratio")
+		.select("#ratio-value")
+		.text(tstvRatio.toFixed(2));
 
 	if (tstvData != null) {
 		tstvData.length = 0;
@@ -519,20 +504,18 @@ function renderStats(stats) {
 	  {category: "", values: [tstvRatio, 1] }
 	];		
 	// This is the parent object for the chart
-	var tstvSelection = d3.select(".genome-stats")
-	                      .select("#ratio-panel").datum(tstvData);
+	var tstvSelection = d3.select("#ratio-panel").datum(tstvData);
 	// Render the mutation spectrum chart with the data
 	tstvChart(tstvSelection);
 
 
 	// Var types
-	var varTypeArray = statsAliveDataMgr.jsonToValueArray(stats.var_type);
+	var varTypeArray = vcfiobio.jsonToValueArray(stats.var_type);
 	var varTypeData = [
 	  {category: "", values: varTypeArray}
 	];		
 	// This is the parent object for the chart
-	var varTypeSelection = d3.select(".genome-stats")
-	                      .select("#var-type").datum(varTypeData);
+	var varTypeSelection = d3.select("#var-type").datum(varTypeData);
 	// Render the var type data with the data
 	varTypeChart(varTypeSelection);
 
@@ -541,15 +524,14 @@ function renderStats(stats) {
 
 	// Alelle Frequency
 	var afObj = stats.af_hist;
-	var afData = statsAliveDataMgr.jsonToArray2D(afObj);
-	var afSelection = d3.select(".genome-stats")
-					    .select("#allele-freq")
+	var afData = vcfiobio.jsonToArray2D(afObj);
+	var afSelection = d3.select("#allele-freq")
 					    .datum(afData);
 	alleleFreqChart(afSelection);	
 
 	// Mutation Spectrum
 	var msObj = stats.mut_spec;
-	var msArray = statsAliveDataMgr.jsonToArray(msObj, "category", "values");
+	var msArray = vcfiobio.jsonToArray(msObj, "category", "values");
 	// Exclude the 0 value as this is the base that that represents the
 	// "category"  Example:  For mutations for A, keep values for G, C, T,
 	// but exclude 0 value for A.
@@ -563,10 +545,17 @@ function renderStats(stats) {
       	});
     }); 
     // This is the parent object for the chart
-	var msSelection = d3.select(".genome-stats")
-	                    .select("#mut-spectrum").datum(msArray);
+	var msSelection = d3.select("#mut-spectrum").datum(msArray);
 	// Render the mutation spectrum chart with the data
 	mutSpectrumChart(msSelection);
+
+
+	// Indel length distribution
+	var indelData = vcfiobio.jsonToArray2D(stats.indel_size);
+	var indelSelection = d3.select("#indel-length-histogram")
+					    .datum(indelData);
+	var indelOptions = {outliers: true, averageLine: false};
+	indelLengthChart(indelSelection, indelOptions);	
 
 	
 

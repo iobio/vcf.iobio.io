@@ -1,4 +1,58 @@
-//Define our data manager module.
+//
+//  vcfiobio
+//  Tony Di Sera
+//  October 2014
+//
+//  This is a data manager class for the variant summary data.
+// 
+//  Two file are used to generate the variant data: 
+//    1. the bgzipped vcf (.vcf.gz) 
+//    2. its corresponding tabix file (.vcf.gz.tbi).  
+//
+//  The variant summary data come in 3 main forms:  
+//    1. reference names and lengths 
+//    2. variant density (point data), 
+//    3. vcf stats (variant types, tstv ration allele frequency, mutation spectrum,
+//       insertion/deletion distribution, and qc distribution).  
+//  The reference names and lengths as well as the variant density data obtained from 
+//  the tabix file; the vcf stats are determined by parsing the vcf file in sampled regions.
+//
+//  The files can be hosted remotely, specified by a URL, or reside on the client, accesssed as a local
+//  file on the file system. When the files are on a remote server, vcfiobio communicates with iobio services 
+//  to obtain the metrics data.  When the files are accessed locally, a client-side javascript library
+//  is used to a) read the tabix file to obtain the reference names/lengths and the variant density data 
+//  and b) parse the vcf records from sampled regions.  This mini vcf file is then streamed to iobio services
+//  to obtain the vcf metrics.  
+//  
+//  The follow example code illustrates the method calls to make
+//  when the vcf file is served remotely (a URL is entered)
+//
+//  var vcfiobio = vcfiobio();
+//  vcfiobio.loadRemoteIndex(vcfUrl, function(data) {
+//     // Filter out the short (<1% median reference length) references
+//     vcfiobio.getReferenceData(.01, 100);
+//     // Show all the references (example: in a pie chart) here....
+//     // Render the variant density data here....
+//  });
+//  vcfiobio.getEstimatedDensity(refName);
+//  vcfiobio.getStats(refs, options, function(data) {
+//     // Render the vcf stats here....
+//  });
+//  
+//
+//  When the vcf file resides on the local file system, call
+//  openVcfFile() and then call loadIndex() instead
+//  of loadRemoteIndex().
+//
+//  var vcfiobio = vcfiobio();
+//  vcfiobio.openVcfFile( event, function(vcfFile) {
+//    vcfiobio.loadIndex( function(data) {
+//     .... same as above ......
+//    });
+//  });
+//  ...  same as above
+//
+//
 vcfiobio = function module() {
 
   var exports = {};
@@ -197,7 +251,7 @@ vcfiobio = function module() {
     var points = useLinearIndex ? refDensity[ref].intervalPoints.concat() : refDensity[ref].points.concat();
 
     if (removeTheDataSpikes) {
-      var filteredPoints = this._ceilingTopQuartile(points);
+      var filteredPoints = this._applyCeiling(points);
       if (filteredPoints.length > 500) {
         points = filteredPoints;
       }
@@ -234,18 +288,18 @@ vcfiobio = function module() {
       offset = offset + refData[i].value;
     }
     if (removeTheDataSpikes) {
-      allPoints = _ceilingTopQuartile(allPoints);
+      allPoints = this._applyCeiling(allPoints);
     }
 
     // Reduce point data to to a reasonable number of points for display purposes
     if (maxPoints) {
       var factor = d3.round(allPoints.length / maxPoints);
-      allPoints = _reducePoints(allPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+      allPoints = this._reducePoints(allPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
     }
 
     // Now perform RDP
     if (rdpEpsilon) {
-      allPoints = _performRDP(allPoints, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
+      allPoints = this._performRDP(allPoints, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
     }
 
 
@@ -439,6 +493,36 @@ vcfiobio = function module() {
 
     return encodeURI(url);
   };
+
+  exports.jsonToArray = function(_obj, keyAttr, valueAttr) {
+    var theArray = [];
+    for (prop in _obj) {
+      var o = new Object();
+      o[keyAttr] = prop;
+      o[valueAttr] = _obj[prop];
+      theArray.push(o);
+    }
+    return theArray;
+  };
+
+  exports.jsonToValueArray = function(_obj) {
+    var theArray = [];
+    for (var key in _obj) {
+      theArray.push(_obj[key]);
+    }
+    return theArray;
+  };
+
+  exports.jsonToArray2D = function(_obj) {
+    var theArray = [];
+    for (prop in _obj) {
+      var row = [];
+      row[0] =  +prop;
+      row[1] =  +_obj[prop];
+      theArray.push(row);
+    }
+    return theArray;
+  };
          
 
 
@@ -484,7 +568,7 @@ vcfiobio = function module() {
     return smoothedData;
   }
 
-  exports._ceilingTopQuartile = function(someArray) {  
+  exports._applyCeiling = function(someArray) {  
     if (someArray.length < 5) {
       return someArray;
     }
