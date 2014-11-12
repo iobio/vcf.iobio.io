@@ -120,7 +120,7 @@
 
                 </section>
               
-    			<section id="middle" class="genome-stats" >
+    			<section id="middle"  >
 
                         <div id="tstv-ratio" class="panel">
                             <div class="title">TSTV Ratio</div>
@@ -128,10 +128,6 @@
                             <div id="ratio-panel" class="svg-alt">
                                 <div id="ratio-value" ></div>
                             </div>  
-                        </div>
-                          <div id="var-type" class="panel">
-                             <div class="title">Variant Types</div>
-                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                         </div>
 
                         <div id="allele-freq" class="panel">
@@ -144,13 +140,31 @@
                         </div>
                 </section>
 
+                <section id="bottom"  >
+
+
+                        <div id="var-type" class="panel">
+                             <div class="title">Variant Types</div>
+                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        </div>
+
+                        <div id="qc" class="panel">
+                             <div class="title">QC Distribution</div>
+                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                        </div>
+                        <div id="indel-length" class="panel">
+                             <div class="title">Insertion &amp; Deletion Length</div>
+                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                            <svg id="indel-length-histogram"/>
+                        </div>
+                </section>
+
            
     		</div>
         </div>
 
 
         <script type="text/javascript" src="app/vcf.iobio.js"></script>
-        <script type="text/javascript" src="app/dataManager.d3.js"></script>
         <script type="text/javascript" src="app/donutChooser.d3.js"></script>
         <script type="text/javascript" src="app/line.d3.js"></script>
         <script type="text/javascript" src="app/barChartAlt.d3.js"></script>
