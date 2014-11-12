@@ -516,7 +516,7 @@ readTabixFile.prototype.getChunks =
 
         var bids = reg2bins(beg, end+1).filter(
             function(x){
-                return (this.bhash[ref][x] != undefined);
+                return (this.bhash && this.bhash[ref] && this.bhash[ref][x] != undefined);
             }, this);
         var bcnks = bids.map(
             function(x){
@@ -569,10 +569,8 @@ readBinaryVCF.prototype.getRecords =
             stg = stg.concat(x);
             if (cnks.length > 0) {
                 var range = cnks.pop();
-                console.log(range[0] + ', ' + range[1]);
                 inflateRegion2Stg(vcfFile, range[0], range[1], cb);
             } else {
-                console.log(stg.length);
                 var stgRecs = stg.split("\n").filter(
                     function (rec) {
                         var n = parseInt(rec.split("\t")[1]);
@@ -581,8 +579,52 @@ readBinaryVCF.prototype.getRecords =
                 cbfn.call(this,stgRecs);
             };
         };
-        var rng0 = cnks.pop();
-        inflateRegion2Stg(this.theFile, rng0[0], rng0[1], cb);
+
+        if (cnks.length == 0) {
+            console.log("no cnks found for ref " + ref + " start=" + beg + " end=" + end ); 
+            cbfn.call(this, null);
+        }  else {
+            var rng0 = cnks.pop();
+            inflateRegion2Stg(this.theFile, rng0[0], rng0[1], cb);
+        }
+    };
+
+readBinaryVCF.prototype.getHeaderRecords =
+    function (cbfn) {
+        var vcfFile = this.theFile;
+        var TbxR = this.tbxR;
+
+
+        // Find the lowest start offset
+        var start = 0;
+        var end = 0;
+        for (var i = 0; i < this.tbxR.tabixContent.head.n_ref; i++) {
+            var ref   = this.tbxR.tabixContent.head.names[i];
+
+            var indexseq = this.tbxR.tabixContent.indexseq[i];
+            var interval = indexseq.intervseq[0];
+            var fileOffset = interval.valueOf();
+            if (fileOffset == 0) {
+                continue;
+            }
+
+            if (end == 0 ) {
+                end = fileOffset;
+            } else if (fileOffset < end) {
+                end = fileOffset;
+            }
+        }
+
+        var stg = "";
+        var cb = function (x) {
+            stg = stg.concat(x);
+            var stgRecs = stg.split("\n").filter(
+                    function (rec) {
+                        return rec.substring(0, 1) == "#";
+                    });
+            cbfn.call(this,stgRecs);
+        };
+        inflateRegion2Stg(this.theFile, start, end, cb);
     };
 
 
