@@ -479,12 +479,12 @@ function loadStats(i) {
 		options.end   = regionEnd;
 	}
 
-	//vcfiobio.getStatsDeprecated(refs, options, function(data) {
-	//	renderStats(data);
-	//});
-	vcfiobio.getStats(refs, options, function(data) {
+	vcfiobio.getStatsDeprecated(refs, options, function(data) {
 		renderStats(data);
 	});
+	//vcfiobio.getStats(refs, options, function(data) {
+	//	renderStats(data);
+	//});
 
 
 }
