@@ -26,7 +26,6 @@
         
 	</head>
 	<body>
-        <div class="tooltip"></div>
         
         
         <div id="selectData">
@@ -148,12 +147,13 @@
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                         </div>
 
-                        <div id="qc" class="panel">
-                             <div class="title">QC Distribution</div>
+                        <div id="qual-distribution" class="panel">
+                             <div class="title">Quality Scores</div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                            <svg id="qual-distribution-histogram"/>
                         </div>
                         <div id="indel-length" class="panel">
-                             <div class="title">Insertion &amp; Deletion Length</div>
+                             <div class="title">Insertion &amp; Deletion Lengths</div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <svg id="indel-length-histogram"/>
                         </div>
@@ -163,6 +163,11 @@
     		</div>
         </div>
 
+        <script>
+            var div = d3.select("body").append("div")   
+                .attr("class", "tooltip")               
+                .style("opacity", 1);
+        </script>             
 
         <script type="text/javascript" src="app/vcf.iobio.js"></script>
         <script type="text/javascript" src="app/donutChooser.d3.js"></script>

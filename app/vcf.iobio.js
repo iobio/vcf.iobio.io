@@ -261,7 +261,7 @@ vcfiobio = function module() {
     // Reduce point data to to a reasonable number of points for display purposes
     if (maxPoints) {
       var factor = d3.round(points.length / 900);
-      points = this._reducePoints(points, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+      points = this.reducePoints(points, factor, function(d) { return d[0]; }, function(d) { return d[1]});
     }
 
     // Now perform RDP
@@ -294,7 +294,7 @@ vcfiobio = function module() {
     // Reduce point data to to a reasonable number of points for display purposes
     if (maxPoints) {
       var factor = d3.round(allPoints.length / maxPoints);
-      allPoints = this._reducePoints(allPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+      allPoints = this.reducePoints(allPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
     }
 
     // Now perform RDP
@@ -306,49 +306,229 @@ vcfiobio = function module() {
     return allPoints;
   }
 
-  exports.getStats = function(refs, options, callback) {      
-     regions.length = 0;
 
-     var bedRegions;
-     for (var j=0; j < refs.length; j++) {
-        var ref      = refData[refs[j]];
-        var start    = options.start;
-        var end      = options.end ? options.end : ref.refLength;
-        var length   = end - start;
-        if ( length < options.binSize * options.binNumber) {
-          regions.push({
-            'name' : ref.name,
-            'start': start,
-            'end'  : length    
-          });
+  exports.getStats = function(refs, options, callback) {    
+    if (sourceType == SOURCE_TYPE_URL) {
+      this._getRemoteStats(refs, options, callback);
+    } else {
+      this._getLocalStats(refs, options, callback);
+    }
+    
+  }
+
+  // We we are dealing with a local VCF, we will create a mini-vcf of all of the sampled regions.
+  // This mini-vcf will be streamed to vcfstatsAliveServer.  
+  exports._getLocalStats = function(refs, options, callback) {      
+    var me = this;
+    me._getRegions(refs, options);
+
+    var connectionID = this._makeid();
+    var client = BinaryClient(vcfstatsAliveServer + '?id=', {'connectionID' : connectionID} );
+    var url = encodeURI( vcfstatsAliveServer + "?protocol=websocket&encoding=binary?cmd=-u 3000 " + encodeURIComponent("http://client"));
+
+    client.on('open', function(stream){
+      var stream = client.createStream({event:'run', params : {'url':url}});
+      //stream = client.createStream({event:'setID', 'connectionID':connectionID});
+
+      //
+      // stream the vcf
+      //
+
+      // This is the callback function that will get invoked each time a set of vcf records is
+      // returned from the binary parser for a given region.  
+      var onGetRecords = function(records) {
+        var me = this;
+        if (regionIndex == regions.length) {
+          // The executing code should never get there as we should exit the recursion in onGetRecords.
         } else {
-           // create random reference coordinates
-           for (var i=0; i < options.binNumber; i++) {   
-              var s = start + parseInt(Math.random()*length); 
-              regions.push( {
-                 'name' : ref.name,
-                 'start' : s,
-                 'end' : s + options.binSize
-              }); 
-           }
-           // sort by start value
-           regions = regions.sort(function(a,b) {
-              var x = a.start; var y = b.start;
-              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-           });               
-           
-           // intelligently determine exome bed coordinates
-           /*
-           if (options.exomeSampling)
-              options.bed = me._generateExomeBed(options.sequenceNames[0]);
-           
-           // map random region coordinates to bed coordinates
-           if (options.bed != undefined)
-              bedRegions = me._mapToBedCoordinates(SQs[0].name, regions, options.bed)
-            */
+
+          // Stream the vcf records we just parsed for a region in the vcf, one records at a time
+          if (records) {
+            for (var r = 0; r < records.length; r++) {
+              stream.write(records[r] + "\n");
+            }
+          } else {
+            // This is an error condition.  If vcfRecords can't return any
+            // records, we will hit this point in the code.
+            // Just log it for now and move on to the next region.
+            console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
+          }
+
+          regionIndex++;
+
+          if (regionIndex > regions.length) {
+            return;
+          } else if (regionIndex == regions.length) {
+            // We have streamed all of the regions so now we will end the stream.
+            console.log("stream end");
+            stream.end();
+            return;
+          } else {
+            // There are more regions to obtain vcf records for, so call getVcfRecords now
+            // that regionIndex has been incremented.
+            vcfReader.getRecords(regions[regionIndex].name, 
+              regions[regionIndex].start, 
+              regions[regionIndex].end, 
+              onGetRecords);
+          }      
+
         }
-     }      
+      }
+
+      // Build up a local VCF file this is comprised of the regions we are sampling.
+      // Parse out the header records from the vcf.  Stream the header
+      // to the server.
+      vcfReader.getHeaderRecords( function(headerRecords) {
+        for (h = 0; h < headerRecords.length; h++) {
+          stream.write(headerRecords[h] + "\n");
+        }
+
+      // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
+      // so that we parse vcf records one region at a time, streaming the vcf records
+      // to the server.
+      vcfReader.getRecords(
+          regions[regionIndex].name, 
+          regions[regionIndex].start, 
+          regions[regionIndex].end, 
+          onGetRecords);
+
+      });
+
+      
+      //
+      // listen for stream data (the output) event. 
+      //
+      stream.on('data', function(data, options) {
+         if (data == undefined) {
+            return;
+         } 
+         var success = true;
+         try {
+           var obj = JSON.parse(buffer + data);
+         } catch(e) {
+           success = false;
+           buffer += data;
+         }
+         if(success) {
+           buffer = "";
+           callback(obj); 
+         }               
+      });
+      
+    });
+
+    
+
+    
      
+  };  
+
+  exports._getRemoteStats = function(refs, options, callback) {      
+    var me = this;
+
+    me._getRegions(refs, options);
+
+    // This is the tabix url.  Here we send the regions as arguments.  tabix
+    // output (vcf header+records for the regions) will be piped
+    // to the vcfstatsalive server.
+    var regionStr = "";
+    regions.forEach(function(region) { 
+      regionStr += " " + region.name + ":" + region.start + "-" + region.end 
+    });
+    var tabixUrl = tabixServer + "?cmd=-h " + vcfURL + regionStr + "&encoding=binary";
+
+    // This is the full url for vcfstatsalive server which is piped its input from tabixserver
+    var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 3000 ' + encodeURIComponent(tabixUrl));
+
+    // Connect to the vcfstatsaliveserver    
+    var client = BinaryClient(vcfstatsAliveServer);
+
+    var buffer = "";
+    client.on('open', function(stream){
+
+        // Run the command
+        var stream = client.createStream({event:'run', params : {'url':url}});
+
+       // Listen for data to be streamed back to the client
+        stream.on('data', function(data, options) {
+           if (data == undefined) {
+              return;
+           } 
+           var success = true;
+           try {
+             var obj = JSON.parse(buffer + data);
+           } catch(e) {
+             success = false;
+             buffer += data;
+           }
+           if(success) {
+             buffer = "";
+             callback(obj); 
+           }               
+        });
+        stream.on('end', function() {
+           if (options.onEnd != undefined)
+              options.onEnd();
+        });
+     });
+     
+  };  
+
+
+ 
+
+  exports._getRegions = function(refs, options) {
+
+    regionIndex = 0;
+    regions.length = 0;
+
+
+    var bedRegions;
+    for (var j=0; j < refs.length; j++) {
+      var ref      = refData[refs[j]];
+      var start    = options.start;
+      var end      = options.end ? options.end : ref.refLength;
+      var length   = end - start;
+      if ( length < options.binSize * options.binNumber) {
+        regions.push({
+          'name' : ref.name,
+          'start': start,
+          'end'  : length    
+        });
+      } else {
+         // create random reference coordinates
+         for (var i=0; i < options.binNumber; i++) {   
+            var s = start + parseInt(Math.random()*length); 
+            regions.push( {
+               'name' : ref.name,
+               'start' : s,
+               'end' : s + options.binSize
+            }); 
+         }
+         // sort by start value
+         regions = regions.sort(function(a,b) {
+            var x = a.start; var y = b.start;
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+         });               
+         
+         // intelligently determine exome bed coordinates
+         /*
+         if (options.exomeSampling)
+            options.bed = me._generateExomeBed(options.sequenceNames[0]);
+         
+         // map random region coordinates to bed coordinates
+         if (options.bed != undefined)
+            bedRegions = me._mapToBedCoordinates(SQs[0].name, regions, options.bed)
+          */
+      }
+    } 
+    return regions;     
+
+  }
+
+
+  exports.getStatsDeprecated = function(refs, options, callback) {      
+      this._getRegions(refs, options);
 
       var server     = sourceType == SOURCE_TYPE_FILE ? catInputServer : vcfstatsAliveServer;
       var serverArgs = sourceType == SOURCE_TYPE_FILE ? '?cmd= '       : '?cmd=-u 3000 ';
@@ -382,14 +562,11 @@ vcfiobio = function module() {
                 options.onEnd();
           });
        });
-
-
      
   };  
 
- 
 
-  exports._getVcfRegionsUrl = function() {
+  exports._getVcfRegionsUrl= function() {
     
     if ( sourceType == SOURCE_TYPE_URL) {
        // When we are dealing with a remove VCF, we will call the tabix server, passing in the
@@ -523,22 +700,9 @@ vcfiobio = function module() {
     }
     return theArray;
   };
-         
 
 
-  exports._makeid = function(){
-    // make unique string id;
-     var text = "";
-     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-     for( var i=0; i < 5; i++ )
-         text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-     return text;
-  };
-
-
-  exports._reducePoints = function(data, factor, xvalue, yvalue) {
+  exports.reducePoints = function(data, factor, xvalue, yvalue) {
     if (factor <= 1 ) {
       return data;
     }
@@ -560,6 +724,26 @@ vcfiobio = function module() {
       sum = 0;
     }
     return results;
+  };
+
+
+  //
+  //
+  //
+  //  PRIVATE 
+  //
+  //
+  //
+
+  exports._makeid = function(){
+    // make unique string id;
+     var text = "";
+     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+     for( var i=0; i < 5; i++ )
+         text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+     return text;
   };
 
   exports._performRDP = function(data, epsilon, pos, depth) {

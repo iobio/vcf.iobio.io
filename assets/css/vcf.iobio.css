@@ -356,7 +356,7 @@ section#bottom {
 
 }
 
-.panel#qc {
+.panel#qual-distribution {
     -webkit-flex: 1 0 35%;
             flex: 1 0 35%;
     -webkit-order: 2;

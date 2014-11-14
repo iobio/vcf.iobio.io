@@ -12,7 +12,7 @@ var tstvChart;
 var alleleFreqChart;
 var mutSpectrumChart;
 var varTypeChart;
-var qcChart;
+var qualDistributionChart;
 var indelLengthChart; 
 
 
@@ -125,7 +125,7 @@ function init() {
    							.pos( function(d) { return d[0] })
 					   		.depth( function(d) { return d[1] })
 
-
+	// View finder (area chart) for variant density chart (when a references is selected)
 	variantDensityVF = lineD3()
                             .width(930)
                             .height(20)
@@ -136,6 +136,7 @@ function init() {
 					   		.depth( function(d) { return d[1] })
 					   		.showGradient(false);
 
+    // View finder (reference as boxes on x-axis) for variant density chart (for all references)
 	variantDensityRefVF = barChartAltD3()
                         .width(930)
                         .height(20)
@@ -147,20 +148,6 @@ function init() {
 				   			chromosomeChart.clickSlice(i);
 							onReferenceSelected(d, i);
 				   		});
-
-    alleleFreqChart = lineD3()
-                       .kind("area")
-                       .width(400)
-                       .height(140)
-					   .margin( {left: 50, right: 30, top: 25, bottom: 50})
-					   .showTransition(false)
-					   .showYAxis(true)
-					   .pos( function(d) { return d[0] })
-					   .depth( function(d) { return d[1] });
-	alleleFreqChart.formatXTick( function(d,i) {
-		return (d * 2) + '%';
-	});
-
 
 	// TSTV grouped barchart (to show ratio)
 	tstvChart = groupedBarD3();
@@ -177,6 +164,37 @@ function init() {
 		.barLabel( function(d,i) {
 	        return tstvCategories[i]
 		 });
+
+	// Allele freq chart
+    alleleFreqChart = lineD3()
+                       .kind("area")
+                       .width(400)
+                       .height(140)
+					   .margin( {left: 50, right: 30, top: 25, bottom: 50})
+					   .showTransition(false)
+					   .showYAxis(true)
+					   .pos( function(d) { return d[0] })
+					   .depth( function(d) { return d[1] });
+	alleleFreqChart.formatXTick( function(d,i) {
+		return (d * 2) + '%';
+	});
+
+	// Mutation spectrum grouped barchart
+	mutSpectrumChart = groupedBarD3();
+	mutSpectrumChart.width(570)
+	    .height(210)
+		.margin( {left: 50, right: 10, top: 10, bottom: 20})
+		.categories( ["1", "2", "3"] )
+		.fill( function(d, i) {
+		    var colorScheme =  colorSchemeMS[d.category]; 
+		    var colorIdx = colorScheme[i];
+		    return colorMS[colorIdx];
+		 })
+		.barLabel( function(d) {
+			var nucleotide = lookupNucleotide[d.category];
+	        return nucleotide[+d.name - 1]
+		 });
+
 
 	// var type barchart (to show ratio)
 	varTypeChart = groupedBarD3();
@@ -196,22 +214,14 @@ function init() {
 		 });
 
 
-
-	// Mutation spectrum grouped barchart
-	mutSpectrumChart = groupedBarD3();
-	mutSpectrumChart.width(570)
-	    .height(210)
+	// QC score histogram chart
+	qualDistributionChart = histogramD3();
+	qualDistributionChart.width(500)
+		.height(210)
 		.margin( {left: 50, right: 10, top: 10, bottom: 20})
-		.categories( ["1", "2", "3"] )
-		.fill( function(d, i) {
-		    var colorScheme =  colorSchemeMS[d.category]; 
-		    var colorIdx = colorScheme[i];
-		    return colorMS[colorIdx];
-		 })
-		.barLabel( function(d) {
-			var nucleotide = lookupNucleotide[d.category];
-	        return nucleotide[+d.name - 1]
-		 });
+		.xValue( function(d) { return d[0] })
+		.yValue( function(d) { return d[1] });
+
 
 
 	// Indel length chart
@@ -221,8 +231,6 @@ function init() {
 		.margin( {left: 50, right: 10, top: 10, bottom: 20})
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] });
-
-
 
 
 }
@@ -283,7 +291,7 @@ function onReferencesLoaded(refData) {
 	
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	chromosomeIndex = 0;
-	chromosomeChart.clickSlice(chromosomeIndex);
+	//chromosomeChart.clickSlice(chromosomeIndex);
 	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 
 	var otherRefData = vcfiobio.getReferences(0, .01);
@@ -471,6 +479,9 @@ function loadStats(i) {
 		options.end   = regionEnd;
 	}
 
+	//vcfiobio.getStatsDeprecated(refs, options, function(data) {
+	//	renderStats(data);
+	//});
 	vcfiobio.getStats(refs, options, function(data) {
 		renderStats(data);
 	});
@@ -550,7 +561,21 @@ function renderStats(stats) {
 	mutSpectrumChart(msSelection);
 
 
+	// QC distribution
+	var qualPoints = vcfiobio.jsonToArray2D(stats.qual_dist.regularBins);
+	//console.log(stats.qual_dist.regularBins);
+	qualReducedPoints = vcfiobio.reducePoints(qualPoints, 5, function(d) { return d[0]; }, function(d) { return d[1]});
+	//console.log(qualReducedPoints);
+
+	var qualSelection = d3.select("#qual-distribution-histogram")
+					    .datum(qualReducedPoints);
+	var qualOptions = {outliers: true, averageLine: true};
+	qualDistributionChart(qualSelection, qualOptions);	
+
+
+
 	// Indel length distribution
+	console.log(stats.indel_size);
 	var indelData = vcfiobio.jsonToArray2D(stats.indel_size);
 	var indelSelection = d3.select("#indel-length-histogram")
 					    .datum(indelData);
@@ -558,8 +583,6 @@ function renderStats(stats) {
 	indelLengthChart(indelSelection, indelOptions);	
 
 	
-
-
 }
 
 
