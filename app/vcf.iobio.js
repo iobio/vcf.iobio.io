@@ -599,7 +599,7 @@ vcfiobio = function module() {
         stream.end();
       });
 
-      var url = vcfstatsAliveServer + "?protocol=websocket&encoding=binary&cmd= " + encodeURIComponent("http://client?&id="+connectionID);
+      var url = vcfstatsAliveServer + "?protocol=websocket&encoding=utf-8&cmd= " + encodeURIComponent("http://client?&id="+connectionID);
       var me = this;
 
       // send data to samtools when it asks for it         
