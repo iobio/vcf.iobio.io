@@ -102,9 +102,16 @@ donutChooserD3 = function module() {
           return name(d.data);
         });
 
-      arcs.on("mouseover", _selectSlice)
+      arcs.on("mouseover", function(d, i) {
+              if (clickedSlices.length > 0) {
+                 _selectSlice(d, i, null, false);
+
+              } else {
+                 _selectSlice(d, i, null, true);
+              }
+            }) 
           .on("mouseout", function(d) {
-              if (this != clickedSlice) {
+              if (clickedSlices.length == 0 && this != clickedSlice) {
                 d3.select(this)
                   .select("path")
                   .transition()
