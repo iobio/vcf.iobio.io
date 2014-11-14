@@ -6,11 +6,8 @@ function histogramD3() {
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
       x = d3.scale.linear(),
-      y = d3.scale.linear(),
-      xAxis = d3.svg.axis().scale(x).orient("bottom");
-      yAxis = d3.svg.axis().scale(y).orient("left").ticks(6),
-      brush = d3.svg.brush().x(x);
-
+      y = d3.scale.linear();
+      
 
   var formatXTick = null;
       
@@ -62,14 +59,23 @@ function histogramD3() {
       y  .domain([0, d3.max(data, function(d) { return d[1]; })])
       y  .range([innerHeight , 0]);
 
+      
+      var xAxis = d3.svg.axis().scale(x).orient("bottom");
+      var brush = d3.svg.brush().x(x);
+      var yAxis = d3.svg.axis().scale(y).orient("left").ticks(6);
+
       // Select the g element, if it exists.
       var g = svg.selectAll("g").data([0]);
 
       // Otherwise, create the skeletal chart.
       var gEnter = g.enter().append("g");
+      gEnter.selectAll("g.x axis").remove();
       gEnter.append("g").attr("class", "x axis").attr("transform", "translate(0," + y.range()[0] + ")");
+      gEnter.selectAll("g.y axis").remove();
       gEnter.append("g").attr("class", "y axis");
-      gEnter.append("g").attr("class", "x brush")      
+      gEnter.append("g").attr("class", "x brush");
+
+      
 
       
 
