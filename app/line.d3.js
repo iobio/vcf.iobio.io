@@ -20,13 +20,16 @@ lineD3 = function module() {
 
   var width = 600 - margin.left - margin.right;
   var height = 220 - margin.top - margin.bottom;
-  
+  var widthPercent  = "95%";
+  var heightPercent = "95%";
 
   var showTooltip = true;
+  var showBrush = false;
   var showXAxis = true;
   var showYAxis = true;
   var showTransition = true;
   var showGradient = true;
+  var brushHeight = null;
 
   var tooltipSelector = ".tooltip";
 
@@ -45,8 +48,8 @@ lineD3 = function module() {
 
       svg.enter()
         .append("svg")
-        .attr("width", "100%")
-        .attr("height", "100%")
+        .attr("width", widthPercent)
+        .attr("height", heightPercent)
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
         .attr("preserveAspectRatio", "xMidYMid meet");
 
@@ -215,12 +218,20 @@ lineD3 = function module() {
         }
        }
 
-      svgGroup.append("g")
-          .attr("class", "x brush")
-          .call(brush)
-          .selectAll("rect")
-          .attr("y", -6)
-          .attr("height", height + 6);
+      if (showBrush) {
+        if (brushHeight == null ) {
+          brushHeight = height;
+          brushY = -6;
+        } else {
+          brushY = 0 - (brushHeight / 2);
+        }
+        svgGroup.append("g")
+            .attr("class", "x brush")
+            .call(brush)
+            .selectAll("rect")
+            .attr("y", brushY)
+            .attr("height", brushHeight);
+      }
 
       if (!showTransition) {
         dispatch.d3rendered();
@@ -262,6 +273,18 @@ lineD3 = function module() {
   exports.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return exports;
+  };
+
+  exports.widthPercent = function(_) {
+    if (!arguments.length) return widthPercent;
+    widthPercent = _;
+    return exports;
+  };
+
+  exports.heightPercent = function(_) {
+    if (!arguments.length) return heightPercent;
+    heightPercent = _;
     return exports;
   };
  
@@ -316,6 +339,18 @@ lineD3 = function module() {
   exports.showGradient = function(_) {
     if (!arguments.length) return showGradient;
     showGradient = _;
+    return exports;
+  }
+
+  exports.showBrush = function(_) {
+    if (!arguments.length) return showBrush;
+    showBrush = _;
+    return exports;
+  }
+
+  exports.brushHeight = function(_) {
+    if (!arguments.length) return brushHeight;
+    brushHeight = _;
     return exports;
   }
 

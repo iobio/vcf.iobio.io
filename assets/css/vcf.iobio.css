@@ -43,15 +43,15 @@ g.arcs {
 }
 
 #mut-spectrum .y .tick text {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: normal;
 }
 #mut-spectrum .x .tick text {
-    font-size: 22px;
+    font-size: 12px;
     font-weight: bold;
 }
 #mut-spectrum .category text {
-    font-size: 16px;
+    font-size: 11px;
     font-weight: bold;
 }
 #mut-spectrum .category rect {
@@ -177,8 +177,8 @@ section#bottom {
 .panel > .title { font-size: 26px}
 
 .panel#chromosome-picker {
-    -webkit-flex: 1 0 270px;
-            flex: 1 0 270px;
+    -webkit-flex: 1 0 200px;
+            flex: 1 0 200px;
     -webkit-order: 1;
             order: 1;
     height: 270px;                        
@@ -318,21 +318,21 @@ section#bottom {
 
 
 .panel#tstv-ratio {
-    -webkit-flex: 1 0 10%;
-            flex: 1 0 10%;
+    -webkit-flex: 1 0 200px;
+            flex: 1 0 200px;
     -webkit-order: 1;
             order: 1;
-    height: 250px;
+    height: 200px;
 
 
 }
 
 .panel#allele-freq {
-    -webkit-flex: 1 0 35%;
-            flex: 1 0 35%;
+    -webkit-flex: 1 0 30%;
+            flex: 1 0 30%;
     -webkit-order: 2;
             order: 2;
-     height: 250px;                               
+     height: 200px;                               
 }
 
 .panel#mut-spectrum {
@@ -340,7 +340,7 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 3;
             order: 3;
-    height: 250px;
+    height: 200px;
 
 }
 
@@ -348,20 +348,20 @@ section#bottom {
 
 
 .panel#var-type {
-    -webkit-flex: 1 0 10%;
-            flex: 1 0 10%;
+    -webkit-flex: 1 0 200px;
+            flex: 1 0 200px;
     -webkit-order: 1;
             order: 1;
-    height: 250px;
+    height: 200px;
 
 }
 
 .panel#qual-distribution {
-    -webkit-flex: 1 0 35%;
-            flex: 1 0 35%;
+    -webkit-flex: 1 0 30%;
+            flex: 1 0 30%;
     -webkit-order: 2;
             order: 2;
-     height: 250px;                               
+     height: 200px;                               
 }
 
 .panel#indel-length {
@@ -369,7 +369,7 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 3;
             order: 3;
-    height: 250px;
+    height: 200px;
 
 }
 
@@ -380,7 +380,6 @@ section#bottom {
     font-size:  30px; 
     color:      #2687BE; 
 
-    margin-top: 10px;
     
     display: -webkit-flex;
     display:         flex;

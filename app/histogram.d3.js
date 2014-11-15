@@ -16,16 +16,13 @@ function histogramD3() {
     options = $.extend(defaults,options);
     var innerHeight = height - margin.top - margin.bottom;
 
-    if (formatXTick) {
-      xAxis.tickFormat(formatXTick);
-    }
-
+   
     selection.each(function(data) {
       // set svg element
       var svg = d3.select(this);
 
       svg.attr("width", "95%")
-        .attr("height", "100%") 
+        .attr("height", "95%") 
         .attr('viewBox', "0 0 " + 
                          (parseInt(width) +  parseInt(margin.left) + parseInt(margin.right)) + " " + 
                          (parseInt(height) + parseInt(margin.top) +  parseInt(margin.bottom)))
@@ -63,6 +60,11 @@ function histogramD3() {
       var xAxis = d3.svg.axis().scale(x).orient("bottom");
       var brush = d3.svg.brush().x(x);
       var yAxis = d3.svg.axis().scale(y).orient("left").ticks(6);
+
+      if (formatXTick) {
+        xAxis.tickFormat(formatXTick);
+      }
+
 
       // Select the g element, if it exists.
       var g = svg.selectAll("g").data([0]);

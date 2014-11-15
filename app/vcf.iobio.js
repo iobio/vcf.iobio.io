@@ -165,10 +165,10 @@ vcfiobio = function module() {
 
 
         // Load the reference density data.  Exclude reference if 0 points.
-        if (points.length > 0 ) {
+        //if (points.length > 0 ) {
             refDensity[ref] = {"idx": i, "points": points, "intervalPoints": intervalPoints};
             refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": i});
-        }
+        //}
 
 
       }

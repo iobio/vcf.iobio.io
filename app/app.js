@@ -117,9 +117,11 @@ function init() {
 	// Create the variant density chart
 	variantDensityChart = lineD3()
                             .width(900)
-                            .height(100)
+                            .height(70)
+                            .widthPercent("90%")
+                            .heightPercent("90%")
                             .kind("area")
-							.margin( {left: 30, right: 20, top: 10, bottom: 20})
+							.margin( {left: 0, right: 0, top: 0, bottom: 20})
 							.showXAxis(true)
 							.showYAxis(false)
    							.pos( function(d) { return d[0] })
@@ -127,11 +129,15 @@ function init() {
 
 	// View finder (area chart) for variant density chart (when a references is selected)
 	variantDensityVF = lineD3()
-                            .width(930)
+                            .width(900)
                             .height(20)
+                            .widthPercent("90%")
+                            .heightPercent("90%")
                             .kind("area")
-							.margin( {left: 30, right: 20, top: 0, bottom: 20})
+							.margin( {left: 0, right: 0, top: 10, bottom: 20})
 							.showYAxis(false)
+							.showBrush(true)
+							.brushHeight(40)
    							.pos( function(d) { return d[0] })
 					   		.depth( function(d) { return d[1] })
 					   		.showGradient(false);
@@ -152,9 +158,11 @@ function init() {
 	// TSTV grouped barchart (to show ratio)
 	tstvChart = groupedBarD3();
 	var tstvCategories =  ["TS", "TV"];
-	tstvChart.width(200)
-	    .height(120)
-		.margin( {left: 10, right: 10, top: 25, bottom: 20})
+	tstvChart.width(140)
+	    .height(60)
+	    .widthPercent("65%")
+	    .heightPercent("65%")
+		.margin( {left: 10, right: 10, top: 30, bottom: 10})
 		.showXAxis(true)
 		.showYAxis(false)
 		.showXTicks(false)
@@ -166,25 +174,23 @@ function init() {
 		 });
 
 	// Allele freq chart
-    alleleFreqChart = lineD3()
-                       .kind("area")
-                       .width(400)
-                       .height(140)
-					   .margin( {left: 50, right: 30, top: 25, bottom: 50})
-					   .showTransition(false)
-					   .showYAxis(true)
-					   .pos( function(d) { return d[0] })
-					   .depth( function(d) { return d[1] });
+    alleleFreqChart = histogramD3()
+                       .width(445)
+                       .height(110)
+					   .margin( {left: 45, right: 0, top: 5, bottom: 20})
+					   .xValue( function(d) { return d[0] })
+					   .yValue( function(d) { return d[1] });
 	alleleFreqChart.formatXTick( function(d,i) {
 		return (d * 2) + '%';
 	});
 
 	// Mutation spectrum grouped barchart
 	mutSpectrumChart = groupedBarD3();
-	mutSpectrumChart.width(570)
-	    .height(210)
-		.margin( {left: 50, right: 10, top: 10, bottom: 20})
+	mutSpectrumChart.width(420)
+	    .height(80)
+		.margin( {left: 40, right: 0, top: 0, bottom: 20})
 		.categories( ["1", "2", "3"] )
+		.categoryPadding(.5)
 		.fill( function(d, i) {
 		    var colorScheme =  colorSchemeMS[d.category]; 
 		    var colorIdx = colorScheme[i];
@@ -200,8 +206,8 @@ function init() {
 	varTypeChart = groupedBarD3();
 	var varTypeCategories = ["SNP", "Ins", "Del", "Other"];
 	varTypeChart.width(150)
-	    .height(130)
-		.margin( {left: 40, right: 10, top: 30, bottom: 10})
+	    .height(90)
+		.margin( {left: 40, right: 0, top: 30, bottom: 40})
 		.showXAxis(true)
 		.showYAxis(true)
 		.showXTicks(false)
@@ -216,9 +222,9 @@ function init() {
 
 	// QC score histogram chart
 	qualDistributionChart = histogramD3();
-	qualDistributionChart.width(500)
-		.height(210)
-		.margin( {left: 50, right: 10, top: 10, bottom: 20})
+	qualDistributionChart.width(490)
+                         .height(100)
+					     .margin( {left: 45, right: 0, top: 5, bottom: 10})
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] });
 
@@ -226,9 +232,9 @@ function init() {
 
 	// Indel length chart
 	indelLengthChart = histogramD3();
-	indelLengthChart.width(500)
-		.height(210)
-		.margin( {left: 50, right: 10, top: 10, bottom: 20})
+	indelLengthChart.width(490)
+                    .height(100)
+					.margin( {left: 45, right: 0, top: 5, bottom: 10})
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] });
 
@@ -536,9 +542,10 @@ function renderStats(stats) {
 	// Alelle Frequency
 	var afObj = stats.af_hist;
 	var afData = vcfiobio.jsonToArray2D(afObj);
-	var afSelection = d3.select("#allele-freq")
+	var afSelection = d3.select("#allele-freq-histogram")
 					    .datum(afData);
-	alleleFreqChart(afSelection);	
+	var afOptions = {outliers: true, averageLine: false};					    
+	alleleFreqChart(afSelection, afOptions);	
 
 	// Mutation Spectrum
 	var msObj = stats.mut_spec;

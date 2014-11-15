@@ -2,8 +2,10 @@ groupedBarD3 = function module() {
 
   var margin = {left: 30, right: 30, top: 10, bottom: 30};
 
-  var width = 600 - margin.left - margin.right;
-  var height = 220 - margin.top - margin.bottom;
+  var width         = 600 - margin.left - margin.right;
+  var height        = 220 - margin.top - margin.bottom;
+  var widthPercent  = "95%";
+  var heightPercent = "95%";
 
   var categoryPadding = .4;
   
@@ -16,6 +18,7 @@ groupedBarD3 = function module() {
   var showXTicks = true;
   var showBarLabel = true;
   var categories = null;
+
 
 
   
@@ -128,8 +131,8 @@ groupedBarD3 = function module() {
       if (showYAxis) {
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left")
-            .tickFormat(d3.format(".2s"));
+            .orient("left");
+            //.tickFormat(d3.format(".2s"));
       }   
 
 
@@ -144,8 +147,8 @@ groupedBarD3 = function module() {
 
       svg.enter()
         .append("svg")
-        .attr("width", "100%")
-        .attr("height", "90%")
+        .attr("width", widthPercent)
+        .attr("height", heightPercent)
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
         .attr("preserveAspectRatio", "xMidYMid meet");
 
@@ -260,6 +263,18 @@ groupedBarD3 = function module() {
   exports.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return exports;
+  };
+
+  exports.widthPercent = function(_) {
+    if (!arguments.length) return widthPercent;
+    widthPercent = _;
+    return exports;
+  };
+
+  exports.heightPercent = function(_) {
+    if (!arguments.length) return heightPercent;
+    heightPercent = _;
     return exports;
   };
 
