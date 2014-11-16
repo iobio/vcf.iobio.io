@@ -116,12 +116,12 @@ function init() {
 
 	// Create the variant density chart
 	variantDensityChart = lineD3()
-                            .width(900)
-                            .height(70)
-                            .widthPercent("90%")
-                            .heightPercent("90%")
+                            .width(980)
+                            .height(80)
+                            .widthPercent("95%")
+                            .heightPercent("95%")
                             .kind("area")
-							.margin( {left: 0, right: 0, top: 0, bottom: 20})
+							.margin( {left: 10, right: 20, top: 0, bottom: 20})
 							.showXAxis(true)
 							.showYAxis(false)
    							.pos( function(d) { return d[0] })
@@ -129,12 +129,12 @@ function init() {
 
 	// View finder (area chart) for variant density chart (when a references is selected)
 	variantDensityVF = lineD3()
-                            .width(900)
+                            .width(980)
                             .height(20)
-                            .widthPercent("90%")
-                            .heightPercent("90%")
+                            .widthPercent("95%")
+                            .heightPercent("95%")
                             .kind("area")
-							.margin( {left: 0, right: 0, top: 10, bottom: 20})
+							.margin( {left: 10, right: 20, top: 10, bottom: 20})
 							.showYAxis(false)
 							.showBrush(true)
 							.brushHeight(40)
@@ -144,9 +144,11 @@ function init() {
 
     // View finder (reference as boxes on x-axis) for variant density chart (for all references)
 	variantDensityRefVF = barChartAltD3()
-                        .width(930)
+                        .width(980)
                         .height(20)
-                        .margin( {left: 30, right: 20, top: 0, bottom: 0})
+                        .widthPercent("95%")
+                        .heightPercent("95%")
+                        .margin( {left: 10, right: 20, top: 0, bottom: 0})
 						.nameFunction( function(d) { return d.name })
 				   		.valueFunction( function(d) { return d.value })
 				   		.on("clickbar", function(d,i) {
@@ -297,7 +299,7 @@ function onReferencesLoaded(refData) {
 	
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	chromosomeIndex = 0;
-	//chromosomeChart.clickSlice(chromosomeIndex);
+	chromosomeChart.clickSlice(chromosomeIndex);
 	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 
 	var otherRefData = vcfiobio.getReferences(0, .01);
@@ -485,12 +487,12 @@ function loadStats(i) {
 		options.end   = regionEnd;
 	}
 
-	vcfiobio.getStatsDeprecated(refs, options, function(data) {
-		renderStats(data);
-	});
-	//vcfiobio.getStats(refs, options, function(data) {
+	//vcfiobio.getStatsDeprecated(refs, options, function(data) {
 	//	renderStats(data);
 	//});
+	vcfiobio.getStats(refs, options, function(data) {
+		renderStats(data);
+	});
 
 
 }
@@ -525,7 +527,6 @@ function renderStats(stats) {
 	// Render the mutation spectrum chart with the data
 	tstvChart(tstvSelection);
 
-
 	// Var types
 	var varTypeArray = vcfiobio.jsonToValueArray(stats.var_type);
 	var varTypeData = [
@@ -536,15 +537,12 @@ function renderStats(stats) {
 	// Render the var type data with the data
 	varTypeChart(varTypeSelection);
 
-
-
-
 	// Alelle Frequency
 	var afObj = stats.af_hist;
 	var afData = vcfiobio.jsonToArray2D(afObj);
 	var afSelection = d3.select("#allele-freq-histogram")
 					    .datum(afData);
-	var afOptions = {outliers: true, averageLine: false};					    
+	var afOptions = {outliers: true, averageLine: false, barWidthMultiplier: 2};					    
 	alleleFreqChart(afSelection, afOptions);	
 
 	// Mutation Spectrum
@@ -570,19 +568,17 @@ function renderStats(stats) {
 
 	// QC distribution
 	var qualPoints = vcfiobio.jsonToArray2D(stats.qual_dist.regularBins);
-	//console.log(stats.qual_dist.regularBins);
-	qualReducedPoints = vcfiobio.reducePoints(qualPoints, 5, function(d) { return d[0]; }, function(d) { return d[1]});
-	//console.log(qualReducedPoints);
+	var factor = 5;
+	qualReducedPoints = vcfiobio.reducePoints(qualPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
 
 	var qualSelection = d3.select("#qual-distribution-histogram")
 					    .datum(qualReducedPoints);
-	var qualOptions = {outliers: true, averageLine: true};
+	var qualOptions = {outliers: true, averageLine: true, barWidthMultiplier: factor};
 	qualDistributionChart(qualSelection, qualOptions);	
 
 
 
 	// Indel length distribution
-	console.log(stats.indel_size);
 	var indelData = vcfiobio.jsonToArray2D(stats.indel_size);
 	var indelSelection = d3.select("#indel-length-histogram")
 					    .datum(indelData);
