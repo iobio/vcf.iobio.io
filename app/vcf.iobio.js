@@ -63,10 +63,13 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
-  var vcfstatsAliveServer    = "ws://localhost:7070";
-  var tabixServer            = "ws://localhost:7090";
-  var vcfReadDeptherServer   = "ws://localhost:7062";
+  //var vcfstatsAliveServer    = "ws://localhost:7070";
+  //var tabixServer            = "ws://localhost:7090";
+  //var vcfReadDeptherServer   = "ws://localhost:7062";
 
+  var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
+  var tabixServer            = "ws://tabix.iobio.io";
+  var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
 
 
   var vcfURL;
@@ -276,7 +279,7 @@ vcfiobio = function module() {
     var allPoints = [];
     var offset = 0;
     for (var i = 0; i < refData.length; i++) {
-      var points = refDensity[refData[i].name].points;
+      var points = refDensity[refData[i].name].intervalPoints;
       var offsetPoints = [];
       for (var x = 0; x < points.length; x++) {
         offsetPoints.push([points[x][0] + offset, points[x][1]]);
