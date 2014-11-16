@@ -103,11 +103,8 @@ donutChooserD3 = function module() {
         });
 
       arcs.on("mouseover", function(d, i) {
-              if (clickedSlices.length > 0) {
-                 _selectSlice(d, i, null, false);
-
-              } else {
-                 _selectSlice(d, i, null, true);
+              if (clickedSlices.length == 0) {
+                 _selectSlice.call(this, d, i, null, true);
               }
             }) 
           .on("mouseout", function(d) {
@@ -259,8 +256,8 @@ donutChooserD3 = function module() {
           ang = (ang - (Math.PI / 2) ) * -1;
 
           // Calculate a .5% radius displacement (inverse to make slice to inward)
-          var x = Math.cos(ang) * radius * 0.05;
-          var y = Math.sin(ang) * radius * -0.05;
+          var x = Math.cos(ang) * radius * 0.1;
+          var y = Math.sin(ang) * radius * -0.1;
           d3.select(theSlice)
             .select("path")
             .attr("transform", "rotate(0)")
