@@ -279,7 +279,7 @@ vcfiobio = function module() {
     var allPoints = [];
     var offset = 0;
     for (var i = 0; i < refData.length; i++) {
-      var points = refDensity[refData[i].name].points;
+      var points = refDensity[refData[i].name].intervalPoints;
       var offsetPoints = [];
       for (var x = 0; x < points.length; x++) {
         offsetPoints.push([points[x][0] + offset, points[x][1]]);

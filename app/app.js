@@ -411,7 +411,7 @@ function loadVariantDensityData(ref, i) {
 	variantDensityChart.showXAxis(true);
 	variantDensityChart.height(100);
 	variantDensityChart(d3.select("#variant-density").datum(dataLI), onVariantDensityChartRendered);
-	variantDensityVF(d3.select("#variant-density-vf").datum(data), onVariantDensityVFChartRendered);
+	variantDensityVF(d3.select("#variant-density-vf").datum(dataLI), onVariantDensityVFChartRendered);
 
 	// Listen for the brush event.  This will select a subsection of the x-axis on the variant
 	// density chart, allowing the user to zoom in to a particular region to sample that specific
