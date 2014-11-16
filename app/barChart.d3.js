@@ -4,6 +4,8 @@ barChartD3 = function module() {
 
     var margin = {left: 10, right: 10, top: 10, bottom: 10};
     var barPadding = 1;
+    var widthPercent  = "95%";
+    var heightPercent = "95%";
 
 
     var dispatch = d3.dispatch("customHover");
@@ -32,8 +34,8 @@ barChartD3 = function module() {
                 .data([_data]);
             svg.enter().append("svg")
                 .classed("chart", true)
-                .attr("width", "100%")
-                .attr("height", "100%")
+                .attr("width", widthPercent)
+                .attr("height", heightPercent)
                 .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
                 .attr("preserveAspectRatio", "xMidYMid meet");
 
@@ -101,6 +103,19 @@ barChartD3 = function module() {
         value = _;
         return exports;
     };
+
+    exports.widthPercent = function(_) {
+        if (!arguments.length) return widthPercent;
+        widthPercent = _;
+        return exports;
+    };
+
+  exports.heightPercent = function(_) {
+        if (!arguments.length) return heightPercent;
+        heightPercent = _;
+        return exports;
+  };
+ 
 
 
 

@@ -2,6 +2,10 @@ barChartAltD3 = function module() {
     var width = 400,
         height = 300;
 
+    var widthPercent  = "95%";
+    var heightPercent = "95%";
+
+
     var margin = {left: 10, right: 10, top: 10, bottom: 10};
     var barPadding = 1;
 
@@ -34,7 +38,7 @@ barChartAltD3 = function module() {
             }
             var offset = 0;
             for (var i = 0; i  < _data.length; i++) {
-                _data[i].width = width * (value(_data[i]) / totalValue);
+                _data[i].width = d3.round(width * (value(_data[i]) / totalValue));
                 _data[i].offset = offset;
                 offset += _data[i].width;            
             }
@@ -45,8 +49,8 @@ barChartAltD3 = function module() {
                 .data([_data]);
             svg.enter().append("svg")
                 .classed("chart", true)
-                .attr("width", "100%")
-                .attr("height", "100%")
+                .attr("width", widthPercent)
+                .attr("height", widthPercent)
                 .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
                 .attr("preserveAspectRatio", "xMidYMid meet");
 
@@ -127,6 +131,19 @@ barChartAltD3 = function module() {
         height = _;
         return exports;
     };
+
+    exports.widthPercent = function(_) {
+        if (!arguments.length) return widthPercent;
+        widthPercent = _;
+        return exports;
+    };
+
+    exports.heightPercent = function(_) {
+        if (!arguments.length) return heightPercent;
+        heightPercent = _;
+        return exports;
+    };
+
     exports.margin = function(_) {
         if (!arguments.length) return margin;
         margin = _;
