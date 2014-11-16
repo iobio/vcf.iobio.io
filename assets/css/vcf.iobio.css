@@ -174,7 +174,7 @@ section#bottom {
 
 
 
-.panel > .title { font-size: 26px}
+.panel > .title { font-size: 22px}
 
 .panel#chromosome-picker {
     -webkit-flex: 1 0 200px;
@@ -187,7 +187,8 @@ section#bottom {
 #primary-references {
     height: 200px;
     padding: 0px;
-    margin: 0px;    
+    margin-top: 8px;  
+    margin-bottom: 5px;  
 }
 #other-references {
     display: none;
@@ -200,9 +201,14 @@ section#bottom {
     height: 270px;
     position:relative;
 
+
 }
 #variant-density-ref-vf {
     margin-top: -3px;
+}
+
+#variant-density {
+    margin-top: 20px;
 }
 
 
@@ -318,8 +324,8 @@ section#bottom {
 
 
 .panel#tstv-ratio {
-    -webkit-flex: 1 0 200px;
-            flex: 1 0 200px;
+    -webkit-flex: 1 0 188px;
+            flex: 1 0 188px;
     -webkit-order: 1;
             order: 1;
     height: 200px;
@@ -348,8 +354,8 @@ section#bottom {
 
 
 .panel#var-type {
-    -webkit-flex: 1 0 200px;
-            flex: 1 0 200px;
+    -webkit-flex: 1 0 188px;
+            flex: 1 0 188px;
     -webkit-order: 1;
             order: 1;
     height: 200px;
