@@ -66,6 +66,7 @@ vcfiobio = function module() {
   var vcfstatsAliveServer    = "ws://localhost:7070";
   var tabixServer            = "ws://localhost:7090";
   var vcfReadDeptherServer   = "ws://localhost:7062";
+  
 
   //var vcfstatsAliveServer   = "ws://23.23.213.232:7070";
   //var tabixServer            = "ws://tabix.iobio.io";
