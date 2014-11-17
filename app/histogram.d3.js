@@ -2,7 +2,7 @@ function histogramD3() {
   var margin = {top: 30, right: 20, bottom: 20, left: 50},
       width = 200,
       height = 100,
-      defaults = {outliers: true, averageLine: true, barWidthMultiplier: 1},
+      defaults = {outliers: true, averageLine: true},
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
       x = d3.scale.linear(),
@@ -144,7 +144,7 @@ function histogramD3() {
       // Update bars.
       bar.select("rect").transition()
          .duration(200)
-         .attr("width", Math.max(Math.ceil(x(x.domain()[0]+1)),1) * options.barWidthMultiplier)
+         .attr("width", Math.max( Math.ceil( x(x.domain()[0]+1) ), 1))
          .attr("height", function(d) { 
             return parseInt(d[0]) >= x.domain()[0] ? innerHeight - parseInt(y(d[1])) : 0; 
          });

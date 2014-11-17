@@ -99,7 +99,7 @@ function init() {
 	chromosomeChart = donutChooserD3()
 		                .width(220)
 		                .height(220)
-		                .options({showTooltip: false})
+		                .options({showTooltip: true})
 						.on("clickslice", function(d, i) {
 							chromosomeIndex = i;
 							regionStart = null;
@@ -177,9 +177,9 @@ function init() {
 
 	// Allele freq chart
     alleleFreqChart = histogramD3()
-                       .width(445)
-                       .height(110)
-					   .margin( {left: 45, right: 0, top: 5, bottom: 20})
+                       .width(460)
+                       .height(140)
+					   .margin( {left: 40, right: 0, top: 0, bottom: 20})
 					   .xValue( function(d) { return d[0] })
 					   .yValue( function(d) { return d[1] });
 	alleleFreqChart.formatXTick( function(d,i) {
@@ -209,7 +209,7 @@ function init() {
 	var varTypeCategories = ["SNP", "Ins", "Del", "Other"];
 	varTypeChart.width(150)
 	    .height(90)
-		.margin( {left: 40, right: 0, top: 30, bottom: 40})
+		.margin( {left: 40, right: 10, top: 30, bottom: 30})
 		.showXAxis(true)
 		.showYAxis(true)
 		.showXTicks(false)
@@ -222,23 +222,23 @@ function init() {
 		 });
 
 
-	// QC score histogram chart
-	qualDistributionChart = histogramD3();
-	qualDistributionChart.width(490)
-                         .height(100)
-					     .margin( {left: 45, right: 0, top: 5, bottom: 10})
-		.xValue( function(d) { return d[0] })
-		.yValue( function(d) { return d[1] });
-
-
-
 	// Indel length chart
 	indelLengthChart = histogramD3();
-	indelLengthChart.width(490)
-                    .height(100)
-					.margin( {left: 45, right: 0, top: 5, bottom: 10})
+	indelLengthChart.width(420)
+                    .height(110)
+					.margin( {left: 40, right: 0, top: 0, bottom: 10})
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] });
+
+
+	// QC score histogram chart
+	qualDistributionChart = histogramD3();
+	qualDistributionChart.width(420)
+                         .height(110)
+					     .margin( {left: 25, right: 0, top: 10, bottom: 10})
+		.xValue( function(d) { return d[0] })
+		.yValue( function(d) { return d[1] });
+
 
 
 }
@@ -295,14 +295,14 @@ function onReferencesLoaded(refData) {
 	d3.selectAll("section#top .samplingLoader").style("display", "none");
 
 
-	var pieChartRefData = vcfiobio.getReferences(.01, 1);
+	var pieChartRefData = vcfiobio.getReferences(.005, 1);
 	
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	chromosomeIndex = 0;
 	chromosomeChart.clickSlice(chromosomeIndex);
 	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 
-	var otherRefData = vcfiobio.getReferences(0, .01);
+	var otherRefData = vcfiobio.getReferences(0, .005);
 
 	if (otherRefData.length > 0) {
 		var dropdown = d3.select("#other-references-dropdown");
@@ -320,6 +320,8 @@ function onReferencesLoaded(refData) {
 		  .text( function(d,i) { return d.name } );
 
 		d3.select("#other-references").style("display", "block");
+	} else {
+		d3.select("#other-references").style("display", "none");
 	}
 
 		
@@ -330,66 +332,23 @@ function onReferencesLoaded(refData) {
 function onReferenceSelected(ref, i) {
 	 d3.select("#reference_selected").text("Reference " + ref.name);
 	 d3.select("#region_selected").text("0 - " + d3.format(",")(ref.value));
-
-	 d3.select("#variant-density-vf").style("display", "block");
-	 d3.select("#variant-density-ref-vf").style("display", "none");
-
 	 d3.select("#variant-density-panel").select(".hint").text("(drag bottom chart to select a region)");
 
-	 loadVariantDensityData(ref, i);
-
- 	 d3.selectAll("section#top .svg-alt").style("visibility", "hidden");
-
-	 d3.selectAll("section#middle svg").style("visibility", "hidden");
-	 d3.selectAll("section#middle .svg-alt").style("visibility", "hidden");
-	 d3.selectAll("section#middle .samplingLoader").style("display", "block");
-
-
-	 d3.selectAll("section#bottom svg").style("visibility", "hidden");
-	 d3.selectAll("section#bottom .svg-alt").style("visibility", "hidden");
-	 d3.selectAll("section#bottom .samplingLoader").style("display", "block");
+     loadVariantDensityData(ref, i);
+	 loadStats(chromosomeIndex);
 
 }
 
 function onAllReferencesSelected() {
 	 d3.select("#reference_selected").text("All References");
 	 d3.select("#region_selected").text("");
-
-	 d3.select("#variant-density-vf").style("display", "none");
-	 d3.select("#variant-density-ref-vf").style("display", "block");
-
 	 d3.select("#variant-density-panel").select(".hint").text("(click bottom chart to select a reference)");
 
-
 	 loadGenomeVariantDensityData();
-
- 	 d3.selectAll("section#top .svg-alt").style("visibility", "hidden");
-
-	 d3.selectAll("section#middle svg").style("visibility", "hidden");
-	 d3.selectAll("section#middle .svg-alt").style("visibility", "hidden");
-	 d3.selectAll("section#middle .samplingLoader").style("display", "block");
-
-
-	 d3.selectAll("section#bottom svg").style("visibility", "hidden");
-	 d3.selectAll("section#bottom .svg-alt").style("visibility", "hidden");
-	 d3.selectAll("section#bottom .samplingLoader").style("display", "block");
+	 loadStats(chromosomeIndex);
 }
 
 function onVariantDensityChartRendered() {
-	d3.selectAll("section#top .svg-alt").style("visibility", "visible");
-
-	d3.selectAll("section#middle svg").style("visibility", "visible");
-	d3.selectAll("section#middle .svg-alt").style("visibility", "visible");
-   	d3.selectAll("section#middle .samplingLoader").style("display", "none");
-
-
-	d3.selectAll("section#bottom svg").style("visibility", "visible");
-	d3.selectAll("section#bottom .svg-alt").style("visibility", "visible");
-   	d3.selectAll("section#bottom .samplingLoader").style("display", "none");
-
-
-
-   	loadStats(chromosomeIndex);
 }
 
 function onVariantDensityVFChartRendered() {
@@ -397,45 +356,51 @@ function onVariantDensityVFChartRendered() {
 }
 
 function loadVariantDensityData(ref, i) {
+
 	
+	 d3.select("#variant-density-vf").style(    "display",    "block");
+	 d3.select("#variant-density-ref-vf").style("display",    "none");
+	 d3.selectAll("section#top .svg-alt").style("visibility", "visible");
 
+	// Get the point data (the estimated density)
 	var data = vcfiobio.getEstimatedDensity(ref.name, 
-		false, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
-
-	var dataLI = vcfiobio.getEstimatedDensity(ref.name, 
 		true, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 	
-
 	// Load the variant density chart with the data
 	variantDensityChart.showXAxis(true);
 	variantDensityChart.height(100);
-	variantDensityChart(d3.select("#variant-density").datum(dataLI), onVariantDensityChartRendered);
-	variantDensityVF(d3.select("#variant-density-vf").datum(dataLI), onVariantDensityVFChartRendered);
+	variantDensityChart(d3.select("#variant-density").datum(data), onVariantDensityChartRendered);
+	variantDensityVF(d3.select("#variant-density-vf").datum(data), onVariantDensityVFChartRendered);
 
 	// Listen for the brush event.  This will select a subsection of the x-axis on the variant
 	// density chart, allowing the user to zoom in to a particular region to sample that specific
 	// region rather than the entire chromosome.
 	variantDensityVF.on("d3brush", function(brush) {
 		if (!brush.empty()) {
+
+			// These are the region coordinates
 			regionStart = d3.round(brush.extent()[0]);
 			regionEnd   = d3.round(brush.extent()[1]);
 
 			d3.select("#region_selected")
 			   .text(d3.format(",")(regionStart) + ' - ' + d3.format(",")(regionEnd));
 
+			// Get the estimated density for the reference (already in memory)
 			var data = vcfiobio.getEstimatedDensity(ref.name, 
 				true, densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
 
+			// Now filter the estimated density data to only include the points that fall within the selected
+			// region
 			var filteredData = data.filter(function(d) { 
 				return (d[0] >= regionStart && d[0] <= regionEnd) 
 			});
 
-
-
+			// Show the variant density for the selected region
 			variantDensityChart(d3.select("#variant-density").datum(filteredData), onVariantDensityChartRendered);
 
-
+			// Load the stats based on the selected region
+			loadStats(chromosomeIndex);
 		}
 	});	
 
@@ -448,6 +413,11 @@ function loadVariantDensityData(ref, i) {
 }
 
 function loadGenomeVariantDensityData(ref, i) {
+
+	d3.select("#variant-density-vf").style(    "display",     "none");
+	d3.select("#variant-density-ref-vf").style("display",     "block");
+	d3.selectAll("section#top .svg-alt").style("visibility", "visible");
+
 	
 	var data = vcfiobio.getGenomeEstimatedDensity( densityOptions.removeSpikes, 
 		densityOptions.maxPoints, densityOptions.epsilonRDP);
@@ -459,17 +429,20 @@ function loadGenomeVariantDensityData(ref, i) {
 	variantDensityChart(d3.select("#variant-density").datum(data), onVariantDensityChartRendered);
 	variantDensityRefVF(d3.select("#variant-density-ref-vf").datum(vcfiobio.getReferences(.01, 1)));
 
-	
-
-
 }
 
 
 function loadStats(i) {
-	
-	d3.select("#total-reads")
-			.select("#value")
-			.text(0);
+
+	d3.select("#total-reads").select("#value").text(0);
+
+	d3.selectAll("section#middle svg").style(            "visibility", "hidden");
+	d3.selectAll("section#middle .svg-alt").style(       "visibility", "hidden");
+	d3.selectAll("section#middle .samplingLoader").style("display",    "block");
+	d3.selectAll("section#bottom svg").style(            "visibility", "hidden");
+	d3.selectAll("section#bottom .svg-alt").style(       "visibility", "hidden");
+	d3.selectAll("section#bottom .samplingLoader").style( "display",   "block");
+
 
 	var options = JSON.parse(JSON.stringify(statsOptions));
 	var refs = [];
@@ -487,9 +460,6 @@ function loadStats(i) {
 		options.end   = regionEnd;
 	}
 
-	//vcfiobio.getStatsDeprecated(refs, options, function(data) {
-	//	renderStats(data);
-	//});
 	vcfiobio.getStats(refs, options, function(data) {
 		renderStats(data);
 	});
@@ -499,6 +469,17 @@ function loadStats(i) {
 
 
 function renderStats(stats) {
+
+
+	d3.selectAll("section#middle svg").style("visibility", "visible");
+	d3.selectAll("section#middle .svg-alt").style("visibility", "visible");
+   	d3.selectAll("section#middle .samplingLoader").style("display", "none");
+
+
+	d3.selectAll("section#bottom svg").style("visibility", "visible");
+	d3.selectAll("section#bottom .svg-alt").style("visibility", "visible");
+   	d3.selectAll("section#bottom .samplingLoader").style("display", "none");
+
 
 	// # of Variants sampled	
 	var readParts = shortenNumber(stats.TotalRecords);
@@ -542,7 +523,7 @@ function renderStats(stats) {
 	var afData = vcfiobio.jsonToArray2D(afObj);
 	var afSelection = d3.select("#allele-freq-histogram")
 					    .datum(afData);
-	var afOptions = {outliers: true, averageLine: false, barWidthMultiplier: 2};					    
+	var afOptions = {outliers: true, averageLine: false};					    
 	alleleFreqChart(afSelection, afOptions);	
 
 	// Mutation Spectrum
@@ -573,7 +554,7 @@ function renderStats(stats) {
 
 	var qualSelection = d3.select("#qual-distribution-histogram")
 					    .datum(qualReducedPoints);
-	var qualOptions = {outliers: true, averageLine: true, barWidthMultiplier: factor};
+	var qualOptions = {outliers: true, averageLine: true};
 	qualDistributionChart(qualSelection, qualOptions);	
 
 

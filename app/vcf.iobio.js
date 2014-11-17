@@ -63,14 +63,18 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
-  //var vcfstatsAliveServer    = "ws://localhost:7070";
-  //var tabixServer            = "ws://localhost:7090";
-  //var vcfReadDeptherServer   = "ws://localhost:7062";
+  var vcfstatsAliveServer    = "ws://localhost:7070";
+  var tabixServer            = "ws://localhost:7090";
+  var vcfReadDeptherServer   = "ws://localhost:7062";
 
-  var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
-  var tabixServer            = "ws://tabix.iobio.io";
-  var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
+  //var vcfstatsAliveServer   = "ws://23.23.213.232:7070";
+  //var tabixServer            = "ws://tabix.iobio.io";
+  //var vcfReadDeptherServer   = "ws://23.23.213.232:7062";
 
+  //var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
+  //var tabixServer            = "ws://tabix.iobio.io";
+  //var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
+  
 
   var vcfURL;
   var vcfReader;
@@ -197,8 +201,8 @@ vcfiobio = function module() {
          for (var i=0; i < data.length; i++)  {
             if ( data[i][0] == '#' ) {
                
-               var refIndex = data[i].substr(1);
-               var tokens = data[i].split("\t");
+               var tokens = data[i].substr(1).split("\t");
+               refIndex = tokens[0];
                refName = tokens[1];
                var refLength = tokens[2];
 
@@ -216,6 +220,10 @@ vcfiobio = function module() {
                }
             }                  
          }
+      });
+
+      stream.on("error", function(error) {
+
       });
 
       stream.on('end', function() {
@@ -421,7 +429,9 @@ vcfiobio = function module() {
     });
 
     
+    client.on("error", function(error) {
 
+    });
     
      
   };  

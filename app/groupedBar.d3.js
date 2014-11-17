@@ -18,9 +18,6 @@ groupedBarD3 = function module() {
   var showXTicks = true;
   var showBarLabel = true;
   var categories = null;
-
-
-
   
 
   /*
@@ -206,8 +203,22 @@ groupedBarD3 = function module() {
           .attr("x", function(d) { return x1(name(d)); })
           .attr("y", function(d){  return y(value(d)); })
           .attr("height", function(d) { return height - y(value(d)); })
-          .style("fill", fill);
-
+          .style("fill", fill)
+          .on("mouseover", function(d) {  
+            div.transition()        
+               .duration(200)      
+               .style("opacity", .9);      
+            div.html(d3.round(value(d)))                                  
+               .style("left", (d3.event.pageX) + "px") 
+               .style("text-align", 'left')    
+               .style("top", (d3.event.pageY - 24) + "px");    
+         })                  
+         .on("mouseout", function(d) {       
+            div.transition()        
+               .duration(500)      
+               .style("opacity", 0);   
+         });
+         
        bars.exit().remove();
 
        if (showBarLabel) {

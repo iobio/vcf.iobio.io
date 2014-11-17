@@ -83,6 +83,28 @@ lineD3 = function module() {
         .attr("class", "group")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+      // Tooltip
+      var formatter = d3.format(',');
+      svgGroup.on("mouseover", function() {  
+             div.transition()        
+                 .duration(200)      
+                 .style("opacity", .9);      
+             div .html(formatter(parseInt(x.invert(d3.event.pageX - $(this).position().left))))
+                 .style("left", (d3.event.pageX) + "px") 
+                 .style("text-align", 'left')    
+                 .style("top", (d3.event.pageY - 24) + "px");    
+             })                  
+         .on("mousemove", function() {       
+            div.html(formatter(parseInt(x.invert(d3.event.pageX - $(this).position().left))))
+               .style("left", (d3.event.pageX) + "px") 
+               .style("top", (d3.event.pageY - 24) + "px");
+          })               
+         .on("mouseout", function() {       
+             div.transition()        
+                 .duration(500)      
+                 .style("opacity", 0);   
+       });   
+
         
       var x = d3.scale.linear()
           .range([0, width]);
