@@ -63,13 +63,13 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
-  var vcfstatsAliveServer    = "ws://localhost:7070";
-  var tabixServer            = "ws://localhost:7090";
-  var vcfReadDeptherServer   = "ws://localhost:7062";
+  //var vcfstatsAliveServer    = "ws://localhost:7070";
+  //var tabixServer            = "ws://localhost:7090";
+  //var vcfReadDeptherServer   = "ws://localhost:7062";
 
-  //var vcfstatsAliveServer   = "ws://23.23.213.232:7070";
-  //var tabixServer            = "ws://tabix.iobio.io";
-  //var vcfReadDeptherServer   = "ws://23.23.213.232:7062";
+  var vcfstatsAliveServer   = "ws://23.23.213.232:7070";
+  var tabixServer            = "ws://tabix.iobio.io";
+  var vcfReadDeptherServer   = "ws://23.23.213.232:7062";
 
   //var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
   //var tabixServer            = "ws://tabix.iobio.io";
