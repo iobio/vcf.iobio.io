@@ -42,8 +42,8 @@
                 <div class="file-button" style="text-align:center" onClick="displayVcfUrlBox()">Choose VCF URL</div>
                 <div style="clear:both"></div>
             </div>
-            <div id='vcf-url' style="margin-top:24px;width:700px;margin-left:auto;margin-right:auto;visibility:hidden" class="arrow_box">
-                <input id="url-input" value="http://s3-us-west-2.amazonaws.com/files.vcfstats.test/G15512.HCC1954.vcf.gz" ></input><button id="vcf-url-go-button" onClick="onUrlEntered()">Go</button>
+            <div id='vcf-url' style="margin-top:24px;width:800px;margin-left:auto;margin-right:auto;visibility:hidden" class="arrow_box">
+                <input id="url-input" value="ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.2/ExAC.r0.2.sites.vep.vcf.gz" ></input><button id="vcf-url-go-button" onClick="onUrlEntered()">Go</button>
             </div>
             <div id="footer">            
                 <div id="license"><a href="license.html">License</a></div>
@@ -77,7 +77,7 @@
                         </div>
                         <div style="padding-left: 4px" >
                             <div id="number"></div>
-                            <div id="label">variants sampled</div>
+                            <div id="label">regions sampled</div>
                         </div>
                         <div style="padding-left: 10px">
                             <img style="width: 20px; height: 20px;"  title="Sample More" src="assets/images/more_sampling.png"></img>
@@ -126,7 +126,7 @@
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div id="ratio-panel" class="svg-alt">
                             </div>  
-                            <div id="ratio-value" ></div>
+                            <div id="ratio-value" class="svg-alt" ></div>
                         </div>
 
                         <div id="allele-freq" class="panel">
@@ -148,15 +148,16 @@
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                         </div>
 
-                        <div id="qual-distribution" class="panel">
-                             <div class="title">Quality Scores</div>
-                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                            <svg id="qual-distribution-histogram"/>
-                        </div>
                         <div id="indel-length" class="panel">
                              <div class="title">Insertion &amp; Deletion Lengths</div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <svg id="indel-length-histogram"/>
+                        </div>
+
+                        <div id="qual-distribution" class="panel">
+                             <div class="title">Quality Scores</div>
+                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                            <svg id="qual-distribution-histogram"/>
                         </div>
                 </section>
 

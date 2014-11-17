@@ -129,7 +129,8 @@ section#top {
 }
 
 .avg text {
-    fill: rgb(180,180,180);
+    fill: rgb(145,145,145);
+    font-size: 16px;
 }
 
 .arc .fill {fill: #2d8fc1}             
@@ -169,12 +170,15 @@ section#top {
 .arrow_box input {
     border: none;
     outline: none;
-    width:610px;
+    width:  90%;
     margin: 8px;
     color: #2d8fc1;
-    font:300 30px quicksand;
+    font: 400 18px quicksand;
 }
-.arrow_box button { font:300 28px quicksand;}
+.arrow_box button { 
+  font:300 28px quicksand;
+  margin-top: 4px;
+}
 
 .brush .extent {
   stroke: #000;
@@ -232,7 +236,6 @@ div.tooltip {
   border: 0px;      
   border-radius: 4px;           
   pointer-events: none; 
-  visibility: hidden;        
 }
 
 svg g text {
