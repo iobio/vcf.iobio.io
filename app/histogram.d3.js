@@ -121,9 +121,9 @@ function histogramD3() {
                .duration(200)      
                .style("opacity", .9);      
             div.html(d[0] + ", " + d[1])                                 
-         .style("left", (d3.event.pageX) + "px") 
-         .style("text-align", 'left')    
-         .style("top", (d3.event.pageY - 24) + "px");    
+               .style("left", (d3.event.pageX) + "px") 
+               .style("text-align", 'left')    
+               .style("top", (d3.event.pageY - 24) + "px");    
          })                  
          .on("mouseout", function(d) {       
             div.transition()        
