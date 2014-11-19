@@ -1,12 +1,10 @@
 .chart rect {
-    fill: steelblue;
+    fill: rgb(49, 102, 147);
 }
 
 .bar rect {
     opacity: .75;
-    stroke-width: 1;
-    stroke: rgb(0, 0, 0);  
-    fill: steelblue;
+    fill: rgb(49, 102, 147);
 }
 
 #variant-density-vf #area-chart-path {
