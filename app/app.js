@@ -299,15 +299,17 @@ function onReferencesLoaded(refData) {
     d3.selectAll("section#top .svg-alt").style("display", "block");
 	d3.selectAll("section#top .samplingLoader").style("display", "none");
 
-
-	var pieChartRefData = vcfiobio.getReferences(.005, 1);
+	var otherRefData = null;
+	var pieChartRefData = null;
+	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	chromosomeIndex = 0;
 	chromosomeChart.clickSlice(chromosomeIndex);
 	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
+	otherRefData = vcfiobio.getReferences(0, .005);
 
-	var otherRefData = vcfiobio.getReferences(0, .005);
+
 
 	if (otherRefData.length > 0) {
 		var dropdown = d3.select("#other-references-dropdown");

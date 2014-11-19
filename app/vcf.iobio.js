@@ -55,7 +55,7 @@
 //
 vcfiobio = function module() {
 
-  var debug = true;
+  var debug = false;
 
   var exports = {};
 
@@ -73,6 +73,7 @@ vcfiobio = function module() {
   var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
   var tabixServer            = "ws://tabix.iobio.io";
   var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
+  var catInputServer         = "ws://localhost:7063";
 
   
 
@@ -335,7 +336,7 @@ vcfiobio = function module() {
     this._streamVcf(vcfstatsAliveServer, callback);
 
     if (debug) {
-      this._streamVcf(catInputServer)
+      this._streamVcf(catInputServer);
     }
      
   };  
