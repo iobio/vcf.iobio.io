@@ -589,6 +589,36 @@ readBinaryVCF.prototype.getRecords =
         }
     };
 
+readBinaryVCF.prototype.getHeader = 
+    function (cbfn) {
+        var vcfRthis = this;
+        var f = vcfRthis.theFile;
+        var offset = 0;
+
+        var hdstgs = [];
+        var cb = function (nxtStg) {
+            var stgs = nxtStg.split("\n");
+            gdstgs = stgs.filter(
+                function (s) {return (s[0] == "#");});
+            hdstgs = hdstgs.concat(gdstgs);
+            if (stgs[stgs.length-1][0] == "#") {
+                nextBlockOffset(f, offset, function(o) {
+                    offset = o;
+                    inflateBlock2stg(f, offset, cb);
+                });
+            } else {
+                vcfRthis.head = hdstgs.join("\n");
+                cbfn.call(vcfRthis, vcfRthis.head);
+            };
+        };
+
+        if (vcfRthis.head) {
+            cbfn.call(vcfRthis, vcfRthis.head);
+        } else {
+            inflateBlock2stg(f, offset, cb);
+        };
+    };
+
 readBinaryVCF.prototype.getHeaderRecords =
     function (cbfn) {
         var vcfFile = this.theFile;
