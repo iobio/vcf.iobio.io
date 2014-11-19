@@ -179,9 +179,9 @@ function init() {
 
 	// Allele freq chart
     alleleFreqChart = histogramD3()
-                       .width(460)
+                       .width(455)
                        .height(140)
-					   .margin( {left: 40, right: 0, top: 0, bottom: 20})
+					   .margin( {left: 45, right: 0, top: 0, bottom: 20})
 					   .xValue( function(d, i) { return d[0] })
 					   .yValue( function(d, i) { return d[1] });
 	alleleFreqChart.formatXTick( function(d,i) {
@@ -238,9 +238,9 @@ function init() {
 
 	// QC score histogram chart
 	qualDistributionChart = histogramD3();
-	qualDistributionChart.width(420)
+	qualDistributionChart.width(395)
                          .height(110)
-					     .margin( {left: 25, right: 0, top: 10, bottom: 10})
+					     .margin( {left: 50, right: 0, top: 10, bottom: 10})
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] });
 
