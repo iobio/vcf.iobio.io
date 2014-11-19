@@ -16,8 +16,6 @@ var qualDistributionChart;
 var indelLengthChart; 
 
 
-var serverSimulator = null;
-
 var chromosomeIndex = 0;
 var regionStart = null;
 var regionEnd = null;
@@ -34,7 +32,11 @@ var densityRegionOptions = {
     epsilonRDP: null
 }
 
-var statsOptions = {
+
+var	samplingMultiplierLimit = 4;
+
+var statsOptions = {	
+	samplingMultiplier: 1,
 	binSize : 40000, 
     binNumber : 40,
     start : 1
@@ -450,6 +452,12 @@ function loadStats(i) {
 	var options = JSON.parse(JSON.stringify(statsOptions));
 	var refs = [];
 	refs.length = 0;
+	// If we are getting stats by sampling all references,
+	// we will divide the bins across the references.
+	// Otherwise, the user has selected a particular reference
+	// (and optionally selected a region of the reference)
+	// and we will sample across the reference or a region
+	// of the reference.
 	if (i == -1) {
 		var numReferences = vcfiobio.getReferences(.01, 1).length;
 		for (var x = 0; x < numReferences; x++) {
@@ -462,6 +470,11 @@ function loadStats(i) {
 		options.start = regionStart;
 		options.end   = regionEnd;
 	}
+
+	// Incread the bin size by the sampling multiplier, which
+	// captures the number of times the "sample more" button
+	// has been pressed by the user
+	options.binNumber = options.binNumber * statsOptions.samplingMultiplier;
 
 	vcfiobio.getStats(refs, options, function(data) {
 		renderStats(data);
@@ -572,6 +585,12 @@ function renderStats(stats) {
 	var indelOptions = {outliers: true, averageLine: false};
 	indelLengthChart(indelSelection, indelOptions);	
 
+	// Reset the sampling multiplier back to one
+	// so that next time we get stats, we start
+	// with the default sampling size that can
+	// be increased as needed
+	statsOptions.samplingMultiplier = 1;
+
 	
 }
 
@@ -611,6 +630,14 @@ function shortenNumber(num) {
         return [Math.round(num/1000000), "million"];
 }
 
+ function increaseSampling() {
+    if (statsOptions.samplingMultiplier >= samplingMultiplierLimit) { 
+    	alert("You have reached the sampling limit"); 
+    	return;
+    }
+    statsOptions.samplingMultiplier += 1;
+    loadStats(chromosomeIndex);
+}
 
 
 
