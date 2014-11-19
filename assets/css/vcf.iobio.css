@@ -219,8 +219,8 @@ section#bottom {
 
 
 #banner-title {
-    -webkit-flex: 0 0 200px;
-            flex: 0 0 200px;
+    -webkit-flex: 0 0 300px;
+            flex: 0 0 300px;
     -webkit-order: 1;
             order: 1;
 }    
@@ -244,8 +244,8 @@ section#bottom {
 }
 
 #vcf_file {
-    webkit-flex: 0 0  auto;
-            flex: 0 0 auto;
+    webkit-flex: 0 0  300px;
+            flex: 0 0 300px;
     -webkit-order: 1;
             order: 1;
     font-size: 13px;
@@ -260,7 +260,7 @@ section#bottom {
     display: -webkit-flex;
     display:         flex;
     display: -ms-flexbox;
-    -webkit-flex-flow: colomn;
+    -webkit-flex-flow: column;
             flex-flow: column;
     -webkit-justify-content: center;        
             justify-content: center;
