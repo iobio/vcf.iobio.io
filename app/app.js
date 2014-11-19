@@ -99,7 +99,7 @@ function init() {
 	chromosomeChart = donutChooserD3()
 		                .width(220)
 		                .height(220)
-		                .options({showTooltip: true})
+		                .options({showTooltip: false})
 						.on("clickslice", function(d, i) {
 							chromosomeIndex = i;
 							regionStart = null;
@@ -180,11 +180,14 @@ function init() {
                        .width(460)
                        .height(140)
 					   .margin( {left: 40, right: 0, top: 0, bottom: 20})
-					   .xValue( function(d) { return d[0] })
-					   .yValue( function(d) { return d[1] });
+					   .xValue( function(d, i) { return d[0] })
+					   .yValue( function(d, i) { return d[1] });
 	alleleFreqChart.formatXTick( function(d,i) {
 		return (d * 2) + '%';
 	});
+
+    
+					   
 
 	// Mutation spectrum grouped barchart
 	mutSpectrumChart = groupedBarD3();
@@ -551,6 +554,9 @@ function renderStats(stats) {
 	var qualPoints = vcfiobio.jsonToArray2D(stats.qual_dist.regularBins);
 	var factor = 5;
 	qualReducedPoints = vcfiobio.reducePoints(qualPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+	//for (var i = 0; i < qualReducedPoints.length; i++) {
+	//	qualReducedPoints[i][0] = i;
+	//}
 
 	var qualSelection = d3.select("#qual-distribution-histogram")
 					    .datum(qualReducedPoints);
