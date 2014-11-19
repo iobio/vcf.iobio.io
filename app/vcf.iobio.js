@@ -55,6 +55,8 @@
 //
 vcfiobio = function module() {
 
+  var debug = true;
+
   var exports = {};
 
   var dispatch = d3.dispatch( 'dataReady', 'dataLoading');
@@ -66,14 +68,12 @@ vcfiobio = function module() {
 //  var vcfstatsAliveServer    = "ws://localhost:7070";
 //  var tabixServer            = "ws://localhost:7090";
 //  var vcfReadDeptherServer   = "ws://localhost:7062";
-
-  // var vcfstatsAliveServer   = "ws://23.23.213.232:7070";
-  // var tabixServer            = "ws://tabix.iobio.io";
-  // var vcfReadDeptherServer   = "ws://23.23.213.232:7062";
+//  var catInputServer = "ws://localhost:7063";
 
   var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
   var tabixServer            = "ws://tabix.iobio.io";
   var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
+
   
 
   var vcfURL;
@@ -330,11 +330,20 @@ vcfiobio = function module() {
   // We we are dealing with a local VCF, we will create a mini-vcf of all of the sampled regions.
   // This mini-vcf will be streamed to vcfstatsAliveServer.  
   exports._getLocalStats = function(refs, options, callback) {      
-    var me = this;
-    me._getRegions(refs, options);
+    this._getRegions(refs, options);
+    
+    this._streamVcf(vcfstatsAliveServer, callback);
 
-    var client = BinaryClient(vcfstatsAliveServer);
-    var url = encodeURI( vcfstatsAliveServer + "?protocol=websocket&cmd=" + encodeURIComponent("http://client"));
+    if (debug) {
+      this._streamVcf(catInputServer)
+    }
+     
+  };  
+
+  exports._streamVcf = function(server, callback) {
+
+    var client = BinaryClient(server);
+    var url = encodeURI( server + "?protocol=websocket&cmd=" + encodeURIComponent("http://client"));
 
     var buffer = "";
     client.on('open', function(){
@@ -356,7 +365,9 @@ vcfiobio = function module() {
          }
          if(success) {
            buffer = "";
-           callback(obj); 
+           if (callback) {
+             callback(obj); 
+           }
          }               
       });
       
@@ -406,13 +417,9 @@ vcfiobio = function module() {
         }
       }
 
-      // Build up a local VCF file this is comprised of the regions we are sampling.
-      // Parse out the header records from the vcf.  Stream the header
-      // to the server.
-      vcfReader.getHeaderRecords( function(headerRecords) {
-        for (h = 0; h < headerRecords.length; h++) {
-          stream.write(headerRecords[h] + "\n");
-        }
+      vcfReader.getHeader( function(header) {
+        stream.write(header + "\n");
+      });
 
       // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
       // so that we parse vcf records one region at a time, streaming the vcf records
@@ -426,15 +433,13 @@ vcfiobio = function module() {
       });
 
 
-    });
 
     
     client.on("error", function(error) {
 
     });
-    
-     
-  };  
+
+  }
 
   exports._getRemoteStats = function(refs, options, callback) {      
     var me = this;
