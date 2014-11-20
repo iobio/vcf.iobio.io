@@ -254,9 +254,11 @@ function init() {
 
 	// Indel length chart
 	indelLengthChart = histogramD3();
-	indelLengthChart.width(455)
-                    .height(140)
-					.margin( {left: 40, right: 0, top: 0, bottom: 20})
+	indelLengthChart.width(405)
+                    .height(135)
+                    .widthPercent("100%")
+                    .heightPercent("100%")
+					.margin( {left: 40, right: 10, top: 0, bottom: 35})
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] })
 		.xAxisLabel( function() { return 'Deletions < 0, Insertions > 0'})
