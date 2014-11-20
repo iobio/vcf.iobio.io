@@ -225,6 +225,19 @@ section#top {
     height:9px;
 }
 
+.samplingLoader.big {
+    font-size:24px;
+    color:#2687BE;
+    position:relative;
+    margin-top: 70px;
+    margin-left:-6px;
+    display:none;
+}
+.samplingLoader.big img {
+    height:16px;
+    margin-left: 10px;
+}
+
 div.tooltip {   
   position: absolute;           
   text-align: center;           
