@@ -65,7 +65,7 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
-//  var vcfstatsAliveServer    = "ws://localhost:7070";
+//var vcfstatsAliveServer    = "ws://localhost:7070";
 //  var tabixServer            = "ws://localhost:7090";
 //  var vcfReadDeptherServer   = "ws://localhost:7062";
 //  var catInputServer = "ws://localhost:7063";
@@ -418,9 +418,12 @@ vcfiobio = function module() {
         }
       }
 
-      vcfReader.getHeader( function(header) {
-        stream.write(header + "\n");
+      vcfReader.getHeaderRecords( function(headerRecords) {
+        for (h = 0; h < headerRecords.length; h++) {
+          stream.write(headerRecords[h] + "\n");
+        }
       });
+
 
       // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
       // so that we parse vcf records one region at a time, streaming the vcf records
