@@ -304,9 +304,13 @@ function onReferencesLoaded(refData) {
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
+	
+	//chromosomeChart.clickAllSlices(pieChartRefData);
+	
 	chromosomeIndex = 0;
 	chromosomeChart.clickSlice(chromosomeIndex);
 	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
+	
 	otherRefData = vcfiobio.getReferences(0, .005);
 
 

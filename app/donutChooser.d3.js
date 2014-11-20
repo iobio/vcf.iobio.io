@@ -83,11 +83,7 @@ donutChooserD3 = function module() {
       .attr("class", "inside")
       .text(function(d) { return 'All'; })
       .on("click", function(d) { 
-        clickedSlices.length = 0;
-        for (var i = 0; i < data.length; i++) {
-          var theSlice = arcs.selectAll("d.arc")[i].parentNode;
-          _clickSlice(theSlice, theSlice.__data__,  i, false);
-        }
+        _clickAllSlices(data);
         dispatch.clickall();    
       } );
       
@@ -282,6 +278,14 @@ donutChooserD3 = function module() {
     return [ Math.cos(a) * r, Math.sin(a) * r ];
   };
 
+  function _clickAllSlices(data) {
+    clickedSlices.length = 0;
+    for (var i = 0; i < data.length; i++) {
+        var theSlice = arcs.selectAll("d.arc")[i].parentNode;
+        _clickSlice(theSlice, theSlice.__data__,  i, false);
+    }    
+  }
+
 
 
   exports.clickSlice = function(i) {   
@@ -290,6 +294,13 @@ donutChooserD3 = function module() {
     _selectSlice(theSlice.__data__,  i, theSlice);
     clickedSlice = theSlice;
     return exports;
+  }
+
+  exports.clickAllSlices = function(data) {
+    _clickAllSlices(data);
+    dispatch.clickall();    
+    return exports;
+
   }
 
   exports.tooltipSelector = function(_) {
