@@ -244,7 +244,12 @@ function init() {
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] });
 
-
+	// check if url to vcf file is supplied in url.  If it is, load this
+	// and proceed directly to the display page
+    if (window.location.search != "") {
+        var vcfUrl = window.location.search.split(/\?[vV][cC][fF]=/)[1];
+         _loadVcfFromUrl(vcfUrl);
+    }
 
 }
 
@@ -256,6 +261,10 @@ function displayVcfUrlBox() {
 function onUrlEntered() {
     var url = $("#url-input").val();
     window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + url);
+    _loadVcfFromUrl(url);
+}
+
+function _loadVcfFromUrl(url) {
 
     vcfiobio.openVcfUrl( url );
 
@@ -268,10 +277,7 @@ function onUrlEntered() {
 	d3.select("#showData")
 	  .style("visibility", "visible");
 
-	
-
 	vcfiobio.loadRemoteIndex(url, onReferencesLoaded);
-
 
 }
 
