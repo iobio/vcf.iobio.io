@@ -29,6 +29,13 @@ g.arcs {
   font-size: 10px;
 }
 
+text.x.axis.label {
+    font-size: 12px;
+}
+text.y.axis.label {
+    font-size: 12px;
+}
+
 
 #variant-density .tick text {
   font-size: 12px;

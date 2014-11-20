@@ -13,9 +13,13 @@ groupedBarD3 = function module() {
   var colorScale = d3.scale.category20();
 
   var showXAxis = true;
-  var showYAxis = true;
-  var yAxisLabel = null;
   var showXTicks = true;
+  var xAxisLabel = null;
+
+  var showYAxis = true;
+  var yAxisTickLabel = null;
+  var yAxisLabel = null;
+
   var showBarLabel = true;
   var categories = null;
   
@@ -165,6 +169,17 @@ groupedBarD3 = function module() {
           .attr("class", "x axis")
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis);
+
+        // Add the text label for the x axis
+        if (xAxisLabel) {
+          svgGroup.selectAll("g.x axis label").remove();
+          svgGroup.append("text")
+            .attr("class", "x axis label")
+            .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+            .style("text-anchor", "middle")
+            .text(xAxisLabel);
+        }
+
       }
 
       if (showYAxis) {
@@ -173,7 +188,7 @@ groupedBarD3 = function module() {
           .append("g")
           .attr("class", "y axis")
           .call(yAxis);
-        if (yAxisLabel) {
+        if (yAxisTickLabel) {
           svgGroup.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
@@ -182,7 +197,21 @@ groupedBarD3 = function module() {
             .attr("font-size", "10px")
             .text(yAxisLabel);
 
-        }      
+        }  
+ 
+         // Add the text label for the Y axis
+         if (yAxisLabel) {
+          svgGroup.selectAll("g.y axis label").remove();
+          svgGroup.append("text")
+              .attr("class", "y axis label")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 0 - margin.left)
+              .attr("x",0 - (height / 2))
+              .attr("dy", "1em")
+              .style("text-anchor", "middle")
+              .text(yAxisLabel);
+
+       }            
       }
 
       svgGroup = svg.selectAll("g.group")
@@ -363,9 +392,9 @@ groupedBarD3 = function module() {
     return exports;
   }
 
-  exports.yAxisLabel = function(_) {
-    if (!arguments.length) return yAxisLabel;
-    yAxisLabel = _;
+  exports.yAxisTickLabel = function(_) {
+    if (!arguments.length) return yAxisTickLabel;
+    yAxisTickLabel = _;
     return exports;
   }
 
@@ -374,7 +403,19 @@ groupedBarD3 = function module() {
     categoryPadding = _;
     return exports;
   }
+ 
+  exports.xAxisLabel = function(_) {
+    if (!arguments.length) return xAxisLabel;
+    xAxisLabel = _;
+    return exports;
+  }
   
+  exports.yAxisLabel = function(_) {
+    if (!arguments.length) return yAxisLabel;
+    yAxisLabel = _;
+    return exports;
+  }
+    
 
 
 

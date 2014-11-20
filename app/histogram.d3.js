@@ -10,6 +10,12 @@ function histogramD3() {
 
 
   var formatXTick = null;
+
+  var xAxisLabel = null;
+  var yAxisLabel = null;
+
+  var widthPercent = "95%";
+  var heightPercent = "95%";
       
   function chart(selection, options) {
     // merge options and defaults
@@ -21,8 +27,8 @@ function histogramD3() {
       // set svg element
       var svg = d3.select(this);
 
-      svg.attr("width", "95%")
-        .attr("height", "95%") 
+      svg.attr("width", widthPercent)
+        .attr("height", heightPercent) 
         .attr('viewBox', "0 0 " + 
                          (parseInt(width) +  parseInt(margin.left) + parseInt(margin.right)) + " " + 
                          (parseInt(height) + parseInt(margin.top) +  parseInt(margin.bottom)))
@@ -78,8 +84,31 @@ function histogramD3() {
       gEnter.append("g").attr("class", "x brush");
 
       
-
+      // Add the text label for the x axis
+      //gEnter.selectAll("g.xaxis label")
+      if (xAxisLabel) {
+        gEnter.selectAll("g.x axis label").remove();
+        gEnter.append("text")
+          .attr("class", "x axis label")
+          .attr("transform", "translate(" + (width / 2) + " ," + (y.range()[0]  + margin.bottom) + ")")
+          .style("text-anchor", "middle")
+          .text(xAxisLabel);
+      }
       
+       // Add the text label for the Y axis
+       if (yAxisLabel) {
+        gEnter.selectAll("g.y axis label").remove();
+        gEnter.append("text")
+            .attr("class", "y axis label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x",0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text(yAxisLabel);
+
+       }
+
 
       // Update the inner dimensions.
       g.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -271,10 +300,34 @@ function histogramD3() {
     return chart;
   }
   
+  chart.xAxisLabel = function(_) {
+    if (!arguments.length) return xAxisLabel;
+    xAxisLabel = _;
+    return chart;
+  }
+  
+  chart.yAxisLabel = function(_) {
+    if (!arguments.length) return yAxisLabel;
+    yAxisLabel = _;
+    return chart;
+  }
+  
   chart.brush = function(_) {
     if (!arguments.length) return brush;
     brush = _;
     return chart; 
+  };
+
+  chart.widthPercent = function(_) {
+    if (!arguments.length) return widthPercent;
+    widthPercent = _;
+    return chart;
+  };
+
+  chart.heightPercent = function(_) {
+    if (!arguments.length) return heightPercent;
+    heightPercent = _;
+    return chart;
   };
 
 

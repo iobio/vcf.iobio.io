@@ -22,6 +22,16 @@ var densityPanelDimensions = {
 	padding: 40,
 	verticalOffset: 120
 };
+var qualDistDimensions = {
+	width: 0,
+	height: 0,
+	marginTop: 15,
+	marginBottom: 35,
+	marginLeft: 30,
+	marginRight: 0,
+	widthOffset: 10,
+	heightOffset: 30
+};
 
 
 var chromosomeIndex = 0;
@@ -104,6 +114,11 @@ function init() {
 	// Setup event handlers for File input
 	document.getElementById('file').addEventListener('change', onFilesSelected, false);
 
+
+	// Get the container dimensions to determine the chart dimensions
+	getChartDimensions();
+
+
 	// Create the chromosome picker chart. Listen for the click event on one of the arcs.
 	// This event is dispatched when the user clicks on a particular chromosome.
 	chromosomeChart = donutChooserD3()
@@ -125,7 +140,6 @@ function init() {
 
 
 	// Create the variant density chart
-	getDensityPanelDimensions();
 	variantDensityChart = lineD3()
                             .width(densityPanelDimensions.width)
                             .height( densityPanelDimensions.height - densityPanelDimensions.verticalOffset )
@@ -192,7 +206,8 @@ function init() {
                        .height(140)
 					   .margin( {left: 45, right: 0, top: 0, bottom: 20})
 					   .xValue( function(d, i) { return d[0] })
-					   .yValue( function(d, i) { return d[1] });
+					   .yValue( function(d, i) { return Math.log(d[1]) })
+					   .yAxisLabel( "log(frequency)" )
 	alleleFreqChart.formatXTick( function(d,i) {
 		return (d * 2) + '%';
 	});
@@ -204,7 +219,7 @@ function init() {
 	mutSpectrumChart = groupedBarD3();
 	mutSpectrumChart.width(420)
 	    .height(80)
-		.margin( {left: 40, right: 0, top: 0, bottom: 20})
+		.margin( {left: 40, right: 0, top: 0, bottom: 40})
 		.categories( ["1", "2", "3"] )
 		.categoryPadding(.5)
 		.fill( function(d, i) {
@@ -215,7 +230,8 @@ function init() {
 		.barLabel( function(d) {
 			var nucleotide = lookupNucleotide[d.category];
 	        return nucleotide[+d.name - 1]
-		 });
+		 })
+		.xAxisLabel("Reference Base");
 
 
 	// var type barchart (to show ratio)
@@ -238,20 +254,28 @@ function init() {
 
 	// Indel length chart
 	indelLengthChart = histogramD3();
-	indelLengthChart.width(420)
-                    .height(110)
-					.margin( {left: 40, right: 0, top: 0, bottom: 10})
+	indelLengthChart.width(455)
+                    .height(140)
+					.margin( {left: 40, right: 0, top: 0, bottom: 20})
 		.xValue( function(d) { return d[0] })
-		.yValue( function(d) { return d[1] });
+		.yValue( function(d) { return d[1] })
+		.xAxisLabel( function() { return 'Deletions < 0, Insertions > 0'})
 
 
 	// QC score histogram chart
 	qualDistributionChart = histogramD3();
-	qualDistributionChart.width(395)
-                         .height(110)
-					     .margin( {left: 50, right: 0, top: 10, bottom: 10})
+	qualDistributionChart.width(qualDistDimensions.width)
+                         .height(qualDistDimensions.height)
+                         .widthPercent("100%")
+                         .heightPercent("100%")
+					     .margin( {left:   qualDistDimensions.marginLeft, 
+					     	       right:  qualDistDimensions.marginRight, 
+					     	       top:    qualDistDimensions.marginTop, 
+					     	       bottom: qualDistDimensions.marginBottom})
 		.xValue( function(d) { return d[0] })
-		.yValue( function(d) { return d[1] });
+		.yValue( function(d) { return d[1] })
+		.xAxisLabel("Variant Quality Score");
+
 
 	// check if url to vcf file is supplied in url.  If it is, load this
 	// and proceed directly to the display page
@@ -394,7 +418,7 @@ function loadVariantDensityData(ref, i) {
 		true, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 	// Calculate the width and height of the panel as it may have changed since initialization
-	getDensityPanelDimensions();
+	getChartDimensions();
 	variantDensityChart.width(densityPanelDimensions.width);
 	variantDensityChart.height(densityPanelDimensions.height / 2);
 	variantDensityVF.width(densityPanelDimensions.width);
@@ -450,7 +474,7 @@ function loadGenomeVariantDensityData(ref, i) {
 	d3.selectAll("section#top .svg-alt").style("visibility", "visible");
 
 	// Calculate the width and height of the panel as it may have changed since initialization
-	getDensityPanelDimensions();
+	getChartDimensions();
 	variantDensityChart.width(densityPanelDimensions.width);
 	variantDensityChart.height(densityPanelDimensions.height - densityPanelDimensions.verticalOffset);
 	variantDensityRefVF.width(densityPanelDimensions.width);
@@ -670,10 +694,15 @@ function shortenNumber(num) {
     loadStats(chromosomeIndex);
 }
 
-function getDensityPanelDimensions() {
+function getChartDimensions() {
 
 	densityPanelDimensions.width  = $("#variant-density-panel").width() - densityPanelDimensions.padding;
     densityPanelDimensions.height = $("#variant-density-panel").height();
+
+    qualDistDimensions.width = $("#qual-distribution").width() - 
+                               (qualDistDimensions.widthOffset + qualDistDimensions.marginLeft + qualDistDimensions.marginRight);
+    qualDistDimensions.height = $("#qual-distribution").height() - 
+                               (qualDistDimensions.heightOffset + qualDistDimensions.marginTop + qualDistDimensions.marginBottom);
 }
 
 
