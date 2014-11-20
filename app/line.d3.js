@@ -51,7 +51,12 @@ lineD3 = function module() {
         .attr("width", widthPercent)
         .attr("height", heightPercent)
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
-        .attr("preserveAspectRatio", "xMidYMid meet");
+        .attr("preserveAspectRatio", "xMinYMid meet");
+
+      // The chart dimensions could change after instantiation, so update viewbox dimensions
+      // every time we draw the chart.
+      d3.select(this).selectAll("svg")
+         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom));
 
       
       if (kind == KIND_AREA && showGradient) {

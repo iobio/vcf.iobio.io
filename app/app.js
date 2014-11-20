@@ -16,6 +16,14 @@ var qualDistributionChart;
 var indelLengthChart; 
 
 
+var densityPanelDimensions = {
+	width: 0,
+	height: 0,
+	padding: 40,
+	verticalOffset: 120
+};
+
+
 var chromosomeIndex = 0;
 var regionStart = null;
 var regionEnd = null;
@@ -117,13 +125,14 @@ function init() {
 
 
 	// Create the variant density chart
+	getDensityPanelDimensions();
 	variantDensityChart = lineD3()
-                            .width(980)
-                            .height(80)
-                            .widthPercent("95%")
-                            .heightPercent("95%")
+                            .width(densityPanelDimensions.width)
+                            .height( densityPanelDimensions.height - densityPanelDimensions.verticalOffset )
+                            .widthPercent("100%")
+                            .heightPercent("100%")
                             .kind("area")
-							.margin( {left: 10, right: 20, top: 0, bottom: 20})
+							.margin( {left: 20, right: 20, top: 0, bottom: 20})
 							.showXAxis(true)
 							.showYAxis(false)
    							.pos( function(d) { return d[0] })
@@ -131,12 +140,12 @@ function init() {
 
 	// View finder (area chart) for variant density chart (when a references is selected)
 	variantDensityVF = lineD3()
-                            .width(980)
+                            .width(densityPanelDimensions.width)
                             .height(20)
-                            .widthPercent("95%")
-                            .heightPercent("95%")
+                            .widthPercent("100%")
+                            .heightPercent("100%")
                             .kind("area")
-							.margin( {left: 10, right: 20, top: 10, bottom: 20})
+							.margin( {left: 20, right: 20, top: 10, bottom: 20})
 							.showYAxis(false)
 							.showBrush(true)
 							.brushHeight(40)
@@ -146,11 +155,11 @@ function init() {
 
     // View finder (reference as boxes on x-axis) for variant density chart (for all references)
 	variantDensityRefVF = barChartAltD3()
-                        .width(980)
+                        .width(densityPanelDimensions.width)
                         .height(20)
-                        .widthPercent("95%")
-                        .heightPercent("95%")
-                        .margin( {left: 10, right: 20, top: 0, bottom: 0})
+                        .widthPercent("100%")
+                        .heightPercent("100%")
+                        .margin( {left: 20, right: 20, top: 0, bottom: 0})
 						.nameFunction( function(d) { return d.name })
 				   		.valueFunction( function(d) { return d.value })
 				   		.on("clickbar", function(d,i) {
@@ -311,11 +320,12 @@ function onReferencesLoaded(refData) {
 	
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	
-	//chromosomeChart.clickAllSlices(pieChartRefData);
+	// Show "ALL" references as first view
+	chromosomeChart.clickAllSlices(pieChartRefData);
 	
-	chromosomeIndex = 0;
-	chromosomeChart.clickSlice(chromosomeIndex);
-	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
+	//chromosomeIndex = 0;
+	//chromosomeChart.clickSlice(chromosomeIndex);
+	//onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 	
 	otherRefData = vcfiobio.getReferences(0, .005);
 
@@ -383,10 +393,14 @@ function loadVariantDensityData(ref, i) {
 	var data = vcfiobio.getEstimatedDensity(ref.name, 
 		true, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
+	// Calculate the width and height of the panel as it may have changed since initialization
+	getDensityPanelDimensions();
+	variantDensityChart.width(densityPanelDimensions.width);
+	variantDensityChart.height(densityPanelDimensions.height / 2);
+	variantDensityVF.width(densityPanelDimensions.width);
 	
 	// Load the variant density chart with the data
 	variantDensityChart.showXAxis(true);
-	variantDensityChart.height(100);
 	variantDensityChart(d3.select("#variant-density").datum(data), onVariantDensityChartRendered);
 	variantDensityVF(d3.select("#variant-density-vf").datum(data), onVariantDensityVFChartRendered);
 
@@ -435,6 +449,12 @@ function loadGenomeVariantDensityData(ref, i) {
 	d3.select("#variant-density-ref-vf").style("display",     "block");
 	d3.selectAll("section#top .svg-alt").style("visibility", "visible");
 
+	// Calculate the width and height of the panel as it may have changed since initialization
+	getDensityPanelDimensions();
+	variantDensityChart.width(densityPanelDimensions.width);
+	variantDensityChart.height(densityPanelDimensions.height - densityPanelDimensions.verticalOffset);
+	variantDensityRefVF.width(densityPanelDimensions.width);
+
 	
 	var data = vcfiobio.getGenomeEstimatedDensity( densityOptions.removeSpikes, 
 		densityOptions.maxPoints, densityOptions.epsilonRDP);
@@ -442,9 +462,8 @@ function loadGenomeVariantDensityData(ref, i) {
 	
 	// Load the variant density chart with the data
 	variantDensityChart.showXAxis(false);
-	variantDensityChart.height(150);
 	variantDensityChart(d3.select("#variant-density").datum(data), onVariantDensityChartRendered);
-	variantDensityRefVF(d3.select("#variant-density-ref-vf").datum(vcfiobio.getReferences(.01, 1)));
+	variantDensityRefVF(d3.select("#variant-density-ref-vf").datum(vcfiobio.getReferences(.005, 1)));
 
 }
 
@@ -471,7 +490,7 @@ function loadStats(i) {
 	// and we will sample across the reference or a region
 	// of the reference.
 	if (i == -1) {
-		var numReferences = vcfiobio.getReferences(.01, 1).length;
+		var numReferences = vcfiobio.getReferences(.005, 1).length;
 		for (var x = 0; x < numReferences; x++) {
 			refs.push(x);
 		}
@@ -649,6 +668,12 @@ function shortenNumber(num) {
     }
     statsOptions.samplingMultiplier += 1;
     loadStats(chromosomeIndex);
+}
+
+function getDensityPanelDimensions() {
+
+	densityPanelDimensions.width  = $("#variant-density-panel").width() - densityPanelDimensions.padding;
+    densityPanelDimensions.height = $("#variant-density-panel").height();
 }
 
 

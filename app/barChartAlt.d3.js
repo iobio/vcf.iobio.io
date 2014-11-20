@@ -40,7 +40,15 @@ barChartAltD3 = function module() {
             for (var i = 0; i  < _data.length; i++) {
                 _data[i].width = d3.round(width * (value(_data[i]) / totalValue));
                 _data[i].offset = offset;
-                offset += _data[i].width;            
+                offset += _data[i].width;  
+
+                if (i == _data.length - 1)  {
+                    var actualWidth = _data[i].offset + _data[i].width;
+                    var diff = width - actualWidth;
+                    if ( diff > 0 ) {
+                        _data[i].width += diff;
+                    }
+                }        
             }
 
             // Trick to just append the svg skeleton once
@@ -52,7 +60,14 @@ barChartAltD3 = function module() {
                 .attr("width", widthPercent)
                 .attr("height", widthPercent)
                 .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
-                .attr("preserveAspectRatio", "xMidYMid meet");
+                .attr("preserveAspectRatio", "xMinYMid meet");
+
+            // The chart dimensions could change after instantiation, so update viewbox dimensions
+            // every time we draw the chart.
+            d3.select(this).selectAll("svg")
+               .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom));
+
+         
 
             svg.selectAll("g.bars").remove();
             var grouping =  svg.selectAll("g.bars").data([_data]).enter()
