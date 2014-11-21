@@ -20,6 +20,10 @@
   font-size: 14px;
 }
 
+.avg text {
+    fill: rgb(145,145,145);
+    font-size: 12px;
+}
 
 g.arcs {
   pointer-events: all;
@@ -423,12 +427,6 @@ section#bottom {
 
 #variant-density-ref-vf svg g rect:hover {
   cursor: pointer;
-}
-
-svg g text.inside:hover {
-  font-weight: bold;
-  cursor: pointer;
-  fill: #4096ee;
 }
 
 
