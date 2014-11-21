@@ -355,11 +355,11 @@ function onReferencesLoaded(refData) {
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	
 	// Show "ALL" references as first view
-	//chromosomeChart.clickAllSlices(pieChartRefData);
+	chromosomeChart.clickAllSlices(pieChartRefData);
 	
-	chromosomeIndex = 0;
-	chromosomeChart.clickSlice(chromosomeIndex);
-	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
+	//chromosomeIndex = 0;
+	//chromosomeChart.clickSlice(chromosomeIndex);
+	//onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 	
 	otherRefData = vcfiobio.getReferences(0, .005);
 
