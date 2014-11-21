@@ -152,6 +152,7 @@ section#banner {
             flex-flow: row;
     margin-left: 10px;
     margin-bottom: 10px;
+    align-items: flex-start;
 }
 
 section#top {
@@ -226,8 +227,8 @@ section#bottom {
 
 
 #banner-title {
-    -webkit-flex: 0 0 300px;
-            flex: 0 0 300px;
+    -webkit-flex: 0 0 400px;
+            flex: 0 0 400px;
     -webkit-order: 1;
             order: 1;
 }    
@@ -251,11 +252,12 @@ section#bottom {
 }
 
 #vcf_file {
-    webkit-flex: 0 0  300px;
-            flex: 0 0 300px;
+    webkit-flex: 0 0  400px;
+            flex: 0 0 400px;
     -webkit-order: 1;
             order: 1;
     font-size: 13px;
+    word-break: break-word;
 
 }
 #vcf_selection {

@@ -25,12 +25,12 @@ var densityPanelDimensions = {
 var qualDistDimensions = {
 	width: 0,
 	height: 0,
-	marginTop: 15,
-	marginBottom: 35,
-	marginLeft: 30,
+	marginTop: 0,
+	marginBottom: 30,
+	marginLeft: 40,
 	marginRight: 0,
-	widthOffset: 10,
-	heightOffset: 30
+	widthOffset: 0,
+	heightPercent: .8
 };
 
 
@@ -193,6 +193,7 @@ function init() {
 		.showXAxis(true)
 		.showYAxis(false)
 		.showXTicks(false)
+		.showTooltip(false)
 		.categories( tstvCategories )
 		.categoryPadding(.4)
 		.showBarLabel(true)
@@ -211,6 +212,10 @@ function init() {
 	alleleFreqChart.formatXTick( function(d,i) {
 		return (d * 2) + '%';
 	});
+	alleleFreqChart.tooltipText( function(d) { 
+			return  d3.round(d[1]) + ' variants with ' + (d[0] * 2) + '%' + ' AF ';
+	});
+
 
     
 					   
@@ -261,7 +266,10 @@ function init() {
 					.margin( {left: 40, right: 10, top: 0, bottom: 35})
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] })
-		.xAxisLabel( function() { return 'Deletions < 0, Insertions > 0'})
+		.tooltipText( function(d) { 
+			return d[1]  + ' variants with a ' +  Math.abs(d[0]) + " bp " + (d[0] < 0 ? "deletion" : "insertion"); 
+		 })
+		.xAxisLabel( function() { return 'Deletions: x < 0,    Insertions: x > 0'})
 
 
 	// QC score histogram chart
@@ -347,11 +355,11 @@ function onReferencesLoaded(refData) {
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	
 	// Show "ALL" references as first view
-	chromosomeChart.clickAllSlices(pieChartRefData);
+	//chromosomeChart.clickAllSlices(pieChartRefData);
 	
-	//chromosomeIndex = 0;
-	//chromosomeChart.clickSlice(chromosomeIndex);
-	//onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
+	chromosomeIndex = 0;
+	chromosomeChart.clickSlice(chromosomeIndex);
+	onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 	
 	otherRefData = vcfiobio.getReferences(0, .005);
 
@@ -703,8 +711,8 @@ function getChartDimensions() {
 
     qualDistDimensions.width = $("#qual-distribution").width() - 
                                (qualDistDimensions.widthOffset + qualDistDimensions.marginLeft + qualDistDimensions.marginRight);
-    qualDistDimensions.height = $("#qual-distribution").height() - 
-                               (qualDistDimensions.heightOffset + qualDistDimensions.marginTop + qualDistDimensions.marginBottom);
+    qualDistDimensions.height = ($("#qual-distribution").height() - (qualDistDimensions.marginTop + qualDistDimensions.marginBottom)) * 
+    							qualDistDimensions.heightPercent;
 }
 
 

@@ -5,6 +5,9 @@ function histogramD3() {
       defaults = {outliers: true, averageLine: true},
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
+      tooltipText = function(d) {
+        return d[0] + ", " + d[1]; 
+      },
       x = d3.scale.linear(),
       y = d3.scale.linear();
 
@@ -146,10 +149,12 @@ function histogramD3() {
          .attr("width", Math.max(x(x.domain()[0]+1),1))
          .attr("height", 0)
          .on("mouseover", function(d) {  
+
             div.transition()        
                .duration(200)      
-               .style("opacity", .9);      
-            div.html(d[0] + ", " + d[1])                                 
+               .style("opacity", .9);  
+
+            div.html( tooltipText(d) )
                .style("left", (d3.event.pageX) + "px") 
                .style("text-align", 'left')    
                .style("top", (d3.event.pageY - 24) + "px");    
@@ -327,6 +332,12 @@ function histogramD3() {
   chart.heightPercent = function(_) {
     if (!arguments.length) return heightPercent;
     heightPercent = _;
+    return chart;
+  };
+
+  chart.tooltipText = function(_) {
+    if (!arguments.length) return tooltipText;
+    tooltipText = _;
     return chart;
   };
 

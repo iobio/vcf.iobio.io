@@ -65,10 +65,10 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
-//var vcfstatsAliveServer    = "ws://localhost:7070";
-//  var tabixServer            = "ws://localhost:7090";
-//  var vcfReadDeptherServer   = "ws://localhost:7062";
-//  var catInputServer = "ws://localhost:7063";
+var vcfstatsAliveServer    = "ws://localhost:7070";
+  var tabixServer            = "ws://localhost:7090";
+  var vcfReadDeptherServer   = "ws://localhost:7062";
+  var catInputServer = "ws://localhost:7063";
 
   var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
   var tabixServer            = "ws://tabix.iobio.io";

@@ -20,6 +20,7 @@ groupedBarD3 = function module() {
   var yAxisTickLabel = null;
   var yAxisLabel = null;
 
+  var showTooltip = true;
   var showBarLabel = true;
   var categories = null;
   
@@ -172,6 +173,7 @@ groupedBarD3 = function module() {
 
         // Add the text label for the x axis
         if (xAxisLabel) {
+          svgGroup = svg.selectAll("g.group");
           svgGroup.selectAll("g.x axis label").remove();
           svgGroup.append("text")
             .attr("class", "x axis label")
@@ -189,6 +191,8 @@ groupedBarD3 = function module() {
           .attr("class", "y axis")
           .call(yAxis);
         if (yAxisTickLabel) {
+          svgGroup = svg.selectAll("g.group");
+          svgGroup.selectAll("g.y axis label").remove();
           svgGroup.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
@@ -234,18 +238,22 @@ groupedBarD3 = function module() {
           .attr("height", function(d) { return height - y(value(d)); })
           .style("fill", fill)
           .on("mouseover", function(d) {  
-            div.transition()        
-               .duration(200)      
-               .style("opacity", .9);      
-            div.html(d3.round(value(d)))                                  
-               .style("left", (d3.event.pageX) + "px") 
-               .style("text-align", 'left')    
-               .style("top", (d3.event.pageY - 24) + "px");    
+            if (showTooltip) {
+              div.transition()        
+                 .duration(200)      
+                 .style("opacity", .9);      
+              div.html(d3.round(value(d)))                                  
+                 .style("left", (d3.event.pageX) + "px") 
+                 .style("text-align", 'left')    
+                 .style("top", (d3.event.pageY - 24) + "px");    
+             }
          })                  
-         .on("mouseout", function(d) {       
-            div.transition()        
-               .duration(500)      
-               .style("opacity", 0);   
+         .on("mouseout", function(d) {      
+            if (showTooltip) {
+              div.transition()        
+                 .duration(500)      
+                 .style("opacity", 0);   
+            } 
          });
          
        bars.exit().remove();
