@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------//
 //                                                                          //
-//                              J B G Z F                                   //
+//                              J S B G Z F                                 //
 //                                                                          //
 //                                                                          //
 // Copyright (c) 2014-2014 Trustees of Boston College                       //
@@ -33,19 +33,57 @@
 //
 // Include the following libs:
 //
-// https://raw.github.com/vjeux/jDataView/master/src/jdataview.js
-// https://raw.github.com/vjeux/jParser/master/src/jparser.js
 // inflate.js (fetch and place or fetch remotely)
-// binary-bam.js (this file)
-// With files[0] == bam file
-//      files[1] == bai file
+// pako_deflate.min.js (fetch and place or fetch remotely)
+// jsbgzf.js (this file)
 //
-// bamR = new readBinaryBAM(files[1], files[0]);
-// var x = undefined;
-// bamR.getRecords(11, 1000000, 1015808, function(rs){x = rs;});
-// var chunks = bamR.getChunks(11, 1000000, 1015808)
-
-
+// API consists of top level functions - no constructor needed or
+// wanted.
+//
+// * buffer2String - take a unsigned byte array (UBA) and convert to a
+//   string. Only works for iso-latin-1 (or ascii - 8 bit bytes) - no
+//   UTF-8 (unicode, ...) here
+//
+// * getChunk - low level function to obtain a chunk of a file as a UBA
+//
+// * getBGZFHD - parses and returns as a map bgzf headers (each
+//   compressed block has a bgzf header)
+//
+// * nextBlockOffset - from a provided legal compressed block offset,
+//   obtain the offset of the next compressed block
+//
+// * blockSize - from a provided legal compressed block offset,
+//   compute size of contained compressed block
+//
+// * countBlocks - counts the total number of bgzf (compressed) blocks
+//   in file
+//
+// * inflateBlock - from a provided legal compressed block offset,
+//   inflate the blcck to its UBA representation.
+//
+// * inflateBlock2stg - same as inflateBlock but then use
+//   buffer2String to convert inflated block to a string
+//
+// * inflateRegion - from a provided starting compressed block offset
+//   and some ending offset (need not be a block offset), expand all
+//   blocks covereed by region to a single UBA
+//
+// * inflateAllBlocks - inflate all blocks in file to a single UBA.
+//   Likely not usable for large files.
+//
+// * inflateRegion2Stg - same as inflateBlock2stg, but for
+//   inflateRegion
+//
+// * inflateAll2Stg - same as inflateRegioin2Stg, but where region is
+//   the entire file
+//
+// * bgzf - takes a UBA of data and deflates to a bgzf compressed
+//   block
+//
+// Appending buffers - used internally, but are intended for public
+// use as well
+// * appendBuffer - append two unsigned byte arrays (UBA)
+// * appendBuffers - append vector of UBAs
 
 
 // Standard log base 2.  Used in bai format bin level calculation
@@ -305,8 +343,8 @@ function inflateBlock2stg(f, blockOffset, cbfn) {
 
 // Mid level function that given a BGZF file F, a region defined by
 // offsets BEGOFFSET and ENDOFFSET, fetches, inflates and appends all
-// the _gzip_ blocks in the region into a single array buffer and
-// passes to CBFN.
+// (_inclusively_) the _gzip_ blocks in the region into a single array
+// buffer and passes to CBFN.
 function inflateRegion (f, begOffset, endOffset, cbfn) {
     var blockOffset = begOffset;
     var res = [];
@@ -316,7 +354,7 @@ function inflateRegion (f, begOffset, endOffset, cbfn) {
             f, blockOffset,
             function(x){
                 blockOffset = x;
-                if (blockOffset < endOffset) {
+                if (blockOffset <= endOffset) {
                     return inflateBlock(f, blockOffset, cb);
                 } else {
                     var resBuf = appendBuffers(res);
@@ -333,7 +371,7 @@ function inflateRegion (f, begOffset, endOffset, cbfn) {
 // BGZF _data_ file (bai should be fine) will likely blow up with
 // memory exceeded.
 function inflateAllBlocks(f, cbfn) {
-    return inflateRegion(f, 0, f.size, cbfn);
+    return inflateRegion(f, 0, f.size-1, cbfn);
 }
 
 

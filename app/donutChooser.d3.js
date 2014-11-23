@@ -85,8 +85,10 @@ donutChooserD3 = function module() {
       .attr("stroke", 'lightgrey')
       .attr("fill", 'none')
       .on("mouseover", function(d) {
-         _selectAllCircle(true);     
-         d3.select(this).attr("cursor", "pointer");
+        if (clickedSlices.length == 0) {
+          _selectAllCircle(true);     
+          d3.select(this).attr("cursor", "pointer");
+        }
       })
       .on("mouseout", function(d) {
         if (clickedSlices.length == 0) {
@@ -103,11 +105,12 @@ donutChooserD3 = function module() {
         .on("click", function(d) { 
           _clickAllSlices(data);
           dispatch.clickall();    
-        } )
+        })
         .on("mouseover", function(d) {
-          _selectAllCircle(true);
-          d3.select(this).attr("cursor", "pointer");
-
+          if (clickedSlices.length == 0) {
+            _selectAllCircle(true);
+            d3.select(this).attr("cursor", "pointer");
+          }
         })
         .on("mouseout", function(d) {
           if (clickedSlices.length == 0) {
@@ -143,7 +146,6 @@ donutChooserD3 = function module() {
               }
             })
           .on("click", function(d, i) {
-              _selectAllCircle(false);
               _clickSlice(this, d, i, true);
             });
 
@@ -152,19 +154,27 @@ donutChooserD3 = function module() {
   }
 
   function _selectAllCircle(select) {
+
     if (select) {
-      d3.select("circle#all-circle").attr("fill", "#478FB2");
-      d3.select("circle#all-circle").style("stroke", "black");
-      d3.select("text#all-text").style("font-weight", "bold");
-      d3.select("text#all-text").style("fill", "white");
-      d3.select("text#all-text").style("opacity", ".8");
+      d3.select("circle#all-circle").attr("fill", "#F7F3BA");
+      d3.select("circle#all-circle").style("stroke", "lightgrey");
+      d3.select("text#all-text").style("font-weight", "normal");
+      d3.select("text#all-text").style("fill", "black");
+      d3.select("text#all-text").style("opacity", ".5");
     } else {
        d3.select("circle#all-circle").attr("fill", "none");
        d3.select("circle#all-circle").style("stroke", "lightgrey");
-       d3.select("text#all-text").style("fill", "black");
+       d3.select("text#all-text").style("fill", "grey");
        d3.select("text#all-text").style("font-weight", "normal");
        d3.select("text#all-text").style("opacity", "1");
     }
+  }
+  function _clickAllCircle() {
+      d3.select("circle#all-circle").attr("fill", "#F7F3BA");
+      d3.select("circle#all-circle").style("stroke", "grey");
+      d3.select("text#all-text").style("font-weight", "bold");
+      d3.select("text#all-text").style("fill", "grey");
+      d3.select("text#all-text").style("opacity", "1");    
   }
 
   function _tooltip() {
@@ -172,6 +182,11 @@ donutChooserD3 = function module() {
   }
 
   function _clickSlice(theSlice, d, i, singleSelection) {
+    if (singleSelection) {
+      _selectAllCircle(false);
+    }
+
+
     if (singleSelection) {
       if (clickedSlices.length > 0) {
         for (var i = 0; i < clickedSlices.length; i++) {
@@ -185,10 +200,8 @@ donutChooserD3 = function module() {
 
     } 
 
-
     // Bold the label of the clicked slice
     d3.select(theSlice).selectAll("text").attr("class", "chartlabelSelected");
-
 
     // Offset the arc even more than mouseover offset
     // Calculate angle bisector
@@ -310,11 +323,7 @@ donutChooserD3 = function module() {
             .attr("transform", "translate("+x+","+y+")"); 
 
         }
-
-
-
         this.currentSlice = theSlice;
-
   }
 
 
@@ -328,6 +337,7 @@ donutChooserD3 = function module() {
 
   function _clickAllSlices(data) {
     _selectAllCircle(true);
+    _clickAllCircle();
     clickedSlices.length = 0;
     for (var i = 0; i < data.length; i++) {
         var theSlice = arcs.selectAll("d.arc")[i].parentNode;

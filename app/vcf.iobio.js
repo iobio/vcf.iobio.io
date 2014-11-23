@@ -55,7 +55,7 @@
 //
 vcfiobio = function module() {
 
-  var debug = false;
+  var debug =  false;
 
   var exports = {};
 
@@ -65,17 +65,15 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
-var vcfstatsAliveServer    = "ws://localhost:7070";
-  var tabixServer            = "ws://localhost:7090";
-  var vcfReadDeptherServer   = "ws://localhost:7062";
-  var catInputServer = "ws://localhost:7063";
+  //var vcfstatsAliveServer    = "ws://localhost:7070";
+  //var tabixServer            = "ws://localhost:7090";
+  //var vcfReadDeptherServer   = "ws://localhost:7062";
+  //var catInputServer         = "ws://localhost:7063";
 
   var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
   var tabixServer            = "ws://tabix.iobio.io";
   var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
   var catInputServer         = "ws://localhost:7063";
-
-  
 
   var vcfURL;
   var vcfReader;
@@ -137,10 +135,10 @@ var vcfstatsAliveServer    = "ws://localhost:7070";
       var tbiIdx = tbiR;
       refDensity.length = 0;
 
-      for (var i = 0; i < tbiIdx.tabixContent.head.n_ref; i++) {
-        var ref   = tbiIdx.tabixContent.head.names[i];
+      for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {
+        var ref   = tbiIdx.idxContent.head.names[i];
 
-        var indexseq = tbiIdx.tabixContent.indexseq[i];
+        var indexseq = tbiIdx.idxContent.indexseq[i];
         var refLength = indexseq.n_intv * size16kb;
 
         // Use the bins to load the density data
@@ -418,10 +416,13 @@ var vcfstatsAliveServer    = "ws://localhost:7070";
         }
       }
 
-      vcfReader.getHeaderRecords( function(headerRecords) {
-        for (h = 0; h < headerRecords.length; h++) {
-          stream.write(headerRecords[h] + "\n");
-        }
+      //vcfReader.getHeaderRecords( function(headerRecords) {
+      //  for (h = 0; h < headerRecords.length; h++) {
+      //    stream.write(headerRecords[h] + "\n");
+      //  }
+      //});
+      vcfReader.getHeader( function(header) {
+         stream.write(header + "\n");
       });
 
 
