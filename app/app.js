@@ -126,10 +126,10 @@ function init() {
 		                .height(220)
 		                .options({showTooltip: false})
 						.on("clickslice", function(d, i) {
-							chromosomeIndex = i;
+							chromosomeIndex = d.idx;
 							regionStart = null;
 							regionEnd = null;
-							onReferenceSelected(d, i);
+							onReferenceSelected(d, d.idx);
 						})
 						.on("clickall", function() {
 							chromosomeIndex = -1;
@@ -177,9 +177,9 @@ function init() {
 						.nameFunction( function(d) { return d.name })
 				   		.valueFunction( function(d) { return d.value })
 				   		.on("clickbar", function(d,i) {
-				   			chromosomeIndex = i;
+				   			chromosomeIndex = d.idx;
 				   			chromosomeChart.clickSlice(i);
-							onReferenceSelected(d, i);
+							onReferenceSelected(d, d.idx);
 				   		});
 
 	// TSTV grouped barchart (to show ratio)
