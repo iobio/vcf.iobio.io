@@ -7,12 +7,15 @@
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
         <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="components/alertify.js/themes/alertify.core.css" />
+        <link rel="stylesheet" href="components/alertify.js/themes/alertify.default.css" />
 		<link href="assets/css/iobio.css" rel="stylesheet" type='text/css'>
 		<link href="assets/css/vcf.iobio.css" rel="stylesheet" type='text/css'/>
 
 		<script type="text/javascript" src="components/d3/d3.js"></script>
         <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="components/nprogress/nprogress.js"></script>
+        <script type="text/javascript" src="components/alertify.js/lib/alertify.min.js"></script>
         <script type="text/javascript" src="assets/js/class.js"></script>
         <script type="text/javascript" src="assets/js/rdp.js"></script>
 
@@ -35,7 +38,7 @@
         <div id="selectData">
             <header><a href="http://vcf.iobio.io">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>            
             <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 100px">
-                <div style="margin-left:auto;margin-right:auto;font-size: 33px; color: rgb(110,110,110); margin-bottom:70px">                
+                <div style="margin-left:auto;margin-right:auto;font-size: 33px; color: rgb(110,110,110); margin-bottom:40px">                
                     vcf.iobio.io uses realtime sampling to generate global statistics of your vcf file in a few seconds.
                 </div>
                 
@@ -45,13 +48,52 @@
                 </div>
                 <div class="file-button" style="text-align:center" onClick="displayVcfUrlBox()">Choose VCF URL</div>
                 <div style="clear:both"></div>
+
             </div>
             <div id='vcf-url' style="margin-top:24px;width:800px;margin-left:auto;margin-right:auto;visibility:hidden" class="arrow_box">
                 <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input><button id="vcf-url-go-button" onClick="onUrlEntered()">Go</button>
             </div>
+            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 40px">
+
+                <strong>Variant files to try</strong>
+
+                <table cellspacing="5px" width="700px">
+
+                <tr >
+                    <td>
+                        1000 Genomes Whole Sequencing
+                    </td>
+
+                    <td>
+                        <a href="http://www.1000genomes.org/data">Website</a>
+                    </td>
+
+                    <td>
+                        <a href="http://vcf.iobio.io?ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5.20130502.sites.vcf.gz">Show in vcf.iobio.io</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        Exome Aggregation Collaboration (ExAC)
+                    </td>
+
+                    <td>
+                        <a href="http://exac.broadinstitute.org/about">Website</a>
+                    </td>
+
+                    <td>
+                        <a href="http://vcf.iobio.io?vcf=http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz">Show in vcf.iobio.io</a>
+                    </td>
+                </tr>
+
+                </table>
+
+            </div>
             <div id="footer">            
-                <div id="license"><a href="license.html">License</a></div>
-                <div id="browser-compatability"><a href="images/browserCompatability.png">Browsers</a></div>
+                <div id="help"><a href="help.html">Help</a></div>
+                <div id="license"><a href="http://bam.iobio.io/license.html">License</a></div>
+                <div id="browser-compatability"><a href="http://bam.iobio.io/images/browserCompatability.png">Browsers</a></div>
                 <div style="clear:both"></div>
             </div>
         </div>
@@ -173,6 +215,11 @@
     		</div>
         </div>
 
+        <dialog id="dialog">
+            <p>Hi, I'm a dialog!</p>
+            <button class="close">Okay</button>
+        </dialog>
+        
         <script>
             var div = d3.select("body").append("div")   
                 .attr("class", "tooltip")               

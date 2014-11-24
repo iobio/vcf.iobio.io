@@ -22,21 +22,11 @@ var densityPanelDimensions = {
 	padding: 40,
 	verticalOffset: 120
 };
-var qualDistDimensions = {
-	width: 0,
-	height: 0,
-	marginTop: 0,
-	marginBottom: 30,
-	marginLeft: 40,
-	marginRight: 0,
-	widthOffset: 0,
-	heightPercent: .8
-};
-
 
 var chromosomeIndex = 0;
 var regionStart = null;
 var regionEnd = null;
+var afData = null;
 
 var densityOptions = {
 	removeSpikes: true,
@@ -212,8 +202,9 @@ function init() {
 	alleleFreqChart.formatXTick( function(d,i) {
 		return (d * 2) + '%';
 	});
-	alleleFreqChart.tooltipText( function(d) { 
-			return  d3.round(d[1]) + ' variants with ' + (d[0] * 2) + '%' + ' AF ';
+	alleleFreqChart.tooltipText( function(d, i) { 
+		var value = afData[i][1];
+		return  d3.round(value) + ' variants with ' + (d[0] * 2) + '%' + ' AF ';
 	});
 
 
@@ -222,9 +213,11 @@ function init() {
 
 	// Mutation spectrum grouped barchart
 	mutSpectrumChart = groupedBarD3();
-	mutSpectrumChart.width(420)
-	    .height(80)
-		.margin( {left: 40, right: 0, top: 0, bottom: 40})
+	mutSpectrumChart.width(455)
+	    .height(120)
+	    .widthPercent("95%")
+	    .heightPercent("90%")
+		.margin( {left: 45, right: 0, top: 10, bottom: 30})
 		.categories( ["1", "2", "3"] )
 		.categoryPadding(.5)
 		.fill( function(d, i) {
@@ -259,11 +252,11 @@ function init() {
 
 	// Indel length chart
 	indelLengthChart = histogramD3();
-	indelLengthChart.width(405)
-                    .height(135)
-                    .widthPercent("100%")
-                    .heightPercent("100%")
-					.margin( {left: 40, right: 10, top: 0, bottom: 35})
+	indelLengthChart.width( $("#indel-length").width() )
+		.height( $("#indel-length").height()  - 20)
+		.widthPercent("100%")
+		.heightPercent("100%")
+		.margin( {left: 40, right: 0, bottom: 30, top: 20})		
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] })
 		.tooltipText( function(d) { 
@@ -274,17 +267,17 @@ function init() {
 
 	// QC score histogram chart
 	qualDistributionChart = histogramD3();
-	qualDistributionChart.width(qualDistDimensions.width)
-                         .height(qualDistDimensions.height)
-                         .widthPercent("100%")
-                         .heightPercent("100%")
-					     .margin( {left:   qualDistDimensions.marginLeft, 
-					     	       right:  qualDistDimensions.marginRight, 
-					     	       top:    qualDistDimensions.marginTop, 
-					     	       bottom: qualDistDimensions.marginBottom})
+	qualDistributionChart.width( $("#qual-distribution").width() )
+		.height( $("#qual-distribution").height()  - 20)
+		.widthPercent("100%")
+		.heightPercent("100%")
+		.margin( {left: 40, right: 0, bottom: 30, top: 20})		
 		.xValue( function(d) { return d[0] })
 		.yValue( function(d) { return d[1] })
 		.xAxisLabel("Variant Quality Score");
+	qualDistributionChart.tooltipText( function(d, i) { 	
+		return  d3.round(d[1]) + ' variants with VQ of ' + d[0];
+	});
 
 
 	// check if url to vcf file is supplied in url.  If it is, load this
@@ -601,7 +594,7 @@ function renderStats(stats) {
 
 	// Alelle Frequency
 	var afObj = stats.af_hist;
-	var afData = vcfiobio.jsonToArray2D(afObj);
+	afData = vcfiobio.jsonToArray2D(afObj);	
 	var afSelection = d3.select("#allele-freq-histogram")
 					    .datum(afData);
 	var afOptions = {outliers: true, averageLine: false};					    
@@ -630,7 +623,7 @@ function renderStats(stats) {
 
 	// QC distribution
 	var qualPoints = vcfiobio.jsonToArray2D(stats.qual_dist.regularBins);
-	var factor = 5;
+	var factor = 2;
 	qualReducedPoints = vcfiobio.reducePoints(qualPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
 	//for (var i = 0; i < qualReducedPoints.length; i++) {
 	//	qualReducedPoints[i][0] = i;
@@ -709,10 +702,8 @@ function getChartDimensions() {
 	densityPanelDimensions.width  = $("#variant-density-panel").width() - densityPanelDimensions.padding;
     densityPanelDimensions.height = $("#variant-density-panel").height();
 
-    qualDistDimensions.width = $("#qual-distribution").width() - 
-                               (qualDistDimensions.widthOffset + qualDistDimensions.marginLeft + qualDistDimensions.marginRight);
-    qualDistDimensions.height = ($("#qual-distribution").height() - (qualDistDimensions.marginTop + qualDistDimensions.marginBottom)) * 
-    							qualDistDimensions.heightPercent;
+ 
+
 }
 
 

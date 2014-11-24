@@ -103,11 +103,17 @@ vcfiobio = function module() {
        return;
     }
 
+    if (endsWith(event.target.files[0].name, ".vcf") ||
+        endsWith(event.target.files[1].name, ".vcf")) {
+      showFileFormatMessage();
+      return;
+    }
+
     var fileType0 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[0].name);
     var fileType1 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[1].name);
 
-    if (fileType0.length < 3 || fileType1.length <  3) {
-      alter('must select both a .vcf.gz and .vcf.gz.tbi file');
+    if (fileType0 == null || fileType0.length < 3 || fileType1 == 0 || fileType1.length <  3) {
+      alter('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
       return;
     }
 
@@ -121,13 +127,37 @@ vcfiobio = function module() {
       vcfFile   = event.target.files[1];
       tabixFile = event.target.files[0];
     } else {
-      alert('must select both a .vcf.gz and .vcf.gz.tbi file');
+
+      showFileFormatMessage();
     }
 
     callback(vcfFile);
 
   } 
 
+  function showFileFormatMessage() {
+    alertify.set(
+      { 
+        labels: {
+          cancel     : "Show me how",
+          ok         : "OK",
+        },  
+        buttonFocus:  "cancel"
+    });
+
+    alertify.confirm("You must select a compressed vcf file and its corresponding index file in order to run this app. ", 
+        function (e) {
+        if (e) {
+            return;
+        } else {
+            window.location = 'help.html';
+        }
+     });
+  }
+  
+  function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+  }
 
   exports.loadIndex = function(callback) {
  

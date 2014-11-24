@@ -5,7 +5,7 @@ function histogramD3() {
       defaults = {outliers: true, averageLine: true},
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
-      tooltipText = function(d) {
+      tooltipText = function(d, i) {
         return d[0] + ", " + d[1]; 
       },
       x = d3.scale.linear(),
@@ -148,13 +148,13 @@ function histogramD3() {
          .style("z-index", 5)
          .attr("width", Math.max(x(x.domain()[0]+1),1))
          .attr("height", 0)
-         .on("mouseover", function(d) {  
+         .on("mouseover", function(d, i) {  
 
             div.transition()        
                .duration(200)      
                .style("opacity", .9);  
 
-            div.html( tooltipText(d) )
+            div.html( tooltipText(d, i) )
                .style("left", (d3.event.pageX) + "px") 
                .style("text-align", 'left')    
                .style("top", (d3.event.pageY - 24) + "px");    

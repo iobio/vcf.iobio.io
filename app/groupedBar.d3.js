@@ -174,7 +174,7 @@ groupedBarD3 = function module() {
         // Add the text label for the x axis
         if (xAxisLabel) {
           svgGroup = svg.selectAll("g.group");
-          svgGroup.selectAll("g.x axis label").remove();
+          svgGroup.selectAll("text.x.axis.label").remove();
           svgGroup.append("text")
             .attr("class", "x axis label")
             .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
@@ -192,8 +192,9 @@ groupedBarD3 = function module() {
           .call(yAxis);
         if (yAxisTickLabel) {
           svgGroup = svg.selectAll("g.group");
-          svgGroup.selectAll("g.y axis label").remove();
+          svgGroup.selectAll("text.y.axis.label").remove();
           svgGroup.append("text")
+            .attr("class", "y axis label")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
             .attr("dy", ".71em")

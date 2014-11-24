@@ -34,12 +34,16 @@ g.arcs {
 }
 
 text.x.axis.label {
-    font-size: 12px;
+    font-size: 14px;
 }
 text.y.axis.label {
     font-size: 12px;
 }
 
+
+#mut-spectrum text.x.axis.label {
+font-size: 11px;
+}
 
 #variant-density .tick text {
   font-size: 12px;
@@ -269,6 +273,8 @@ section#bottom {
             flex: 0 0 80%;
     -webkit-order: 2;
             order: 2;
+
+    margin-top: 10px;
 
     display: -webkit-flex;
     display:         flex;

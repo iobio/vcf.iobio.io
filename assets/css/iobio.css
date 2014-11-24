@@ -40,14 +40,18 @@ header a:visited {color:none;}
 header a {text-decoration:none; color:#2d8fc1;}
 
 #footer {
-     margin-top: 200px;
-     width: 170px;                   
+     margin-top: 80px;
+     width: 350px;                   
      margin-left: auto;
      margin-right: auto;
      font-size: 18px;
 }
 #footer a {
     color: rgb(110,110,110);
+}
+#help { 
+  float:left;
+  margin-right: 80px;
 }
 #license { float:left;}
 #browser-compatability { float:right;}
