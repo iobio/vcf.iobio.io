@@ -436,4 +436,30 @@ section#bottom {
 }
 
 
+#info { margin: 23px auto 0px auto; width:100%;text-align: center;}
+#info ul{margin: 0px; padding: 0px; list-style-type: none; }
+#info li {display:inline; margin: 0px 0px 0px 20px;}      
+
+#footer {
+   position: relative;
+   margin-top: 100px;                   
+   width: 1200px;                                     
+   margin-left: auto;
+   margin-right: auto;
+   font-size: 18px;
+   text-align: center;
+}
+#footer a {
+    color: rgb(110,110,110);
+    color:#2d8fc1;
+    text-decoration: underline;
+}   
+
+header .iobio-project {font-size:18px; letter-spacing:6px;margin-top:8px; margin-right: 33px; color: rgb(120,120,120)}
+header .iobio-project a {color: rgb(120,120,120)}
+header .iobio-project a:hover {color:#2d8fc1;}
+               
+
+
+
 
