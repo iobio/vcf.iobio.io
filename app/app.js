@@ -45,7 +45,7 @@ var	samplingMultiplierLimit = 4;
 
 var statsOptions = {	
 	samplingMultiplier: 1,
-	binSize : 60000, 
+	binSize : 80000, 
     binNumber : 40,
     start : 1
 };
