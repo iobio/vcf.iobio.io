@@ -37,16 +37,16 @@
         
         <div id="selectData">
             <header><a href="http://vcf.iobio.io">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>            
-            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 100px">
-                <div style="margin-left:auto;margin-right:auto;font-size: 33px; color: rgb(110,110,110); margin-bottom:40px">                
-                    vcf.iobio.io uses realtime sampling to generate global statistics of your vcf file in a few seconds.
+            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 70px">
+                <div style="margin-left:auto;margin-right:auto;font-size: 38px; color: rgb(110,110,110); margin-bottom:40px">                
+                    examine your variant file in seconds
                 </div>
                 
                 <div class="file" onClick="$('#vcf-url').css('visibility', 'hidden')">
                     <input type="file" name="files[]" id="file"  multiple />
-                    <label class="file-button" for="file" >Choose VCF File</label>
+                    <label class="file-button" for="file" >choose vcf file</label>
                 </div>
-                <div class="file-button" style="text-align:center" onClick="displayVcfUrlBox()">Choose VCF URL</div>
+                <div class="file-button" style="text-align:center" onClick="displayVcfUrlBox()">choose vcf url</div>
                 <div style="clear:both"></div>
 
             </div>
@@ -59,20 +59,6 @@
 
                 <table cellspacing="5px" width="700px">
 
-                <tr >
-                    <td>
-                        A 1000 Genomes Whole Sequencing
-                    </td>
-
-                    <td>
-                        <a href="http://www.1000genomes.org/data">Website</a>
-                    </td>
-
-                    <td>
-                        <a href="http://vcf.iobio.io?vcf=http://s3.amazonaws.com/vcf.files/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5.20130502.sites.vcf.gz">Show in vcf.iobio.io</a>
-                    </td>
-                </tr>
-
                 <tr>
                     <td>
                         Exome Aggregation Consortium (ExAC)
@@ -82,18 +68,46 @@
                         <a href="http://exac.broadinstitute.org/about">Website</a>
                     </td>
 
+                     <td>
+                        File
+                    </td>
+
+
                     <td>
-                        <a href="http://vcf.iobio.io?vcf=http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz">Show in vcf.iobio.io</a>
+                        <a href="http://vcf.iobio.io?vcf=http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz">Show in vcf.iobio</a>
                     </td>
                 </tr>
 
+
+                <tr >
+                    <td>
+                        1000 Genomes Project 
+                    </td>
+
+                    <td>
+                        <a href="http://www.1000genomes.org/data">Website</a>
+                    </td>
+
+                    <td>
+                        File
+                    </td>
+
+                    <td>
+                        <a href="http://vcf.iobio.io?vcf=http://s3.amazonaws.com/vcf.files/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5.20130502.sites.vcf.gz">Show in vcf.iobio</a>
+                    </td>
+                </tr>
+
+
                 </table>
 
+                <div style="margin-top: 20px"><strong>For sequence alignment files check out </strong><a href="http://bam.iobio.io">bam.iobio</a></div>    
             </div>
+
+
             <div id="footer">            
-                <div id="help"><a href="help.html">Help</a></div>
+                <div id="help"><a href="help.html">File Requirements</a></div>
                 <div id="license"><a href="http://bam.iobio.io/license.html">License</a></div>
-                <div id="browser-compatability"><a href="http://bam.iobio.io/images/browserCompatability.png">Browsers</a></div>
+                
                 <div style="clear:both"></div>
             </div>
         </div>

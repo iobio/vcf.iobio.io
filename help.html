@@ -47,44 +47,46 @@
 
 <h1>The compressed and indexed VCF</h1>   
 
-Compressing VCF files with BGZip and indexing it with Tabix is the standard way VCF files are stored, and is the format that vcf.iobio.io supports. The software to compress and index VCF files is called Tabix. developed by Heng Li at the Broad Institute.  The source code is available on SourcForge and can be obtained at <a href="http://sourceforge.net/projects/samtools/files/tabix/">http://sourceforge.net/projects/samtools/files/tabix/</a>.
+Compressing VCF files with BGZip and indexing it with Tabix is the standard way VCF files are stored, and is the format that vcf.iobio.io supports. The software to compress and index VCF files is called Tabix, developed by Heng Li at the Broad Institute.  The source code is available on SourceForge and can be obtained at: <a href="http://sourceforge.net/projects/samtools/files/tabix/">http://sourceforge.net/projects/samtools/files/tabix/</a>
 
 <h3>Compiling Tabix</h3>
 
 <h4>Linux</h4>
-Install C compiler and the 'make' utility with the package management system of your specific Linux distribution. In the case of Ubuntu, the following command should suffice
+Install C compiler and the 'make' utility with the package management system of your specific Linux distribution. In the case of Ubuntu, the following command should suffice:
 <pre>
 	$ sudo apt-get install build-essential
-	$ tar -xzf tabix-0.2.6.tar.bz2
+	$ tar -xjf tabix-0.2.6.tar.bz2
 	$ cd tabix-0.2.6
 	$ make
 </pre>
 
 <h4>Mac OS X</h4>
-The compiler toolchain is contained in Xcode, Apple's free software development platform. After installing Xcode from the Mac App Store, tabix can be compiled as following
-<pre>
-	$ tar -xzf tabix-0.2.6.tar.bz2
-	$ cd tabix-0.2.6
-	$ make
-</pre>
-We also provide the precompiled static binaries of bgzip and tabix, as well as a simple GUI application for Mac users, all of which can be downloaded here.
+
+We provide the precompiled static binaries of bgzip and Tabix, as well as a simple GUI application for Mac users, all of which can be downloaded here:
+<p>
+<a href="iTabixit.zip">iTabixit GUI</a>
 <p>
 <a href="TabixBinary.zip">Tabix and BGZip binaries</a>
 <p>
-<a href="iTabixit.zip">GUI iTabixit</a>
-<p>
+
+The compiler toolchain is contained in Xcode, Apple's free software development platform. After installing Xcode from the Mac App Store, Tabix can be compiled as follows:
+<pre>
+	$ tar -xjf tabix-0.2.6.tar.bz2
+	$ cd tabix-0.2.6
+	$ make
+</pre>
 
 
 <h3>Compressing and Indexing your VCF</h3>
 
-Once you have successfully compiled tabix (and bgzip), you can compress your vcf files with the following command:
+Once you have successfully compiled Tabix (and bgzip), you can compress your vcf files with the following command:
 <pre>
 	$ /path/to/tabix/bgzip myvcf.vcf
 	$ /path/to/tabix/tabix -p vcf myvcf.vcf.gz
 </pre>
 These two commands will create two new files: the compressed vcf (.vcf.gz) and the index (.vcf.gz.tbi).  Now you are ready to run <a href="index.html">vcf.iobio</a>, selecting these two files when prompted. 
 <p>
-Usage instructions for Tabix and BGZip can be found at <a href="http://samtools.sourceforge.net/tabix.shtml">http://samtools.sourceforge.net/tabix.shtml</a>
+The manual page for Tabix and BGZip can be found at <a href="http://samtools.sourceforge.net/tabix.shtml">http://samtools.sourceforge.net/tabix.shtml</a>
 
 
 </body>
