@@ -40,7 +40,7 @@ header a:visited {color:none;}
 header a {text-decoration:none; color:#2d8fc1;}
 
 #footer {
-     margin-top: 80px;
+     margin-top: -20px;
      width: 350px;                   
      margin-left: auto;
      margin-right: auto;
