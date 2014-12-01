@@ -418,7 +418,7 @@ function loadVariantDensityData(ref, i) {
 
 	// Get the point data (the estimated density)
 	var data = vcfiobio.getEstimatedDensity(ref.name, 
-		true, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
+		false, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 	// Calculate the width and height of the panel as it may have changed since initialization
 	getChartDimensions();
@@ -446,7 +446,7 @@ function loadVariantDensityData(ref, i) {
 
 			// Get the estimated density for the reference (already in memory)
 			var data = vcfiobio.getEstimatedDensity(ref.name, 
-				true, densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
+				false, densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
 
 			// Now filter the estimated density data to only include the points that fall within the selected
 			// region
@@ -483,7 +483,7 @@ function loadGenomeVariantDensityData(ref, i) {
 	variantDensityRefVF.width(densityPanelDimensions.width);
 
 	
-	var data = vcfiobio.getGenomeEstimatedDensity( densityOptions.removeSpikes, 
+	var data = vcfiobio.getGenomeEstimatedDensity(false, densityOptions.removeSpikes, 
 		densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 	

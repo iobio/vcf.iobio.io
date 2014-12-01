@@ -57,7 +57,7 @@ function estimateCoverageDepth (indexReader, cb) {
         return rdrThis.estimates;
     } else {
         var indexWreads =
-            rdrthis.idxContent.indexseq.reduce(
+            rdrThis.idxContent.indexseq.reduce(
                 function(V, x, i, _){
                     if (x.n_bin != 0 || x.n_intv != 0)
                         V.push([x, i]);
@@ -92,7 +92,8 @@ function estimateCoverageDepth (indexReader, cb) {
                                      pos: position, depth: readDepth});
                                 return segs;
                             }, []);
-                    return RD[ref] = refsegs;
+                    RD[ref] = refsegs;
+                    return RD;
                 }, {});
         return estimateCoverageDepth(indexReader, cb);
     };

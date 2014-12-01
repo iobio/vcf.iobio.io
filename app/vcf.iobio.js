@@ -171,23 +171,6 @@ vcfiobio = function module() {
         var indexseq = tbiIdx.idxContent.indexseq[i];
         var refLength = indexseq.n_intv * size16kb;
 
-        // Use the bins to load the density data
-        var bhash = tbiIdx.bhash[i];
-        var points = [];
-        for (var bin in bhash) {
-          if (bin >= start16kbBinid && bin <= end16kbBinid) {
-            var ranges = tbiR.bin2Ranges(i, bin);
-            var depth = 0;
-            for (var r = 0; r < ranges.length; r++) {
-              var range = ranges[r];
-              depth += range[1] - range[0];
-            }
-            var position = (bin - start16kbBinid) * size16kb;
-            var point = [position, depth];
-            points.push(point);
-          }
-        }
-
         // Use the linear index to load the estimated density data
         var intervalPoints = [];
         for (var x = 0; x < indexseq.n_intv; x++) {
@@ -201,13 +184,35 @@ vcfiobio = function module() {
 
 
         // Load the reference density data.  Exclude reference if 0 points.
-        //if (points.length > 0 ) {
-            refDensity[ref] = {"idx": i, "points": points, "intervalPoints": intervalPoints};
-            refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": i});
-        //}
+        refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints, };
+        refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": i});
 
 
       }
+
+      // Call function from js-bv-sampling to obtain point data.
+      estimateCoverageDepth(tbiIdx, function(estimates) {
+
+      for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {
+
+          
+          var refName   = tbiIdx.idxContent.head.names[i];
+          var pointData = estimates[i];
+          var refLength = pointData[pointData.length - 1].pos + size16kb;
+
+          //refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": + i});
+          refObject = refDensity[refName];
+          refObject.points = [];
+          
+          for (var x = 0; x < pointData.length; x++) {
+            var point = [pointData[x].pos, pointData[x].depth];
+            refObject.points.push(point);
+          }
+        }
+
+      });
+
+
       callback.call(this, refData);
 
     });
@@ -312,11 +317,13 @@ vcfiobio = function module() {
     return points;
   }
 
-  exports.getGenomeEstimatedDensity = function(removeTheDataSpikes, maxPoints, rdpEpsilon) {
+  exports.getGenomeEstimatedDensity = function(useLinearIndex, removeTheDataSpikes, maxPoints, rdpEpsilon) {
     var allPoints = [];
     var offset = 0;
     for (var i = 0; i < refData.length; i++) {
-      var points = refDensity[refData[i].name].intervalPoints;
+
+      var points = useLinearIndex ? refDensity[refData[i].name].intervalPoints.concat() : refDensity[refData[i].name].points.concat();
+
       var offsetPoints = [];
       for (var x = 0; x < points.length; x++) {
         offsetPoints.push([points[x][0] + offset, points[x][1]]);
