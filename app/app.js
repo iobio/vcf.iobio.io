@@ -291,7 +291,13 @@ function init() {
 
 function displayVcfUrlBox() {
     $('#vcf-url').css('visibility','visible');
+    $('#vcf-url-button-panel').css('visibility','visible');
     $("#vcf-url").children("input").focus();
+
+}
+function onFileButtonClicked() {
+	$('#vcf-url').css('visibility', 'hidden');	
+	$('#vcf-url-button-panel').css('visibility', 'hidden');	
 }
 
 function onUrlEntered() {

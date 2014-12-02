@@ -65,7 +65,7 @@
                     <center>examine your variant file in seconds</center>
                 </div>
                 
-                <div class="file" onClick="$('#vcf-url').css('visibility', 'hidden')">
+                <div class="file" onClick="onFileButtonClicked()">
                     <input type="file" name="files[]" id="file"  multiple />
                     <label class="file-button" for="file" >choose vcf file</label>
                 </div>
@@ -74,8 +74,12 @@
 
             </div>
             <div id='vcf-url' style="visibility:hidden" class="arrow_box">
-                <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input><button id="vcf-url-go-button" onClick="onUrlEntered()">Go</button>
+                <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input>
             </div>
+            <div id="vcf-url-button-panel" style="visibility:hidden; width: 670px; margin-left: auto; margin-right: auto;">
+                <button id="vcf-url-go-button" onclick="onUrlEntered()">Go</button>
+            </div>
+            
 
             <div style="clear:both"></div>
             <div id="info">                                
@@ -87,7 +91,7 @@
             </div>
 
             
-            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 0px">
+            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 30px">
 
                 <strong>Variant files to try</strong>
 

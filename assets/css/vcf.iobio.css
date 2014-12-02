@@ -1,3 +1,9 @@
+#vcf-url-go-button  { 
+  font:300 28px quicksand;
+  margin-top: 4px;
+  float: right;
+}
+
 .chart rect {
     fill: rgb(49, 102, 147);
 }
@@ -442,7 +448,7 @@ section#bottom {
 }
 
 
-#info { margin: 8px auto 0px auto; width:100%;text-align: center;}
+#info { margin: 70px auto 0px auto; width:100%;text-align: center;}
 #info ul{margin: 0px; padding: 0px; list-style-type: none; }
 #info li {display:inline; margin: 0px 0px 0px 20px;}      
 
