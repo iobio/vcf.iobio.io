@@ -603,7 +603,12 @@ header .iobio-project a:hover {color:#2d8fc1;}
        text-align: center;
     }
 
-   
+   .arrow_box input {
+        width:  80%;
+    }
+    .arrow_box button { 
+      display: inline;
+    }
 
 }              
 
