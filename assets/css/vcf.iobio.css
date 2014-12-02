@@ -441,8 +441,8 @@ section#bottom {
 
 #footer {
    position: relative;
-   margin-top: 60px;                   
-   width: 1200px;                                     
+   margin-top: 80px;                   
+   width: 100%;                                     
    margin-left: auto;
    margin-right: auto;
    font-size: 18px;
@@ -453,6 +453,20 @@ section#bottom {
     color:#2d8fc1;
     text-decoration: underline;
 }   
+
+.logos {
+
+    display: -webkit-flex;
+    display:         flex;
+    display: -ms-flexbox;
+    -webkit-flex-flow: row wrap;
+            flex-flow: row wrap;
+    -webkit-justify-content: space-around;        
+            justify-content: space-around;
+    -webkit-align-items: center;
+           align-items: center;        
+}
+
 
 header .iobio-project {font-size:18px; letter-spacing:6px;margin-top:8px; margin-right: 33px; color: rgb(120,120,120)}
 header .iobio-project a {color: rgb(120,120,120)}
@@ -578,6 +592,18 @@ header .iobio-project a:hover {color:#2d8fc1;}
                 order: 3;
          height: 200px;                               
     }
+
+    #footer {
+       position: relative;
+       margin-top: 60px;                   
+       width: 100%;                                     
+       margin-left: auto;
+       margin-right: auto;
+       font-size: 18px;
+       text-align: center;
+    }
+
+   
 
 }              
 

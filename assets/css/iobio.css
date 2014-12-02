@@ -39,16 +39,7 @@ header {
 header a:visited {color:none;}
 header a {text-decoration:none; color:#2d8fc1;}
 
-#footer {
-     margin-top: -20px;
-     width: 350px;                   
-     margin-left: auto;
-     margin-right: auto;
-     font-size: 18px;
-}
-#footer a {
-    color: rgb(110,110,110);
-}
+
 #help { 
   float:left;
   margin-right: 80px;
@@ -174,7 +165,7 @@ section#top {
 .arrow_box input {
     border: none;
     outline: none;
-    width:  90%;
+    width:  87%;
     margin: 8px;
     color: #2d8fc1;
     font: 400 18px quicksand;
