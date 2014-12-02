@@ -121,14 +121,14 @@ barChartAltD3 = function module() {
                 .attr('height', function(d) { return height; })
             
             bars.enter().append("text")
-                .classed("chartlabel", true)
-                .attr("x", function(d, i) { return d.offset + (d.width / 2)})
-                .attr("y", function(d, i) { return (height / 2) + 3 })
-                .style("text-anchor", "middle")
-                .text(function(d) { return name(d) })
-                .on("click", function(d, i) {
-                    dispatch.clickbar(d, i); 
-                 });
+                    .classed("chartlabel", true)
+                    .attr("x", function(d, i) { return d.offset + (d.width / 2)})
+                    .attr("y", function(d, i) { return (height / 2) + 3 })
+                    .style("text-anchor", "middle")
+                    .text(function(d) { return name(d) })                
+                    .on("click", function(d, i) {
+                        dispatch.clickbar(d, i); 
+                     });
             
             
 

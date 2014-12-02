@@ -122,6 +122,7 @@ text.chartlabel {
 	
 	font-size: 9px;
 	fill: white;
+    text
 }
 
 text.chartlabelSelected {
@@ -441,6 +442,7 @@ section#bottom {
   font-weight: bold;
   cursor: pointer;
   font-size: 11px;
+  pointer-events: none;
 }
 
 #variant-density-ref-vf svg g rect:hover {
