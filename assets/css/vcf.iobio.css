@@ -460,7 +460,7 @@ header .iobio-project a:hover {color:#2d8fc1;}
 
 
 /* For mobile phones in portrait view */
-@media screen and (max-device-width:1000px), screen and (max-width:1000px) {
+@media screen and (max-device-width:900px), screen and (max-width:900px), screen and (orientation : portrait) {
 
     section#banner {
         -webkit-flex-flow: row wrap;
@@ -532,12 +532,13 @@ header .iobio-project a:hover {color:#2d8fc1;}
        
     }
 
-    #variant-density-panel {
-    -webkit-flex: 1 0 100%;
-            flex: 1 0 100%;
+
+}              
+
+/* For mobile phones  */
+@media screen and (max-device-width:1000px), screen and (max-width:1000px) {
 
 
-    }
     section#middle {
         -webkit-flex-flow: row wrap;
                 flex-flow: row wrap;
