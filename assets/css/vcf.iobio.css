@@ -460,7 +460,8 @@ header .iobio-project a:hover {color:#2d8fc1;}
 
 
 /* For mobile phones in portrait view */
-@media screen and (max-device-width:768px), screen and (max-width:768px), screen and (orientation : portrait) {
+@media screen and (max-device-width:768px) and (orientation : portrait), 
+       screen and (max-width:768px) and (orientation : portrait) {
     
 
     section#top {
