@@ -40,6 +40,13 @@ text.y.axis.label {
     font-size: 12px;
 }
 
+#vcf-url {
+    margin-top:24px;
+    width:670px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 
 #mut-spectrum text.x.axis.label {
 font-size: 11px;
@@ -603,12 +610,7 @@ header .iobio-project a:hover {color:#2d8fc1;}
        text-align: center;
     }
 
-   .arrow_box input {
-        width:  540px;
-    }
-    .arrow_box button { 
-      display: inline;
-    }
+   
 
 }              
 
