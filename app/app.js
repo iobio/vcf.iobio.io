@@ -175,10 +175,10 @@ function init() {
 	// TSTV grouped barchart (to show ratio)
 	tstvChart = groupedBarD3();
 	var tstvCategories =  ["TS", "TV"];
-	tstvChart.width(140)
-	    .height(60)
-	    .widthPercent("65%")
-	    .heightPercent("65%")
+	tstvChart.width($("#tstv-ratio").width()  - 20)
+	    .height($("#tstv-ratio").height() - 130)
+	    .widthPercent("100%")
+	    .heightPercent("100%")
 		.margin( {left: 10, right: 10, top: 30, bottom: 10})
 		.showXAxis(true)
 		.showYAxis(false)
