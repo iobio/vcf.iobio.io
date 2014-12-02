@@ -4,6 +4,14 @@
   float: right;
 }
 
+#all-text1 {
+    pointer-events: none;
+}
+
+#all-circle:hover {
+    cursor: pointer;
+}
+
 .chart rect {
     fill: rgb(49, 102, 147);
 }

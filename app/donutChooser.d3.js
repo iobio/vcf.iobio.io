@@ -18,7 +18,6 @@ donutChooserD3 = function module() {
                });
 
   var color = d3.scale.category20b();
-  var currentSlice = null;
   var sliceApiSelected = null;
   var options = null;
   var arcs = null;
@@ -86,15 +85,15 @@ donutChooserD3 = function module() {
       .attr("fill", 'none')
       .on("mouseover", function(d) {
         if (clickedSlices.length == 0) {
-          _selectAllCircle(true);     
-          d3.select(this).attr("cursor", "pointer");
+          _selectAllCircle(true);               
         }
+        d3.select(this).attr("cursor", "pointer");
       })
       .on("mouseout", function(d) {
         if (clickedSlices.length == 0) {
           _selectAllCircle(false);
-          d3.select(this).attr("cursor", "default");
         }
+        d3.select(this).attr("cursor", "default");
       });
       g.append("text")
         .attr("id", "all-text")
@@ -109,14 +108,14 @@ donutChooserD3 = function module() {
         .on("mouseover", function(d) {
           if (clickedSlices.length == 0) {
             _selectAllCircle(true);
-            d3.select(this).attr("cursor", "pointer");
-          }
+          } 
+          d3.select(this).attr("cursor", "pointer");
         })
         .on("mouseout", function(d) {
           if (clickedSlices.length == 0) {
             _selectAllCircle(false);         
-            d3.select(this).attr("cursor", "pointer");
           }
+          d3.select(this).attr("cursor", "pointer");
         });
 
       arcs.append("text")
@@ -132,9 +131,15 @@ donutChooserD3 = function module() {
 
       arcs.on("mouseover", function(d, i) {
               d3.select(this).attr("cursor", "pointer");
-              if (clickedSlices.length == 0) {
-                 _selectSlice.call(this, d, i, null, true);
-              }
+              _selectSlice.call(this, d, i, null, true);
+
+              //d3.select(this.parentNode).selectAll("g.arc").selectAll("path").style("opacity", ".75");
+
+              d3.select(this).select("path")
+                .style("stroke", "darkturquoise")
+                .style("stroke-width", "2")
+                .style("opacity", 1);
+              
             }) 
           .on("mouseout", function(d) {
               d3.select(this).attr("cursor", "default");
@@ -144,6 +149,11 @@ donutChooserD3 = function module() {
                   .transition()
                   .duration(150).attr("transform", "translate(0,0)"); 
               }
+              //d3.select(this.parentNode).selectAll("g.arc").selectAll("path").style("opacity", "1");
+                  
+              d3.select(this).select("path")
+                    .style("stroke-width", "0");
+
             })
           .on("click", function(d, i) {
               _clickSlice(this, d, i, true);
@@ -323,7 +333,8 @@ donutChooserD3 = function module() {
             .attr("transform", "translate("+x+","+y+")"); 
 
         }
-        this.currentSlice = theSlice;
+
+
   }
 
 
