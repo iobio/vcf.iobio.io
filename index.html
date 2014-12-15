@@ -18,6 +18,7 @@
         <link href='http://fonts.googleapis.com/css?family=Overlock+SC' rel='stylesheet' type='text/css'>
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
         <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
+        <link href="assets/css/modal.css" rel="stylesheet" type='text/css'>
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.core.css" />
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.default.css" />
@@ -155,7 +156,10 @@
         <div  id="showData">
 
             <div id="page" >
-                <section id="banner">
+                <div>
+                    <a id="report-problem" href="#modal-report-problem">Report Problem</a>
+                </div>
+                <section id="banner" style="clear: both">
     				
                     <div id="banner-title" >
                         <header><a href="http://vcf.iobio.io">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
@@ -169,24 +173,27 @@
                             <div id="region_selected"></div>
                         </div>
                     </div>
-    				
+
+
+
                     <div id="total-reads" >
-                        
                         <div >
                             <span id="value"> 0</span>
                         </div>
-                        <div style="padding-left: 4px" >
-                            <div id="number"></div>
+                        <div style="padding: 4px" >
+                            <div id="number">&nbsp;</div>
                             <div id="label">variants sampled</div>
                         </div>
-                        <div style="padding-left: 10px">
-                            <img style="width: 20px; height: 20px;"  
+                        <div style="padding-top: 10px">
+                            <img id="sample-more-button"   
                                  title="Sample More" 
                                  onClick="increaseSampling()"
                                  src="assets/images/more_sampling.png">
                              </img>
                         </div>
+
                     </div>
+    				
     			</section>
 
                 <section id="top" >
@@ -210,7 +217,7 @@
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="variant-density">
                         </div>    
-                        <div id="variant-density-vf" style="margin-top:  -8px;">
+                        <div id="variant-density-vf" >
 
                         </div>
                         <div id="variant-density-ref-vf">
@@ -269,6 +276,31 @@
     		</div>
         </div>
 
+
+<!-- Modal -->
+<div class="modal" id="modal-report-problem" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h2>Report Problem</h2>
+      <a href="#close" class="btn-close" aria-hidden="true">×</a> <!--CHANGED TO "#close"-->
+    </div>
+    <div class="modal-body">
+       <div>
+         <span class="label">Your email</span><input id="report-problem-email" type="text" ></input>
+      </div>
+      <div style="margin-top:10px; margin-bottom:10px">
+         <span class="label"</span>Description of problem<textarea id="report-problem-note" ></textarea>
+      </div>
+      <span class="label"</label>Screen Capture</span>
+      <div id="report-problem-screen-capture">
+    </div>    
+    <div class="modal-footer">
+      <a  id="report-problem-button" href="#email-report-problem"  class="btn">Report</a>  <!--CHANGED TO "#close"-->
+    </div>
+    </div>
+  </div>
+</div>
+<!-- /Modal -->
         
         <script>
             var div = d3.select("body").append("div")   

@@ -287,6 +287,61 @@ function init() {
          _loadVcfFromUrl(vcfUrl);
     }
 
+    $('#report-problem').on('click', displayReportProblem);
+
+    $('#report-problem-button').on('click', emailProblem);
+
+}
+
+function displayReportProblem() {
+	$('#report-problem-email').val("");
+	$('#report-problem-note').val("");
+
+	$('#primary-references svg').height("150px");
+	$('#primary-references svg').width("150px");
+	$('#ratio-panel svg').height("130px");
+	$('#ratio-panel svg').width("300px");
+
+
+	$('#report-problem-screen-capture').html("");
+	$('#report-problem-screen-capture').append( '<section id="banner">' + $('section#banner').html() + '</section>');
+	$('#report-problem-screen-capture').append( '<section id="top">'    + $('section#top').html()    + '</section>');
+	$('#report-problem-screen-capture').append( $('section#middle').html());
+	$('#report-problem-screen-capture').append( $('section#bottom').html());
+
+}
+
+function emailProblem() {
+	$.valHooks.textarea = {
+    	get: function(elem) {
+        	return elem.value.replace(/\r?\n/g, "<br>");
+    	}
+	};
+
+	var email = $('#report-problem-email').val();
+	var note  = $('#report-problem-note').val();
+
+	var email_body = '<html>';
+
+	email_body    += '<head>';
+	email_body    += '<link href="http://fonts.googleapis.com/css?family=Quattrocento+Sans" rel="stylesheet" type="text/css">';
+    email_body    += '<link rel="stylesheet" href="http://localhost/vcf.iobio.io/assets/css/iobio.css" type="text/css">';
+    email_body    += '<link rel="stylesheet" href="http://localhost/vcf.iobio.io/assets/css/vcf.iobio.css" type="text/css">';
+    email_body    += '<link rel="stylesheet" href="http://localhost/vcf.iobio.io/assets/css/standalone.css" type="text/css">';
+	email_body    += '</head>';
+	
+	email_body    += '<body>';
+	email_body    += '<div id="report-problem-screen-capture">';
+	email_body    += $('#report-problem-screen-capture').html();
+	email_body    += '</div>'
+	email_body    += '</body>'
+
+	email_body    += '</html>';
+
+	vcfiobio.sendEmail(email_body, email, note);
+
+	
+    
 }
 
 function displayVcfUrlBox() {
@@ -565,10 +620,10 @@ function renderStats(stats) {
 	var readParts = shortenNumber(stats.TotalRecords);
 	d3.select("#total-reads")
 			.select("#value")
-			.text(readParts[0]);
+			.text(readParts[0] || "&nbsp;");
 	d3.select("#total-reads")
 			.select("#number")
-			.text(readParts[1] || "");
+			.text(readParts[1] || "&nbsp;");
 
 
 	// TsTv Ratio

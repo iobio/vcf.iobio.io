@@ -68,11 +68,13 @@ vcfiobio = function module() {
   //var vcfstatsAliveServer    = "ws://localhost:7070";
   //var tabixServer            = "ws://localhost:7090";
   //var vcfReadDeptherServer   = "ws://localhost:7062";
+  //var emailServer            = "ws://localhost:7068";
   //var catInputServer         = "ws://localhost:7063";
 
   var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
   var tabixServer            = "ws://tabix.iobio.io";
   var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
+  var emailServer            = "ws://localhost:7068";
   var catInputServer         = "ws://localhost:7063";
 
   var vcfURL;
@@ -584,6 +586,28 @@ vcfiobio = function module() {
     } 
     return regions;     
 
+  }
+
+  /*
+  *
+  *  Stream the vcf.iobio snapshot (html) to the emailServer which
+  *  will email a description of the problem along with an html file attachment
+  *  that is the snapshop of vcfiobio.
+  */
+  exports.sendEmail = function(screenContents, email, note) {
+    var client = BinaryClient(emailServer);
+    client.on('open', function(stream){
+      var stream = client.createStream(
+      {
+        'from':     email, 
+        'to':       'vcfiobio@googlegroups.com',
+        'subject':  'vcf.iobio.io Issue - Reported by ' + email,
+        'filename': 'vcfiobio_snapshot.html',
+        'note':     note
+      });
+      stream.write(screenContents);
+      stream.end();
+    });
   }
 
 

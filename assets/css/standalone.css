@@ -1,0 +1,30 @@
+#report-problem-screen-capture {
+    height: 100%;
+    width: 800px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    border: #B8B9BA solid 1px;
+    opacity: 1;
+}
+
+#variant-density-vf {
+    margin-top: -170px;
+}
+
+#variant-density-ref-vf {
+    margin-top: -170px;
+}
+
+#variant-density {
+    margin-top: -50px;
+}
+#sample-more-button {
+    display: none;
+    visibility: hidden;
+}
+
+body {
+    font-family: 'Quattrocento Sans';
+}
