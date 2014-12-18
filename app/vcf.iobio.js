@@ -596,14 +596,25 @@ vcfiobio = function module() {
   */
   exports.sendEmail = function(screenContents, email, note) {
     var client = BinaryClient(emailServer);
+    // Strip of the #modal-report-problem from the URL
+    var theURL = location.href;
+    if (theURL.indexOf("#modal-report-problem") > -1){
+      theURL = theURL.substr(0, theURL.indexOf("#modal-report-problem"));
+    }
+
+    // Format the body of the email
+    var htmlBody = '<span style="padding-right: 4px">Reported by:</span>' + email  + "<br><br>" + 
+                   '<span style="padding-right: 51px">URL:</span>'         + theURL + "<br><br>" + 
+                   note + '<br><br>';
+
     client.on('open', function(stream){
       var stream = client.createStream(
       {
         'from':     email, 
         'to':       'vcfiobio@googlegroups.com',
-        'subject':  'vcf.iobio.io Issue - Reported by ' + email,
+        'subject':  'vcf.iobio.io Issue',
         'filename': 'vcfiobio_snapshot.html',
-        'note':     note
+        'body':     htmlBody
       });
       stream.write(screenContents);
       stream.end();
