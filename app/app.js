@@ -28,8 +28,9 @@ var regionStart = null;
 var regionEnd = null;
 var afData = null;
 
+
 var densityOptions = {
-	removeSpikes: true,
+	removeSpikes: false,
     maxPoints: 1000,
     epsilonRDP: null
 }
@@ -481,6 +482,7 @@ function loadVariantDensityData(ref, i) {
 	var data = vcfiobio.getEstimatedDensity(ref.name, 
 		false, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
+
 	// Calculate the width and height of the panel as it may have changed since initialization
 	getChartDimensions();
 	variantDensityChart.width(densityPanelDimensions.width);
@@ -507,13 +509,18 @@ function loadVariantDensityData(ref, i) {
 
 			// Get the estimated density for the reference (already in memory)
 			var data = vcfiobio.getEstimatedDensity(ref.name, 
-				false, densityRegionOptions.removeSpikes, densityRegionOptions.maxPoints, densityRegionOptions.epsilonRDP);
+				false, densityRegionOptions.removeSpikes, null, densityRegionOptions.epsilonRDP);
 
 			// Now filter the estimated density data to only include the points that fall within the selected
 			// region
 			var filteredData = data.filter(function(d) { 
 				return (d[0] >= regionStart && d[0] <= regionEnd) 
 			});
+
+			// Now let's aggregate to show in 900 px space
+			var factor = d3.round(filteredData.length / 900);
+      		filteredData = vcfiobio.reducePoints(filteredData, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+    
 
 			// Show the variant density for the selected region
 			variantDensityChart(d3.select("#variant-density").datum(filteredData), onVariantDensityChartRendered);
@@ -620,10 +627,13 @@ function renderStats(stats) {
 	var readParts = shortenNumber(stats.TotalRecords);
 	d3.select("#total-reads")
 			.select("#value")
-			.text(readParts[0] || "&nbsp;");
+			.text(readParts[0] || " ");
 	d3.select("#total-reads")
 			.select("#number")
-			.text(readParts[1] || "&nbsp;");
+			.text(readParts[1] || " ");
+	d3.select("#total-reads")
+			.select("#label")
+			.style("padding-top", (readParts.length > 1 ? "0px" : "10px"));
 
 
 	// TsTv Ratio
