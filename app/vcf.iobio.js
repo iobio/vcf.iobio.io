@@ -184,7 +184,6 @@ vcfiobio = function module() {
           
         }
 
-
         // Load the reference density data.  Exclude reference if 0 points.
         refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints, };
         refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": i});
@@ -200,6 +199,41 @@ vcfiobio = function module() {
           
           var refName   = tbiIdx.idxContent.head.names[i];
           var pointData = estimates[i];
+
+          // Sort by position of read; otherwise, we get a wonky
+          // line chart for read depth.  (When a URL is provided,
+          // bamtools returns a sorted array.  We need this same
+          // behavior when the BAM file is loaded from a file
+          // on the client.
+          pointData = pointData.sort(function(a,b) {
+              var x = +a.pos; 
+              var y = +b.pos;
+              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+          });  
+
+          // Zero fill any 16kb points not in array
+          var zeroPointData = [];
+          for (var x = 1; x < pointData.length - 1; x++) {
+              var posPrev = pointData[x-1].pos;
+              var pos     = pointData[x].pos;
+              var posDiff = pos - posPrev;
+              if (posDiff > size16kb) {
+                  var intervalCount = posDiff / size16kb;
+                  for (var y = 0; y < intervalCount; y++) {
+                    zeroPointData.push({pos: posPrev + (y*size16kb), depth: 0});
+                  }
+              }
+          }
+          if (zeroPointData.length > 0) {
+            pointData = pointData.concat(zeroPointData);
+            pointData = pointData.sort(function(a,b) {
+              var x = +a.pos; 
+              var y = +b.pos;
+              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });  
+
+          }
+
           var refLength = pointData[pointData.length - 1].pos + size16kb;
 
           //refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": + i});
