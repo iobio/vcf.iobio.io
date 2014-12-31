@@ -194,9 +194,9 @@ function init() {
 
 	// Allele freq chart
     alleleFreqChart = histogramD3()
-                       .width(455)
-                       .height(140)
-					   .margin( {left: 45, right: 0, top: 0, bottom: 20})
+                       .width(355)
+                       .height(120)
+					   .margin( {left: 45, right: 0, top: 10, bottom: 30})
 					   .xValue( function(d, i) { return d[0] })
 					   .yValue( function(d, i) { return Math.log(d[1]) })
 					   .yAxisLabel( "log(frequency)" )
