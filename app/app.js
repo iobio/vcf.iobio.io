@@ -214,7 +214,7 @@ function init() {
 
 	// Mutation spectrum grouped barchart
 	mutSpectrumChart = groupedBarD3();
-	mutSpectrumChart.width(455)
+	mutSpectrumChart.width(355)
 	    .height(120)
 	    .widthPercent("95%")
 	    .heightPercent("90%")
