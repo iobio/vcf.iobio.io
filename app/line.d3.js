@@ -11,10 +11,6 @@ lineD3 = function module() {
   var depth  = function(d) { return d.depth };
   var formatXTick = null;
 
-  // accessor after RDP conversion
-  var _pos   = function(d) { return d[0] };
-  var _depth = function(d) { return d[1] };
-
 
   var margin = {left: 50, right: 20, top: 10, bottom: 30};
 
@@ -45,6 +41,15 @@ lineD3 = function module() {
       var svg = d3.select(this)
                   .selectAll("svg")
                   .data([data]);
+
+      var x = d3.scale.linear()
+          .range([0, width]);
+
+      var y = d3.scale.linear()
+          .range([height , 0]);
+
+      x.domain(d3.extent(data, pos));
+      y.domain([0, d3.max(data, depth)]);
 
       svg.enter()
         .append("svg")
@@ -90,19 +95,35 @@ lineD3 = function module() {
 
       // Tooltip
       var formatter = d3.format(',');
-      svgGroup.on("mouseover", function() {  
+      svgGroup.on("mouseover", function(d) {  
+             mousex = d3.mouse(this);
+             mousex = mousex[0];
+             var invertedx = x.invert(mousex);
+             var pos1 = d3.event.pageX - $(this).position().left;
+             var invertedx1 = x.invert(pos1);
+             /*
              div.transition()        
                  .duration(200)      
                  .style("opacity", .9);      
-             div .html(formatter(parseInt(x.invert(d3.event.pageX - $(this).position().left))))
+
+              div.html(mousex + ' ' + invertedx + ' ' + pos1 + ' ' + invertedx1)
                  .style("left", (d3.event.pageX) + "px") 
                  .style("text-align", 'left')    
-                 .style("top", (d3.event.pageY - 24) + "px");    
+                 .style("top", (d3.event.pageY - 24) + "px");   
+              */ 
              })                  
-         .on("mousemove", function() {       
-            div.html(formatter(parseInt(x.invert(d3.event.pageX - $(this).position().left))))
+         .on("mousemove", function() {    
+             mousex = d3.mouse(this);
+             mousex = mousex[0];
+             var invertedx = x.invert(mousex);
+             var pos1 = d3.event.pageX - $(this).position().left;
+             var invertedx1 = x.invert(pos1);
+             /*
+
+            div.html(mousex + ' ' + invertedx + ' ' + pos1 + ' ' + invertedx1)
                .style("left", (d3.event.pageX) + "px") 
                .style("top", (d3.event.pageY - 24) + "px");
+               */
           })               
          .on("mouseout", function() {       
              div.transition()        
@@ -110,16 +131,7 @@ lineD3 = function module() {
                  .style("opacity", 0);   
        });   
 
-        
-      var x = d3.scale.linear()
-          .range([0, width]);
-
-      var y = d3.scale.linear()
-          .range([height , 0]);
-
-      x.domain(d3.extent(data, _pos));
-      y.domain([0, d3.max(data, _depth)]);
-
+     
       var brush = d3.svg.brush()
         .x(x)
         .on("brushend", function() {
@@ -148,17 +160,17 @@ lineD3 = function module() {
 
       var line = d3.svg.line()
           .interpolate("linear")
-          .x(function(d,i) { return x(_pos(d)); })
-          .y(function(d) { return y(_depth(d)); });
+          .x(function(d,i) { return x(pos(d)); })
+          .y(function(d) { return y(depth(d)); });
 
       var area;
 
       if (kind == KIND_AREA) {
         area = d3.svg.area()
           .interpolate("linear")
-          .x(function(d) { return x(_pos(d)); })
+          .x(function(d) { return x(pos(d)); })
           .y0(height)
-          .y1(function(d) { return y(_depth(d)); });
+          .y1(function(d) { return y(depth(d)); });
       } 
 
       
