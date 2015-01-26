@@ -115,7 +115,7 @@ vcfiobio = function module() {
     var fileType1 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[1].name);
 
     if (fileType0 == null || fileType0.length < 3 || fileType1 == 0 || fileType1.length <  3) {
-      alter('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
+      alert('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
       return;
     }
 
@@ -341,7 +341,7 @@ vcfiobio = function module() {
 
     // Reduce point data to to a reasonable number of points for display purposes
     if (maxPoints) {
-      var factor = d3.round(points.length / 900);
+      var factor = d3.round(points.length / maxPoints);
       points = this.reducePoints(points, factor, function(d) { return d[0]; }, function(d) { return d[1]});
     }
 
