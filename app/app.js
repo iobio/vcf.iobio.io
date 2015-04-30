@@ -217,8 +217,8 @@ function init() {
 	mutSpectrumChart.width(355)
 	    .height(120)
 	    .widthPercent("95%")
-	    .heightPercent("90%")
-		.margin( {left: 45, right: 0, top: 10, bottom: 30})
+	    .heightPercent("85%")
+		.margin( {left: 45, right: 0, top: 15, bottom: 30})
 		.categories( ["1", "2", "3"] )
 		.categoryPadding(.5)
 		.fill( function(d, i) {
