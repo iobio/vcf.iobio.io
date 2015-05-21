@@ -424,23 +424,22 @@ vcfiobio = function module() {
       //
       // listen for stream data (the output) event. 
       //
-      stream.on('data', function(data, options) {
-         if (data == undefined) {
-            return;
-         } 
-         var success = true;
-         try {
-           var obj = JSON.parse(buffer + data);
-         } catch(e) {
-           success = false;
-           buffer += data;
-         }
-         if(success) {
-           buffer = "";
-           if (callback) {
-             callback(obj); 
+      stream.on('data', function(datas, options) {               
+         datas.split(';').forEach(function(data) {
+           if (data == undefined || data == "\n") return;
+           var success = true;
+           try {
+
+             var obj = JSON.parse(buffer + data)
+           } catch(e) {
+             success = false;
+             buffer += data;
            }
-         }               
+           if(success) {
+             buffer = "";
+             callback(obj);
+           }
+        });
       });
       
     });
