@@ -530,10 +530,10 @@ vcfiobio = function module() {
     regions.forEach(function(region) { 
       regionStr += " " + region.name + ":" + region.start + "-" + region.end 
     });
-    var tabixUrl = tabixServer + "?cmd=-h " + vcfURL + regionStr + "&encoding=binary";
+    var tabixUrl = tabixServer + "?protocol=websocket&cmd=-h " + vcfURL + regionStr + "&encoding=binary";
 
     // This is the full url for vcfstatsalive server which is piped its input from tabixserver
-    var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 1000 ' + encodeURIComponent(tabixUrl));
+    var url = encodeURI( vcfstatsAliveServer + '?protocol=websocket&cmd=-u 1000 ' + encodeURIComponent(tabixUrl));
 
     // Connect to the vcfstatsaliveserver    
     var client = BinaryClient(vcfstatsAliveServer);
