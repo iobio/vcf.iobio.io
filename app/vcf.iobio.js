@@ -71,9 +71,9 @@ vcfiobio = function module() {
   //var emailServer            = "ws://localhost:7068";
   //var catInputServer         = "ws://localhost:7063";
 
-  var vcfstatsAliveServer    = "ws://vcfstatsalive.iobio.io";
-  var tabixServer            = "ws://tabix.iobio.io";
-  var vcfReadDeptherServer   = "ws://vcfreaddepther.iobio.io";
+  var vcfstatsAliveServer    = "wss://vcfstatsalive.iobio.io";
+  var tabixServer            = "wss://tabix.iobio.io";
+  var vcfReadDeptherServer   = "wss://vcfreaddepther.iobio.io";
   var emailServer            = "ws://localhost:7068";
   var catInputServer         = "ws://localhost:7063";
 
