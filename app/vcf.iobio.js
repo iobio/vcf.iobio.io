@@ -413,109 +413,105 @@ vcfiobio = function module() {
   };  
 
   exports._streamVcf = function(server, callback) {
-
     var client = BinaryClient(server);
     var url = encodeURI( server + "?protocol=websocket&cmd=" + encodeURIComponent("http://client"));
 
     var buffer = "";
     client.on('open', function(){
-      var stream = client.createStream({event:'run', params : {'url':url}});
+      var stream = client.createStream({event:'run', params : {'url':url + '&debug=true'}});
+
+      // New local file streaming
+      stream.on('createClientConnection', function(connection) {
+        console.log('got create client request');
+        var ended = 0;
+        var dataClient = BinaryClient('ws://' + connection.serverAddress);
+        dataClient.on('open', function() {
+          var dataStream = dataClient.createStream({event:'clientConnected', 'connectionID' : connection.id});
+
+          var onGetRecords = function(records) {
+            var me = this;
+            if (regionIndex == regions.length) {
+              // The executing code should never get there as we should exit the recursion in onGetRecords.
+            } else {
+
+              // Stream the vcf records we just parsed for a region in the vcf, one records at a time
+              if (records) {
+                for (var r = 0; r < records.length; r++) {              
+                  dataStream.write(records[r] + "\n");
+                }
+              } else {
+                // This is an error condition.  If vcfRecords can't return any
+                // records, we will hit this point in the code.
+                // Just log it for now and move on to the next region.
+                console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
+              }
+
+              regionIndex++;
+
+              if (regionIndex > regions.length) {
+                return;
+              } else if (regionIndex == regions.length) {
+                // We have streamed all of the regions so now we will end the stream.
+                dataStream.end();
+                return;
+              } else {
+                // There are more regions to obtain vcf records for, so call getVcfRecords now
+                // that regionIndex has been incremented.
+                vcfReader.getRecords(regions[regionIndex].name, 
+                  regions[regionIndex].start, 
+                  regions[regionIndex].end, 
+                  onGetRecords);
+              }      
+
+            }
+          }
+
+          //vcfReader.getHeaderRecords( function(headerRecords) {
+          //  for (h = 0; h < headerRecords.length; h++) {
+          //    stream.write(headerRecords[h] + "\n");
+          //  }
+          //});
+          vcfReader.getHeader( function(header) {
+             dataStream.write(header + "\n");
+          });
+
+
+          // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
+          // so that we parse vcf records one region at a time, streaming the vcf records
+          // to the server.
+          vcfReader.getRecords(
+              regions[regionIndex].name, 
+              regions[regionIndex].start, 
+              regions[regionIndex].end, 
+              onGetRecords);
+
+        )};
+      });
+
       
       //
       // listen for stream data (the output) event. 
       //
-      stream.on('data', function(datas, options) {               
-         datas.split(';').forEach(function(data) {
-           if (data == undefined || data == "\n") return;
-           var success = true;
-           try {
-
-             var obj = JSON.parse(buffer + data)
-           } catch(e) {
-             success = false;
-             buffer += data;
+      stream.on('data', function(data, options) {
+         if (data == undefined) {
+            return;
+         } 
+         var success = true;
+         try {
+           var obj = JSON.parse(buffer + data);
+         } catch(e) {
+           success = false;
+           buffer += data;
+         }
+         if(success) {
+           buffer = "";
+           if (callback) {
+             callback(obj); 
            }
-           if(success) {
-             buffer = "";
-             callback(obj);
-           }
-        });
+         }               
       });
       
     });
-
-    //
-    // stream the vcf
-    //
-    client.on("stream", function(stream) {
-      // This is the callback function that will get invoked each time a set of vcf records is
-      // returned from the binary parser for a given region.  
-      var onGetRecords = function(records) {
-        var me = this;
-        if (regionIndex == regions.length) {
-          // The executing code should never get there as we should exit the recursion in onGetRecords.
-        } else {
-
-          // Stream the vcf records we just parsed for a region in the vcf, one records at a time
-          if (records) {
-            for (var r = 0; r < records.length; r++) {              
-              stream.write(records[r] + "\n");
-            }
-          } else {
-            // This is an error condition.  If vcfRecords can't return any
-            // records, we will hit this point in the code.
-            // Just log it for now and move on to the next region.
-            console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
-          }
-
-          regionIndex++;
-
-          if (regionIndex > regions.length) {
-            return;
-          } else if (regionIndex == regions.length) {
-            // We have streamed all of the regions so now we will end the stream.
-            stream.end();
-            return;
-          } else {
-            // There are more regions to obtain vcf records for, so call getVcfRecords now
-            // that regionIndex has been incremented.
-            vcfReader.getRecords(regions[regionIndex].name, 
-              regions[regionIndex].start, 
-              regions[regionIndex].end, 
-              onGetRecords);
-          }      
-
-        }
-      }
-
-      //vcfReader.getHeaderRecords( function(headerRecords) {
-      //  for (h = 0; h < headerRecords.length; h++) {
-      //    stream.write(headerRecords[h] + "\n");
-      //  }
-      //});
-      vcfReader.getHeader( function(header) {
-         stream.write(header + "\n");
-      });
-
-
-      // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
-      // so that we parse vcf records one region at a time, streaming the vcf records
-      // to the server.
-      vcfReader.getRecords(
-          regions[regionIndex].name, 
-          regions[regionIndex].start, 
-          regions[regionIndex].end, 
-          onGetRecords);
-
-      });
-
-
-
-    
-    client.on("error", function(error) {
-
-    });
-
   }
 
   exports._getRemoteStats = function(refs, options, callback) {      
