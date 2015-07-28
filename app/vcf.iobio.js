@@ -71,11 +71,17 @@ vcfiobio = function module() {
   //var emailServer            = "ws://localhost:7068";
   //var catInputServer         = "ws://localhost:7063";
 
-  var vcfstatsAliveServer    = "wss://vcfstatsalive.iobio.io";
-  var tabixServer            = "wss://tabix.iobio.io";
-  var vcfReadDeptherServer   = "wss://vcfreaddepther.iobio.io";
-  var emailServer            = "ws://localhost:7068";
-  var catInputServer         = "ws://localhost:7063";
+  // var vcfstatsAliveServer    = "wss://vcfstatsalive.iobio.io";
+  // var tabixServer            = "wss://tabix.iobio.io";
+  // var vcfReadDeptherServer   = "wss://vcfreaddepther.iobio.io";
+  // var emailServer            = "ws://localhost:7068";
+  // var catInputServer         = "ws://localhost:7063";
+
+  var vcfstatsAliveServer    = "wss://nv-green.iobio.io/vcfstatsalive/";
+  var tabixServer            = "wss://nv-green.iobio.io/tabix/";
+  var vcfReadDeptherServer   = "wss://nv-green.iobio.io/vcfdepther/";
+  var emailServer            = "wss://nv-green.iobio.io/localhost:7068";
+  var catInputServer         = "wss://nv-green.iobio.io/localhost:7063";
 
   var vcfURL;
   var vcfReader;
@@ -485,7 +491,7 @@ vcfiobio = function module() {
               regions[regionIndex].end, 
               onGetRecords);
 
-        )};
+        });
       });
 
       
