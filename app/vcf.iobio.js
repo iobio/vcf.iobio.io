@@ -77,11 +77,11 @@ vcfiobio = function module() {
   // var emailServer            = "ws://localhost:7068";
   // var catInputServer         = "ws://localhost:7063";
 
-  var vcfstatsAliveServer    = "wss://nv-green.iobio.io/vcfstatsalive/";
-  var tabixServer            = "wss://nv-green.iobio.io/tabix/";
-  var vcfReadDeptherServer   = "wss://nv-green.iobio.io/vcfdepther/";
-  var emailServer            = "wss://nv-green.iobio.io/localhost:7068";
-  var catInputServer         = "wss://nv-green.iobio.io/localhost:7063";
+  var vcfstatsAliveServer    = "wss://services.iobio.io/vcfstatsalive/";
+  var tabixServer            = "wss://services.iobio.io/tabix/";
+  var vcfReadDeptherServer   = "wss://services.iobio.io/vcfdepther/";
+  var emailServer            = "wss://services.iobio.io/localhost:7068";
+  var catInputServer         = "wss://services.iobio.io/localhost:7063";
 
   var vcfURL;
   var vcfReader;
