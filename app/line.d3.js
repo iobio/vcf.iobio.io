@@ -56,7 +56,7 @@ lineD3 = function module() {
         .attr("width", widthPercent)
         .attr("height", heightPercent)
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
-        .attr("preserveAspectRatio", "xMinYMid meet");
+        .attr("preserveAspectRatio", "none");
 
       // The chart dimensions could change after instantiation, so update viewbox dimensions
       // every time we draw the chart.
@@ -138,6 +138,8 @@ lineD3 = function module() {
             dispatch.d3brush(brush);
          });
 
+
+
       var xAxis = d3.svg.axis()
           .scale(x)
           .tickFormat(function (d) {
@@ -147,7 +149,7 @@ lineD3 = function module() {
                d = d / 1000 + "K";
              return d;            
           })
-          .orient("bottom");
+          .orient("bottom");      
       if (formatXTick) {
         xAxis.tickFormat(formatXTick);
       }

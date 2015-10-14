@@ -35,7 +35,7 @@ function histogramD3() {
         .attr('viewBox', "0 0 " + 
                          (parseInt(width) +  parseInt(margin.left) + parseInt(margin.right)) + " " + 
                          (parseInt(height) + parseInt(margin.top) +  parseInt(margin.bottom)))
-        .attr("preserveAspectRatio", "xMidYMid meet");
+        .attr("preserveAspectRatio", "none");
        
 
       // Convert data to standard representation greedily;

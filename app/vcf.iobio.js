@@ -362,9 +362,41 @@ vcfiobio = function module() {
   exports.getGenomeEstimatedDensity = function(useLinearIndex, removeTheDataSpikes, maxPoints, rdpEpsilon) {
     var allPoints = [];
     var offset = 0;
+
+    var genomeLength = 0;    
+    // Figure out how to proportion maxPoints across refs
+    for (var i = 0; i < refData.length; i++) {
+      genomeLength += refData[i].refLength;
+    }
+    var roundDecimals = function(value, decimals) {
+      return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
+    for (var i = 0; i < refData.length; i++) {
+      refData[i].genomePercent = roundDecimals(refData[i].refLength / genomeLength, 4);
+    }
+
+
     for (var i = 0; i < refData.length; i++) {
 
       var points = useLinearIndex ? refDensity[refData[i].name].intervalPoints.concat() : refDensity[refData[i].name].points.concat();
+
+
+      // Reduce point data to to a reasonable number of points for display purposes
+      if (maxPoints) {
+        var factor = d3.round(points.length / (maxPoints * refData[i].genomePercent));
+        points = this.reducePoints(points, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+      }
+
+      // Now perform RDP
+      if (rdpEpsilon) {
+        points = this._performRDP(points, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
+      }
+  
+      // Add one more point to the end of the ref density points, taking the depth back down to zero.
+      // This represents the boundary from one ref to another in the global density; otherwise,
+      // it looks like a big spike or dropoff between refs when the end of one ref has a density
+      // quite different than the beginning of the next ref.
+      points.push([refData[i].refLength, 0]);
 
       var offsetPoints = [];
       for (var x = 0; x < points.length; x++) {
@@ -376,19 +408,9 @@ vcfiobio = function module() {
       // next reference's positions.
       offset = offset + refData[i].value;
     }
+
     if (removeTheDataSpikes) {
       allPoints = this._applyCeiling(allPoints);
-    }
-
-    // Reduce point data to to a reasonable number of points for display purposes
-    if (maxPoints) {
-      var factor = d3.round(allPoints.length / maxPoints);
-      allPoints = this.reducePoints(allPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
-    }
-
-    // Now perform RDP
-    if (rdpEpsilon) {
-      allPoints = this._performRDP(allPoints, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
     }
 
 

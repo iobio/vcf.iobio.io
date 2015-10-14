@@ -21,24 +21,22 @@ barChartAltD3 = function module() {
     function exports(_selection) {
         _selection.each(function(_data) {
 
-
-            var xRange = d3.scale.linear()
-                .range([margin.right, width - margin.left])
-                .domain([0, d3.max(_data, function (d) { return value(d); }) ]);
-
-
-
-            var barWidth = width / _data.length;
-            var scaling = width / d3.max(_data, function(d) { return value(d)});
-
             // Set the x offset for each data element
             var totalValue = 0;
             for (var i = 0; i  < _data.length; i++) {
                 totalValue += value(_data[i]);          
             }
+
+            var xRange = d3.scale.linear()
+                //.range([margin.right, width - margin.left])
+                .range([0, width])
+                //.domain([0, d3.max(_data, function (d) { return value(d); }) ]);
+                .domain([0, totalValue ]);
+            
             var offset = 0;
             for (var i = 0; i  < _data.length; i++) {
-                _data[i].width = d3.round(width * (value(_data[i]) / totalValue));
+                _data[i].width = xRange(value(_data[i]));
+
                 _data[i].offset = offset;
                 offset += _data[i].width;  
 
@@ -60,7 +58,7 @@ barChartAltD3 = function module() {
                 .attr("width", widthPercent)
                 .attr("height", widthPercent)
                 .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
-                .attr("preserveAspectRatio", "xMinYMid meet");
+                .attr("preserveAspectRatio", "none");
 
             // The chart dimensions could change after instantiation, so update viewbox dimensions
             // every time we draw the chart.

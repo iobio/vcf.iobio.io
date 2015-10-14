@@ -152,7 +152,7 @@ groupedBarD3 = function module() {
         .attr("width", widthPercent)
         .attr("height", heightPercent)
         .attr('viewBox', "0 0 " + parseInt(width+margin.left+margin.right) + " " + parseInt(height+margin.top+margin.bottom))
-        .attr("preserveAspectRatio", "xMidYMid meet");
+        .attr("preserveAspectRatio", "none");
 
       var defs = svg.selectAll("defs").data([data]).enter()
                         .append("defs");
