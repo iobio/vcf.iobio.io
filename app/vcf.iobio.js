@@ -120,7 +120,9 @@ vcfiobio = function module() {
     var fileType0 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[0].name);
     var fileType1 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[1].name);
 
-    if (fileType0 == null || fileType0.length < 3 || fileType1 == 0 || fileType1.length <  3) {
+    if (fileExt0 == 'vcf' || fileExt1 == 'vcf') {
+      showFileFormatMessage();
+    } else if (fileType0 == null || fileType0.length < 3 || fileType1 == 0 || fileType1.length <  3) {
       alert('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
       return;
     }
@@ -158,7 +160,7 @@ vcfiobio = function module() {
         if (e) {
             return;
         } else {
-            window.location = 'help.html';
+            window.location = 'http://iobio.io/2015/09/03/install-run-tabix/';
         }
      });
   }
