@@ -120,15 +120,15 @@ vcfiobio = function module() {
     var fileType0 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[0].name);
     var fileType1 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[1].name);
 
+    fileExt0 = fileType0[2];
+    fileExt1 = fileType1[2];
+
     if (fileExt0 == 'vcf' || fileExt1 == 'vcf') {
       showFileFormatMessage();
     } else if (fileType0 == null || fileType0.length < 3 || fileType1 == 0 || fileType1.length <  3) {
       alert('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
       return;
     }
-
-    fileExt0 = fileType0[2];
-    fileExt1 = fileType1[2];
 
     if (fileExt0 == 'vcf.gz' && fileExt1 == 'vcf.gz.tbi') {
       vcfFile   = event.target.files[0];
