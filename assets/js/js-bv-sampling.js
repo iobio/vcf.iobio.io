@@ -84,8 +84,19 @@ function estimateCoverageDepth (indexReader, cb) {
                                         function(bc, chunk) {
                                             var b = chunk.cnk_beg.valueOf();
                                             var e = chunk.cnk_end.valueOf();
-                                            return bc + (rshift16(e) -
-                                                         rshift16(b));
+                                            
+                                            var bShift = rshift16(b);
+                                            var eShift = rshift16(e);
+                                            // If the difference between the right shifted begin and
+                                            // end positions is zero, yet the end position (not right shifted)
+                                            // is greater than zero, something is wrong with the 
+                                            // values.  In this case, bypass right shifting.
+                                            if ((eShift - bShift) == 0 && e > 0) {
+                                                return bc + (e - b);
+                                            } else {
+                                                return bc + (eShift - bShift);
+                                            }
+
                                         }, 0);
                                 segs.push(
                                     {relBinNum: relBinNum,

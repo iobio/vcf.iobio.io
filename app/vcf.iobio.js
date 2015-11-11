@@ -65,6 +65,34 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
+  var refLengths_GRCh37 = 
+  {
+        "1":   +249250621,
+        "2":   +243199373,
+        "3":   +198022430,
+        "4":   +191154276,
+        "5":   +180915260,
+        "6":   +171115067,
+        "7":   +159138663,
+        "8":   +146364022,
+        "9":   +141213431,
+        "10":  +135534747,
+        "11":  +135006516,
+        "12":  +133851895,
+        "13":  +115169878,
+        "14":  +107349540,
+        "15":  +102531392,
+        "16":  +90354753,
+        "17":  +81195210,
+        "18":  +78077248,
+        "19":  +59128983,
+        "20":  +63025520,
+        "21":  +48129895,
+        "22":  +51304566,
+        "X":   +155270560,
+        "Y":   +59373566
+      };
+
   //var vcfstatsAliveServer    = "ws://localhost:7070";
   //var tabixServer            = "ws://localhost:7090";
   //var vcfReadDeptherServer   = "ws://localhost:7062";
@@ -179,7 +207,9 @@ vcfiobio = function module() {
         var ref   = tbiIdx.idxContent.head.names[i];
 
         var indexseq = tbiIdx.idxContent.indexseq[i];
-        var refLength = indexseq.n_intv * size16kb;
+        var calcRefLength = indexseq.n_intv * size16kb;
+
+        var refLength = refLengths_GRCh37[ref];
 
         // Use the linear index to load the estimated density data
         var intervalPoints = [];
@@ -191,13 +221,20 @@ vcfiobio = function module() {
           intervalPoints.push( [intervalPos, fileOffset - fileOffsetPrev] );
           
         }
+        if (calcRefLength < refLength) {
+          var lastPos = intervalPoints[intervalPoints.length-1][0];
+          intervalPoints.push([lastPos+1, 0]);
+          intervalPoints.push([refLength-1, 0]);
+        }
 
         // Load the reference density data.  Exclude reference if 0 points.
-        refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints, };
+        refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints};
         refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": i});
 
+       
 
       }
+
 
       // Call function from js-bv-sampling to obtain point data.
       estimateCoverageDepth(tbiIdx, function(estimates) {
@@ -207,21 +244,36 @@ vcfiobio = function module() {
           
           var refName   = tbiIdx.idxContent.head.names[i];
           var pointData = estimates[i];
+          var refDataLength  =  refData[i].refLength;
+          var refLength = refLengths_GRCh37[ref];
+          
 
           // Sort by position of read; otherwise, we get a wonky
           // line chart for read depth.  (When a URL is provided,
           // bamtools returns a sorted array.  We need this same
           // behavior when the BAM file is loaded from a file
           // on the client.
+          pointData.push({pos: 0, depth: 0});
           pointData = pointData.sort(function(a,b) {
               var x = +a.pos; 
               var y = +b.pos;
               return ((x < y) ? -1 : ((x > y) ? 1 : 0));
           });  
 
+          // Make sure to zero fill to the end of the reference
+          var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
+          if (calcRefLength < refLength) {
+            pointData.push({pos: refLength-1, depth: 0});
+          }
+
+          // If we have sparse data, keep track of these regions
+          if (pointData.length < 100) {
+            refData[i].sparsePointData = pointData;
+          }
+
           // Zero fill any 16kb points not in array
           var zeroPointData = [];
-          for (var x = 1; x < pointData.length - 1; x++) {
+          for (var x = 1; x < pointData.length; x++) {
               var posPrev = pointData[x-1].pos;
               var pos     = pointData[x].pos;
               var posDiff = pos - posPrev;
@@ -232,6 +284,9 @@ vcfiobio = function module() {
                   }
               }
           }
+          
+          //pointData.push({pos: refDataLength, depth: 0});
+
           if (zeroPointData.length > 0) {
             pointData = pointData.concat(zeroPointData);
             pointData = pointData.sort(function(a,b) {
@@ -242,24 +297,27 @@ vcfiobio = function module() {
 
           }
 
-          var refLength = pointData[pointData.length - 1].pos + size16kb;
+         
 
           //refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": + i});
-          refObject = refDensity[refName];
+          var refObject = refDensity[refName];
           refObject.points = [];
           
           for (var x = 0; x < pointData.length; x++) {
             var point = [pointData[x].pos, pointData[x].depth];
             refObject.points.push(point);
           }
+
+         
         }
 
       });
 
 
       callback.call(this, refData);
-
+    
     });
+
   }
 
 
@@ -268,7 +326,7 @@ vcfiobio = function module() {
     sourceType = SOURCE_TYPE_URL;
 
     var client = BinaryClient(vcfReadDeptherServer);
-    var url = encodeURI( vcfReadDeptherServer + '?cmd=-i ' + vcfURL + ".tbi");
+    var url = encodeURI( vcfReadDeptherServer + '?cmd= -i ' + vcfURL + ".tbi");
 
     client.on('open', function(stream){
       var stream = client.createStream({event:'run', params : {'url':url}});
@@ -282,10 +340,11 @@ vcfiobio = function module() {
                var tokens = data[i].substr(1).split("\t");
                refIndex = tokens[0];
                refName = tokens[1];
-               var refLength = tokens[2];
+               var calcRefLength = tokens[2];
+               var refLength = refLengths_GRCh37[refName];
 
                
-               refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": +refIndex});
+               refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "calcRefLength": +calcRefLength, "idx": +refIndex});
                refDensity[refName] =  {"idx": refIndex, "points": [], "intervalPoints": []};
             }
             else {
@@ -297,7 +356,7 @@ vcfiobio = function module() {
 
                }
             }                  
-         }
+         }         
       });
 
       stream.on("error", function(error) {
@@ -305,6 +364,35 @@ vcfiobio = function module() {
       });
 
       stream.on('end', function() {
+         for(var i = 0; i < refData.length; i++) {
+            var refObject = refData[i];
+            var refDensityObject = refDensity[refObject.name];
+
+            // If we have sparse data, keep track of these regions
+            var realPointCount = 0;
+            refDensityObject.points.forEach( function (point) {
+              if (point[1] > 0) {
+                realPointCount++;
+              }
+            });
+            if (realPointCount < 100) {
+              refObject.sparsePointData = [];
+              refDensityObject.points.forEach( function (point) {
+              if (point[1] > 0) {
+                refObject.sparsePointData.push( {pos: point[0], depth: point[1]});
+              }
+            });
+            }
+            
+            // We need to mark the end of the ref if the last post < ref length
+            if (refObject.calcRefLength < refObject.refLength) {
+              var points = refDensityObject.points;
+              var lastPos = points[points.length-1][0];
+              points.push([lastPos+1, 0]);
+              points.push([refObject.refLength-1, 0]);
+            }
+
+         }
          callback.call(this, refData);
       });
     });
@@ -614,6 +702,8 @@ vcfiobio = function module() {
       var start    = options.start;
       var end      = options.end ? options.end : ref.refLength;
       var length   = end - start;
+      var sparsePointData = ref.sparsePointData;
+
       if ( length < options.binSize * options.binNumber) {
         regions.push({
           'name' : ref.name,
@@ -621,6 +711,16 @@ vcfiobio = function module() {
           'end'  : end    
         });
       } else {
+         // If this is sparse data, seed with known regions first
+         if (sparsePointData != null && sparsePointData.length > 0) {
+          sparsePointData.forEach( function(point) {
+            regions.push( {
+              'name' : ref.name,
+              'start' : point.pos,
+              'end' : point.pos + options.binSize 
+            })
+          })
+         }
          // create random reference coordinates
          for (var i=0; i < options.binNumber; i++) {   
             var s = start + parseInt(Math.random()*length); 

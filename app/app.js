@@ -31,7 +31,7 @@ var afData = null;
 
 var densityOptions = {
 	removeSpikes: false,
-    maxPoints: 1000,
+    maxPoints:  5000,
     epsilonRDP: null
 }
 
@@ -597,7 +597,7 @@ function loadStats(i) {
 		options.end   = regionEnd;
 	}
 
-	// Incread the bin size by the sampling multiplier, which
+	// Increase the bin size by the sampling multiplier, which
 	// captures the number of times the "sample more" button
 	// has been pressed by the user
 	options.binNumber = options.binNumber * statsOptions.samplingMultiplier;
@@ -638,6 +638,9 @@ function renderStats(stats) {
 
 	// TsTv Ratio
 	var tstvRatio = stats.TsTvRatio;
+	if (tstvRatio == null) {
+		tstvRatio = 0;
+	}
 	d3.select("#tstv-ratio")
 		.select("#ratio-value")
 		.text(tstvRatio.toFixed(2));
