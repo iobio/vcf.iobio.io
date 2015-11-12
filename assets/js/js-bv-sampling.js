@@ -92,7 +92,7 @@ function estimateCoverageDepth (indexReader, cb) {
                                             // is greater than zero, something is wrong with the 
                                             // values.  In this case, bypass right shifting.
                                             if ((eShift - bShift) == 0 && e > 0) {
-                                                return bc + (e - b);
+                                                return bc + 1;
                                             } else {
                                                 return bc + (eShift - bShift);
                                             }
