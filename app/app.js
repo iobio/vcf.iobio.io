@@ -284,14 +284,29 @@ function init() {
 	// check if url to vcf file is supplied in url.  If it is, load this
 	// and proceed directly to the display page
     if (window.location.search != "") {
-        var vcfUrl = window.location.search.split(/\?[vV][cC][fF]=/)[1];
-         _loadVcfFromUrl(vcfUrl);
+    	// check for low sampling flag
+    	var sampling = getParameterByName('sampling')
+    	if (sampling == 'low') {
+    		statsOptions.binSize = 40000;
+    		statsOptions.binNumber = 20;
+    	}
+
+        var vcfUrl = getParameterByName('vcf')
+        if (vcfUrl)
+         	_loadVcfFromUrl(vcfUrl);
     }
 
     $('#report-problem').on('click', displayReportProblem);
 
     $('#report-problem-button').on('click', emailProblem);
 
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 function displayReportProblem() {
