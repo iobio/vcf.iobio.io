@@ -245,7 +245,7 @@ vcfiobio = function module() {
           var refName   = tbiIdx.idxContent.head.names[i];
           var pointData = estimates[i];
           var refDataLength  =  refData[i].refLength;
-          var refLength = refLengths_GRCh37[ref];
+          var refLength = refLengths_GRCh37[refName];
           
 
           // Sort by position of read; otherwise, we get a wonky
@@ -264,7 +264,23 @@ vcfiobio = function module() {
           var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
           if (calcRefLength < refLength) {
             pointData.push({pos: refLength-1, depth: 0});
+          } else if (calcRefLength > refLength) {
+            // Remove any points that go past the reference length
+            var idxToTruncate = 0;
+            for( var idx = 0; idx < pointData.length; idx++) {
+              if (pointData[idx].pos > refLength) {
+                if (idxToTruncate == 0) {
+                  idxToTruncate = idx;
+                }
+              }
+            }
+            if (idxToTruncate > 0) {
+              pointData = pointData.slice(0, idxToTruncate);
+              pointData.push({pos: refLength - 1, depth: 0});
+            }
           }
+
+
 
           // If we have sparse data, keep track of these regions
           if (pointData.length < 100) {
