@@ -589,6 +589,13 @@ vcfiobio = function module() {
                 dataStream.end();
                 return;
               } else {
+                var regionObject = regions[regionIndex];
+                if (regionObject == null) {
+                  console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
+                } else {
+                  console.log("streaming region " + regionIndex + " " + regionObject.name + " " + regionObject.start + "-" + regionObject.end);
+
+                }
                 // There are more regions to obtain vcf records for, so call getVcfRecords now
                 // that regionIndex has been incremented.
                 vcfReader.getRecords(regions[regionIndex].name, 
@@ -608,6 +615,15 @@ vcfiobio = function module() {
           vcfReader.getHeader( function(header) {
              dataStream.write(header + "\n");
           });
+
+          if (regions.length <= regionIndex) {
+            console.log("no regions to process. regionIndex=" + regionIndex + " regions.length=" + regions.length);
+          } else {
+            var regionObject = regions[regionIndex];
+            if (regionObject == null) {
+              console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
+            }
+          }
 
 
           // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
@@ -715,10 +731,12 @@ vcfiobio = function module() {
     var bedRegions;
     for (var j=0; j < refs.length; j++) {
       var ref      = refData[refs[j]];
-      var start    = options.start;
+      var start    = options.start ? options.start : 0;
       var end      = options.end ? options.end : ref.refLength;
       var length   = end - start;
       var sparsePointData = ref.sparsePointData;
+
+      console.log("getting regions for " + ref + " " + start + "-" + end + " length=" + length + " options.binSize*options.binNumber=" +  (options.binSize * options.binNumber) + " sparsePointData=" + (sparsePointData != null ? sparsePointData.length : "null") );
 
       if ( length < options.binSize * options.binNumber) {
         regions.push({

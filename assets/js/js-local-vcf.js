@@ -416,7 +416,7 @@ readBinaryVCF.prototype.getRecords =
                         var rng = cnks.pop();
                         fn1(rng[0], rng[1]);
                     } else {
-                        console.log(stg.length);
+                        //console.log(stg.length);
                         var stgRecs = stg.split("\n").filter(
                             function (rec) {
                                 var n = parseInt(rec.split("\t")[1]);
