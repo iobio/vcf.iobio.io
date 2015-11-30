@@ -444,11 +444,18 @@ function onReferencesLoaded(refData) {
 		});
 		
 		dropdown.selectAll("option")
-		  .data(otherRefData)
-		  .enter()
-		  .append("option")
-		  .attr( "value", function(d,i) { return d.idx; } )
-		  .text( function(d,i) { return d.name } );
+		        .filter( function(d,i) {
+		        	return i > 0;
+		        })
+		        .remove();
+		dropdown.data(otherRefData)
+		        .append("option")
+				.attr( "value", function(d,i) { 
+				  return d.idx; 
+				})
+				.text( function(d,i) { 
+				  return d.name 
+				});
 
 		d3.select("#other-references").style("display", "block");
 	} else {

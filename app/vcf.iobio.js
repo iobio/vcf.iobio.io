@@ -245,7 +245,8 @@ vcfiobio = function module() {
           var refName   = tbiIdx.idxContent.head.names[i];
           var pointData = estimates[i];
           var refDataLength  =  refData[i].refLength;
-          var refLength = refLengths_GRCh37[refName];
+         
+
           
 
           // Sort by position of read; otherwise, we get a wonky
@@ -262,6 +263,10 @@ vcfiobio = function module() {
 
           // Make sure to zero fill to the end of the reference
           var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
+          var refLength = refLengths_GRCh37[refName];
+          if (refLength == null) {
+            refLength = calcRefLength;
+          }
           if (calcRefLength < refLength) {
             pointData.push({pos: refLength-1, depth: 0});
           } else if (calcRefLength > refLength) {
@@ -358,6 +363,9 @@ vcfiobio = function module() {
                refName = tokens[1];
                var calcRefLength = tokens[2];
                var refLength = refLengths_GRCh37[refName];
+               if (refLength == null) {
+                   refLength = calcRefLength;
+               }
 
                
                refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "calcRefLength": +calcRefLength, "idx": +refIndex});
@@ -423,7 +431,13 @@ vcfiobio = function module() {
     var totalLength = +0;
     for (var i = 0; i < refData.length; i++) {
       var refObject = refData[i];
-      totalLength += refObject.value;
+      if (!isNaN(refObject.value)) {
+        totalLength += refObject.value;
+      } else {
+        console.log("Invalid length for ref " + refObject.name +  ". Setting to 0.");
+        refObject.value = 0;
+        refObject.refLength = 0;
+      }
     }
 
     // Only include references with length within percent range
@@ -592,10 +606,7 @@ vcfiobio = function module() {
                 var regionObject = regions[regionIndex];
                 if (regionObject == null) {
                   console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
-                } else {
-                  console.log("streaming region " + regionIndex + " " + regionObject.name + " " + regionObject.start + "-" + regionObject.end);
-
-                }
+                } 
                 // There are more regions to obtain vcf records for, so call getVcfRecords now
                 // that regionIndex has been incremented.
                 vcfReader.getRecords(regions[regionIndex].name, 
@@ -735,8 +746,6 @@ vcfiobio = function module() {
       var end      = options.end ? options.end : ref.refLength;
       var length   = end - start;
       var sparsePointData = ref.sparsePointData;
-
-      console.log("getting regions for " + ref + " " + start + "-" + end + " length=" + length + " options.binSize*options.binNumber=" +  (options.binSize * options.binNumber) + " sparsePointData=" + (sparsePointData != null ? sparsePointData.length : "null") );
 
       if ( length < options.binSize * options.binNumber) {
         regions.push({
