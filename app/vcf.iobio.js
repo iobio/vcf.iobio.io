@@ -649,6 +649,8 @@ vcfiobio = function module() {
         });
       });
 
+
+
       
       //
       // listen for stream data (the output) event. 
@@ -675,6 +677,10 @@ vcfiobio = function module() {
       });
       
     });
+    client.on("error", function(error) {
+      alert("Unable to get vcf stats due to the following error: " + error);
+      console.log("error while annotating vcf records " + error);
+    });
   }
 
   exports._getRemoteStats = function(refs, options, callback) {      
@@ -694,41 +700,58 @@ vcfiobio = function module() {
     // This is the full url for vcfstatsalive server which is piped its input from tabixserver
     var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 1000 ' + encodeURIComponent(tabixUrl));
 
-    // Connect to the vcfstatsaliveserver    
-    var client = BinaryClient(vcfstatsAliveServer);
+    try {
+      // Connect to the vcfstatsaliveserver    
+      var client = BinaryClient(vcfstatsAliveServer);
 
-    var buffer = "";
-    client.on('open', function(stream){
+      var buffer = "";
+      client.on('open', function(stream){
 
-        // Run the command
-        var stream = client.createStream({event:'run', params : {'url':url}});
+      
 
-       // Listen for data to be streamed back to the client
-        stream.on('data', function(datas, options) {
-          datas.split(';').forEach(function(data) {
-             if (data == undefined) {
-                return;
-             } 
-             var success = true;
-             try {
-               var obj = JSON.parse(buffer + data);
-             } catch(e) {
-               success = false;
-               buffer += data;
-             }
-             if(success) {
-               buffer = "";
-               callback(obj); 
-             }
-          });               
-        });
-        stream.on('end', function() {
-           if (options.onEnd != undefined)
-              options.onEnd();
-        });
-     });
+          // Run the command
+          var stream = client.createStream({event:'run', params : {'url':url}});
+
+         // Listen for data to be streamed back to the client
+          stream.on('data', function(datas, options) {
+            datas.split(';').forEach(function(data) {
+               if (data == undefined) {
+                  return;
+               } 
+               var success = true;
+               try {
+                 var obj = JSON.parse(buffer + data);
+               } catch(e) {
+                 success = false;
+                 buffer += data;
+               }
+               if(success) {
+                 buffer = "";
+                 callback(obj); 
+               }
+            });               
+          });
+          stream.on('end', function() {
+             if (options.onEnd != undefined)
+                options.onEnd();
+          });
+         
+        
+       });
+
+
+      client.on("error", function(error) {
+          alert("Unable to get vcf stats due to the following error: " + error);
+          console.log("error while annotating vcf records " + error);
+      });
+    } catch (e) {
+          alert("Unable to get vcf stats due to the following exception: " + e);
+          console.log("error while annotating vcf records " + e);
+
+    }
      
-  };  
+  }; 
+
 
 
  
