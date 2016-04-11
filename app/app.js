@@ -390,7 +390,7 @@ function _loadVcfFromUrl(url) {
 	d3.select("#showData")
 	  .style("visibility", "visible");
 
-	vcfiobio.loadRemoteIndex(url, onReferencesLoaded);
+	vcfiobio.loadRemoteIndex(url, onReferencesLoading, onReferencesLoaded);
 
 }
 
@@ -408,12 +408,18 @@ function onFilesSelected(event) {
 
 		
 
-		vcfiobio.loadIndex(onReferencesLoaded);
+		vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded);
 
 	});
 }
 
 function onReferencesLoaded(refData) {
+	// Show "ALL" references as first view
+	pieChartRefData = vcfiobio.getReferences(.005, 1);
+	chromosomeChart.clickAllSlices(pieChartRefData);	
+}
+
+function onReferencesLoading(refData) {
     d3.selectAll("section#top svg").style("display", "block");
     d3.selectAll("section#top .svg-alt").style("display", "block");
 	d3.selectAll("section#top .samplingLoader").style("display", "none");
@@ -422,10 +428,11 @@ function onReferencesLoaded(refData) {
 	var pieChartRefData = null;
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	
+	d3.select("#primary-references svg").remove();
+
 	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
 	
-	// Show "ALL" references as first view
-	chromosomeChart.clickAllSlices(pieChartRefData);
+	
 	
 	//chromosomeIndex = 0;
 	//chromosomeChart.clickSlice(chromosomeIndex);
