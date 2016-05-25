@@ -95,11 +95,11 @@ vcfiobio = function module() {
 
 
 
-  var emailServer            = "wss://services.iobio.io/localhost:7068";
+  var emailServer            = "wss://nv-prod.iobio.io/localhost:7068";
 
-  var vcfstatsAlive          = "services.iobio.io/vcfstatsalive/";
-  var tabix                  = "services.iobio.io/tabix/";
-  var vcfReadDepther         = "services.iobio.io/vcfdepther/"
+  var vcfstatsAlive          = "nv-prod.iobio.io/vcfstatsalive/";
+  var tabix                  = "nv-prod.iobio.io/tabix/";
+  var vcfReadDepther         = "nv-prod.iobio.io/vcfdepther/"
 
   var vcfURL;
   var vcfReader;
