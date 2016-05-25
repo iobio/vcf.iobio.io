@@ -532,31 +532,35 @@ function loadVariantDensityData(ref, i) {
 			// These are the region coordinates
 			regionStart = d3.round(brush.extent()[0]);
 			regionEnd   = d3.round(brush.extent()[1]);
-
-			d3.select("#region_selected")
-			   .text(d3.format(",")(regionStart) + ' - ' + d3.format(",")(regionEnd));
-
-			// Get the estimated density for the reference (already in memory)
-			var data = vcfiobio.getEstimatedDensity(ref.name, 
-				false, densityRegionOptions.removeSpikes, null, densityRegionOptions.epsilonRDP);
-
-			// Now filter the estimated density data to only include the points that fall within the selected
-			// region
-			var filteredData = data.filter(function(d) { 
-				return (d[0] >= regionStart && d[0] <= regionEnd) 
-			});
-
-			// Now let's aggregate to show in 900 px space
-			var factor = d3.round(filteredData.length / 900);
-      		filteredData = vcfiobio.reducePoints(filteredData, factor, function(d) { return d[0]; }, function(d) { return d[1]});
-    
-
-			// Show the variant density for the selected region
-			variantDensityChart(d3.select("#variant-density").datum(filteredData), onVariantDensityChartRendered);
-
-			// Load the stats based on the selected region
-			loadStats(chromosomeIndex);
+		} else {
+			regionStart = 0;
+			regionEnd = ref.value;
 		}
+
+		d3.select("#region_selected")
+		   .text(d3.format(",")(regionStart) + ' - ' + d3.format(",")(regionEnd));
+
+		// Get the estimated density for the reference (already in memory)
+		var data = vcfiobio.getEstimatedDensity(ref.name, 
+			false, densityRegionOptions.removeSpikes, null, densityRegionOptions.epsilonRDP);
+
+		// Now filter the estimated density data to only include the points that fall within the selected
+		// region
+		var filteredData = data.filter(function(d) { 
+			return (d[0] >= regionStart && d[0] <= regionEnd) 
+		});
+
+		// Now let's aggregate to show in 900 px space
+		var factor = d3.round(filteredData.length / 900);
+  		filteredData = vcfiobio.reducePoints(filteredData, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+
+
+		// Show the variant density for the selected region
+		variantDensityChart(d3.select("#variant-density").datum(filteredData), onVariantDensityChartRendered);
+
+		// Load the stats based on the selected region
+		loadStats(chromosomeIndex);
+
 	});	
 
 	// Listen for finished event which is dispatched after line is drawn.  If chart has
