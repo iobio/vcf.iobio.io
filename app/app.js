@@ -95,9 +95,9 @@ $(document).ready( function(){
 *
 */
 function init() {
-	d3.selectAll("svg").style("visibility", "hidden");
-	d3.selectAll(".svg-alt").style("visibility", "hidden");
-	d3.selectAll(".samplingLoader").style("display", "block");
+	d3.selectAll("svg").classed("hide", true);
+	d3.selectAll(".svg-alt").classed("hide", true);
+	d3.selectAll(".samplingLoader").classed("hide", false);
 
 	vcfiobio = new vcfiobio();
 
@@ -420,9 +420,9 @@ function onReferencesLoaded(refData) {
 }
 
 function onReferencesLoading(refData) {
-    d3.selectAll("section#top svg").style("display", "block");
-    d3.selectAll("section#top .svg-alt").style("display", "block");
-	d3.selectAll("section#top .samplingLoader").style("display", "none");
+    d3.selectAll("section#top svg").classed("hide", false)
+    d3.selectAll("section#top .svg-alt").classed("hide", false);
+	d3.selectAll("section#top .samplingLoader").classed("hide", true);
 
 	var otherRefData = null;
 	var pieChartRefData = null;
@@ -600,12 +600,14 @@ function loadStats(i) {
 
 	d3.select("#total-reads").select("#value").text(0);
 
-	d3.selectAll("section#middle svg").style(            "visibility", "hidden");
-	d3.selectAll("section#middle .svg-alt").style(       "visibility", "hidden");
-	d3.selectAll("section#middle .samplingLoader").style("display",    "block");
-	d3.selectAll("section#bottom svg").style(            "visibility", "hidden");
-	d3.selectAll("section#bottom .svg-alt").style(       "visibility", "hidden");
-	d3.selectAll("section#bottom .samplingLoader").style( "display",   "block");
+	d3.selectAll("section#middle svg").classed(            "hide",    true);
+	d3.selectAll("section#middle .svg-alt").classed(       "hide",    true);
+	d3.selectAll("section#middle .no-values").classed(     "hide",    true);
+	d3.selectAll("section#middle .samplingLoader").classed("hide",    false);
+	d3.selectAll("section#bottom svg").classed(            "hide",    true);
+	d3.selectAll("section#bottom .svg-alt").classed(       "hide",    true);
+	d3.selectAll("section#bottom .no-values").classed(     "hide",    true);
+	d3.selectAll("section#bottom .samplingLoader").classed("hide",    false);
 
 
 	var options = JSON.parse(JSON.stringify(statsOptions));
@@ -646,14 +648,16 @@ function loadStats(i) {
 function renderStats(stats) {
 
 
-	d3.selectAll("section#middle svg").style("visibility", "visible");
-	d3.selectAll("section#middle .svg-alt").style("visibility", "visible");
-   	d3.selectAll("section#middle .samplingLoader").style("display", "none");
+	d3.selectAll("section#middle svg").classed("hide", false);
+	d3.selectAll("section#middle .svg-alt").classed("hide", false);
+   	d3.selectAll("section#middle .samplingLoader").classed("hide", true);
+	d3.selectAll("section#middle .no-values").classed("hide", true);
 
 
-	d3.selectAll("section#bottom svg").style("visibility", "visible");
-	d3.selectAll("section#bottom .svg-alt").style("visibility", "visible");
-   	d3.selectAll("section#bottom .samplingLoader").style("display", "none");
+	d3.selectAll("section#bottom svg").classed("hide", false);
+	d3.selectAll("section#bottom .svg-alt").classed("hide", false);
+   	d3.selectAll("section#bottom .samplingLoader").classed("hide", true);
+	d3.selectAll("section#bottom .no-values").classed("hide", true);
 
 
 	// # of Variants sampled	
@@ -670,85 +674,127 @@ function renderStats(stats) {
 
 
 	// TsTv Ratio
-	var tstvRatio = stats.TsTvRatio;
-	if (tstvRatio == null) {
-		tstvRatio = 0;
-	}
-	d3.select("#tstv-ratio")
-		.select("#ratio-value")
-		.text(tstvRatio.toFixed(2));
+	if (stats.hasOwnProperty("TsTvRatio")) {
+		var tstvRatio = stats.TsTvRatio;
+		if (tstvRatio == null) {
+			tstvRatio = 0;
+		}
+		d3.select("#tstv-ratio")
+			.select("#ratio-value")
+			.text(tstvRatio.toFixed(2));
 
-	if (tstvData != null) {
-		tstvData.length = 0;
+		if (tstvData != null) {
+			tstvData.length = 0;
+		}
+		var tstvData = [
+		  {category: "", values: [tstvRatio, 1] }
+		];		
+		// This is the parent object for the chart
+		var tstvSelection = d3.select("#ratio-panel").datum(tstvData);
+		// Render the mutation spectrum chart with the data
+		tstvChart(tstvSelection);		
+	} else {
+		d3.selectAll('#tstv-ratio svg').classed("hide", true);
+		d3.selectAll('#tstv-ratio #ratio-value').text("");
+		d3.selectAll('#tstv-ratio .no-values').classed("hide", false);
 	}
-	var tstvData = [
-	  {category: "", values: [tstvRatio, 1] }
-	];		
-	// This is the parent object for the chart
-	var tstvSelection = d3.select("#ratio-panel").datum(tstvData);
-	// Render the mutation spectrum chart with the data
-	tstvChart(tstvSelection);
 
 	// Var types
-	var varTypeArray = vcfiobio.jsonToValueArray(stats.var_type);
-	var varTypeData = [
-	  {category: "", values: varTypeArray}
-	];		
-	// This is the parent object for the chart
-	var varTypeSelection = d3.select("#var-type").datum(varTypeData);
-	// Render the var type data with the data
-	varTypeChart(varTypeSelection);
+	var count = 0;
+	for (type in stats.var_type) {
+		count += stats.var_type[type];
+	}
+	if (count > 0) {
+		var varTypeArray = vcfiobio.jsonToValueArray(stats.var_type);
+		var varTypeData = [
+		  {category: "", values: varTypeArray}
+		];		
+		// This is the parent object for the chart
+		var varTypeSelection = d3.select("#var-type").datum(varTypeData);
+		// Render the var type data with the data
+		varTypeChart(varTypeSelection);		
+	} else {
+		d3.selectAll('#var-type svg').classed("hide", true);
+		d3.selectAll('#var-type .no-values').classed("hide", false);
+	}
 
 	// Alelle Frequency
+	if (stats.af_hist)
 	var afObj = stats.af_hist;
 	afData = vcfiobio.jsonToArray2D(afObj);	
-	var afSelection = d3.select("#allele-freq-histogram")
-					    .datum(afData);
-	var afOptions = {outliers: true, averageLine: false};					    
-	alleleFreqChart(afSelection, afOptions);	
+	if (afData.length > 0) {
+		var afSelection = d3.select("#allele-freq-histogram")
+						    .datum(afData);
+		var afOptions = {outliers: true, averageLine: false};					    
+		alleleFreqChart(afSelection, afOptions);			
+	} else {
+		d3.selectAll('#allele-freq svg').classed("hide", true);
+		d3.selectAll('#allele-freq .no-values').classed("hide", false);
+	}
 
 	// Mutation Spectrum
+	count = 0;
 	var msObj = stats.mut_spec;
 	var msArray = vcfiobio.jsonToArray(msObj, "category", "values");
-	// Exclude the 0 value as this is the base that that represents the
-	// "category"  Example:  For mutations for A, keep values for G, C, T,
-	// but exclude 0 value for A.
-	msArray.forEach(function(d) {
-        d.values = d.values.filter( function(val) {
-          if (val == 0) {
-            return false;
-          } else {
-            return true;
-          }
-      	});
-    }); 
-    // This is the parent object for the chart
-	var msSelection = d3.select("#mut-spectrum").datum(msArray);
-	// Render the mutation spectrum chart with the data
-	mutSpectrumChart(msSelection);
+	msArray.forEach(function (msObject) {
+		msObject.values.forEach(function (mutCount) {
+			count += mutCount;
+		});
+	});
+	if (count > 0) {
+		// Exclude the 0 value as this is the base that that represents the
+		// "category"  Example:  For mutations for A, keep values for G, C, T,
+		// but exclude 0 value for A.
+		msArray.forEach(function(d) {
+	        d.values = d.values.filter( function(val) {
+	          if (val == 0) {
+	            return false;
+	          } else {
+	            return true;
+	          }
+	      	});
+	    }); 
+	    // This is the parent object for the chart
+		var msSelection = d3.select("#mut-spectrum").datum(msArray);
+		// Render the mutation spectrum chart with the data
+		mutSpectrumChart(msSelection);		
+	} else {
+		d3.selectAll('#mut-spectrum svg').classed("hide", true);
+		d3.selectAll('#mut-spectrum .no-values').classed("hide", false);
+	}
 
 
 	// QC distribution
 	var qualPoints = vcfiobio.jsonToArray2D(stats.qual_dist.regularBins);
-	var factor = 2;
-	qualReducedPoints = vcfiobio.reducePoints(qualPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
-	//for (var i = 0; i < qualReducedPoints.length; i++) {
-	//	qualReducedPoints[i][0] = i;
-	//}
+	if (qualPoints.length > 0) {
+		var factor = 2;
+		qualReducedPoints = vcfiobio.reducePoints(qualPoints, factor, function(d) { return d[0]; }, function(d) { return d[1]});
+		//for (var i = 0; i < qualReducedPoints.length; i++) {
+		//	qualReducedPoints[i][0] = i;
+		//}
 
-	var qualSelection = d3.select("#qual-distribution-histogram")
-					    .datum(qualReducedPoints);
-	var qualOptions = {outliers: true, averageLine: true};
-	qualDistributionChart(qualSelection, qualOptions);	
+		var qualSelection = d3.select("#qual-distribution-histogram")
+						    .datum(qualReducedPoints);
+		var qualOptions = {outliers: true, averageLine: true};
+		qualDistributionChart(qualSelection, qualOptions);			
+	} else {
+		d3.selectAll('#qual-distribution svg').classed("hide", true);
+		d3.selectAll('#qual-distribution .no-values').classed("hide", false);
+	}
 
 
 
 	// Indel length distribution
 	var indelData = vcfiobio.jsonToArray2D(stats.indel_size);
-	var indelSelection = d3.select("#indel-length-histogram")
-					    .datum(indelData);
-	var indelOptions = {outliers: true, averageLine: false};
-	indelLengthChart(indelSelection, indelOptions);	
+	if (indelData.length > 0) {
+		var indelSelection = d3.select("#indel-length-histogram")
+						    .datum(indelData);
+		var indelOptions = {outliers: true, averageLine: false};
+		indelLengthChart(indelSelection, indelOptions);			
+	} else {
+		d3.selectAll('#indel-length svg').classed("hide", true);
+		d3.selectAll('#indel-length .no-values').classed("hide", false);
+	}
 
 	// Reset the sampling multiplier back to one
 	// so that next time we get stats, we start

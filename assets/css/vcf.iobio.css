@@ -546,6 +546,24 @@ section#bottom {
 }
 
 
+.samplingLoader {
+    display: block;
+}
+
+.samplingLoader.big {
+     display:block;
+}
+.no-values {
+    position: relative;
+    top: 30px;
+    font-size: 14px;
+    color: #2687BE;
+}
+
+.hide {
+    display: none !important;
+}
+
 #info { margin: 70px auto 0px auto; width:100%;text-align: center;}
 #info ul{margin: 0px; padding: 0px; list-style-type: none; }
 #info li {display:inline; margin: 0px 0px 0px 20px;}      
