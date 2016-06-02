@@ -102,7 +102,7 @@ vcfiobio = function module() {
   var vcfstatsAlive          = "nv-prod.iobio.io/vcfstatsalive/";
   var tabix                  = "nv-prod.iobio.io/tabix/";
   var vcfReadDepther         = "nv-prod.iobio.io/vcfdepther/"
-  var vt                     = "nv-prod.iobio.io/vt/";
+  var vt                     = "services.iobio.io/vt/";
 
   var vcfURL;
   var vcfReader;
@@ -692,14 +692,14 @@ vcfiobio = function module() {
 
 
     var cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);       
-    /*
+    
     if (samples && samples.length > 0) {
       cmd = new iobio.cmd(vt, ["subset", "-s", samples.join(","), vcfFile], opts)
                      .pipe(vcfstatsAlive, ['-u', '1000']);
     } else {
       cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);        
     }
-    */
+    
     
     var buffer = "";
     // parse stats

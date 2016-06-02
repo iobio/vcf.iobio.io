@@ -275,16 +275,16 @@ section#bottom {
 .panel > .title { font-size: 22px}
 
 .panel#chromosome-picker {
-    -webkit-flex: 1 0 200px;
-            flex: 1 0 200px;
+    -webkit-flex: 1 0 180px;
+            flex: 1 0 180px;
     -webkit-order: 1;
             order: 1;
     height: 270px;                        
 }
 
 .panel#sample-picker {
-    -webkit-flex: 1 0 150px;
-            flex: 1 0 150px;
+    -webkit-flex: 1 0 0px;
+            flex: 1 0 0px;
     -webkit-order: 2;
             order: 2;
     height: 270px;                        
