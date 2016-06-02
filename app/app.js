@@ -430,6 +430,7 @@ function onReferencesLoaded(refData) {
 	vcfiobio.setSamples([]);
     vcfiobio.getSampleNames(function(sampleNames) {
     	$('.vcf-sample.loader').addClass("hide");
+    	$('#samples-filter-header').addClass("hide");
     	if (sampleNames.length > 1) {    		
 			$('#sample-picker').removeClass("hide");	
     		sampleNames.forEach( function(sampleName) {
@@ -440,7 +441,14 @@ function onReferencesLoaded(refData) {
 
 			$('#sample-go-button').off('click');
 			$('#sample-go-button').on('click', function() {
-				vcfiobio.setSamples($('#vcf-sample-select')[0].selectize.items);
+				var samples =  $('#vcf-sample-select')[0].selectize.items;
+				if (samples.length > 0) {
+		    	    $('#samples-filter-header').removeClass("hide");
+					$('#samples-filter-header #sample-names').text(samples.join(" "));
+				} else {
+		    	    $('#samples-filter-header').addClass("hide");
+				}
+				vcfiobio.setSamples(samples);
 				loadStats(chromosomeIndex);
 			});	
     	} else {

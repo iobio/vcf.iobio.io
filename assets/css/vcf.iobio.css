@@ -386,12 +386,12 @@ section#bottom {
     display: -webkit-flex;
     display:         flex;
     display: -ms-flexbox;
-    -webkit-flex-flow: column;
-            flex-flow: column;
+    -webkit-flex-flow: row;
+            flex-flow: row;
     -webkit-justify-content: center;        
             justify-content: center;
-    -webkit-align-items: center;
-           align-items: center;        
+    -webkit-align-items: flex-start;
+           align-items: flex-start;        
 }
 
 
@@ -419,8 +419,25 @@ section#bottom {
     -webkit-order: 2;
             order: 2;
 
+}
 
+#samples-filter-header {
+    margin-left:    30px;
+}
 
+#samples-filter-header #label {
+    webkit-flex: 0 0  auto;
+            flex: 0 0 auto;
+    -webkit-order: 1;
+            order: 1;
+    font-size: 26px;
+    color: #2687BE    
+}
+#samples-filter-header #sample-names {
+    webkit-flex: 0 0  auto;
+            flex: 0 0 auto;
+    -webkit-order: 2;
+            order: 2;
 }
 
 #total-reads {
