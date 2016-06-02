@@ -421,6 +421,10 @@ function onFilesSelected(event) {
 	});
 }
 
+function showSamplesDialog() {
+	
+}
+
 
 function onReferencesLoaded(refData) {
 	// Show "ALL" references as first view
@@ -430,28 +434,33 @@ function onReferencesLoaded(refData) {
 	vcfiobio.setSamples([]);
     vcfiobio.getSampleNames(function(sampleNames) {
     	$('.vcf-sample.loader').addClass("hide");
-    	$('#samples-filter-header').addClass("hide");
-    	if (sampleNames.length > 1) {    		
-			$('#sample-picker').removeClass("hide");	
-    		sampleNames.forEach( function(sampleName) {
-    			$('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
-    		});
+    	$('#samples-filter-header #sample-names').addClass("hide");
+    	if (sampleNames.length > 1) {  
+    		$('#show-sample-dialog').removeClass("hide");
+    		vcfiobio.setSamples(sampleNames);  		
 
-    		$('#vcf-sample-box').removeClass("hide");
+			$('#sample-picker').removeClass("hide");	
+			sampleNames.forEach( function(sampleName) {
+				$('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
+			});
+
+			$('#vcf-sample-box').removeClass("hide");
 
 			$('#sample-go-button').off('click');
 			$('#sample-go-button').on('click', function() {
 				var samples =  $('#vcf-sample-select')[0].selectize.items;
 				if (samples.length > 0) {
-		    	    $('#samples-filter-header').removeClass("hide");
+		    	    $('#samples-filter-header #sample-names').removeClass("hide");
 					$('#samples-filter-header #sample-names').text(samples.join(" "));
 				} else {
-		    	    $('#samples-filter-header').addClass("hide");
+		    	    $('#samples-filter-header #sample-names').addClass("hide");
 				}
-				vcfiobio.setSamples(samples);
+				
 				loadStats(chromosomeIndex);
-			});	
+			});		    		
+			
     	} else {
+    		$('#show-sample-dialog').addClass("hide");
     		_loadVcfIndexFromUrl(url);
     	}
     });

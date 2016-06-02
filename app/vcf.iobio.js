@@ -97,7 +97,7 @@ vcfiobio = function module() {
 
 
 
-  var emailServer            = "wss://nv-prod.iobio.io/localhost:7068";
+  var emailServer            = "ws://localhost:7068";
 
   var vcfstatsAlive          = "nv-prod.iobio.io/vcfstatsalive/";
   var tabix                  = "nv-prod.iobio.io/tabix/";
@@ -194,7 +194,9 @@ vcfiobio = function module() {
   exports.setSamples = function(sampleNames) {
     samples = sampleNames;
   }
-
+  exports.getSamples = function() {
+    return samples;
+  }
 
   exports.loadIndex = function(callbackData, callbackEnd) {
  

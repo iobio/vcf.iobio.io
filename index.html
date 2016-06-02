@@ -19,8 +19,9 @@
         <link href='http://fonts.googleapis.com/css?family=Overlock+SC' rel='stylesheet' type='text/css'>
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
         <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
-        <link href="assets/css/modal.css" rel="stylesheet" type='text/css'>
+        
         <link href="assets/css/selectize.css" rel="stylesheet" type='text/css'>
+        <link href="assets/css/bootstrap.css" rel="stylesheet" type='text/css'>
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.core.css" />
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.default.css" />
@@ -31,6 +32,7 @@
         <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="components/nprogress/nprogress.js"></script>
         <script type="text/javascript" src="components/alertify.js/lib/alertify.min.js"></script>
+        <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="assets/js/class.js"></script>
         <script type="text/javascript" src="assets/js/rdp.js"></script>
         <script type="text/javascript" src="assets/js/selectize.js"></script> 
@@ -179,13 +181,13 @@
 
         </div>
 
-        <div  id="showData">
+        <div  id="showData" style="padding-top:5px">
 
             <div id="page" >
                 <div>
-                    <a id="report-problem" href="#modal-report-problem">Report Problem</a>
+                    <a href="javascript:void(0)" id="report-problem" data-toggle="modal" data-target="#modal-report-problem">Report Problem</a>
                 </div>
-                <section id="banner" style="clear: both">
+                <section id="banner" style="clear: both;">
     				
                     <div id="banner-title" >
                         <header><a href="/">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
@@ -199,7 +201,17 @@
                                 <div id="reference_selected"></div>
                                 <div id="region_selected"></div>
                             </div>
-                            <div id="samples-filter-header" class="hide" style="text-align:center">    <div id="label">Sample(s)</div>
+                            <div id="samples-filter-header" class="" style="text-align:center">    <div id="label">
+                                    <a id="show-sample-dialog"
+                                       href="javascript:void(0)"
+                                       class="btn hide"
+                                       onclick="showSamplesDialog()"
+                                       data-toggle="modal" 
+                                       data-target="#sample-picker-modal">
+                                       Filter samples
+                                    </a>
+                                </div>
+
                                 <div id="sample-names"></div>
                             </div>
 
@@ -244,21 +256,7 @@
                              </select>
                         </div>                    
                     </div>
-                    <div id="sample-picker" class="panel hide">
-                        <div class="title">Samples</div>
-                        <div class="vcf-sample loader hide" style="text-align:center">
-                          <span class="loader-label" >Initializing</span>
-                          <img src="assets/images/loading_dots.gif" >
-                        </div>
-                          
-                        <div id="vcf-sample-box" class="hide" style="text-align:center">
-                          <div id="vcf-sample-select-box"  style="display:inline-block;">
-                            <select id="vcf-sample-select"  data-placeholder="choose sample(s)...">
-                            </select>
-                          </div>
-                            <button id="sample-go-button">filter</button>
-                        </div>                            
-                    </div>
+
                     <div id="variant-density-panel" class="panel">
                         <div class="title">Variant Density</div>
                         <span class="svg-alt hint">(drag bottom chart to select region)</span>
@@ -332,25 +330,59 @@
 
 
 <!-- Modal -->
-<div class="modal" id="modal-report-problem" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-header">
-      <h2>Report Problem</h2>
-      <a href="#close" class="btn-close" aria-hidden="true">×</a> <!--CHANGED TO "#close"-->
+<div class="modal fade" id="modal-report-problem" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h2>Report Problem</h2>
+          <a href="#close" class="btn-close" aria-hidden="true">×</a> <!--CHANGED TO "#close"-->
+        </div>
+        <div class="modal-body">
+           <div>
+             <span class="label">Your email</span><input id="report-problem-email" type="text" ></input>
+          </div>
+          <div style="margin-top:10px; margin-bottom:10px">
+             <span class="label"</span>Description of problem<textarea id="report-problem-note" ></textarea>
+          </div>
+          <span class="label"</label>Screen Capture</span>
+          <div id="report-problem-screen-capture">
+        </div>    
+        <div class="modal-footer">
+          <a  id="report-problem-button" href="#email-report-problem"  class="btn">Report</a>  <!--CHANGED TO "#close"-->
+        </div>
     </div>
-    <div class="modal-body">
-       <div>
-         <span class="label">Your email</span><input id="report-problem-email" type="text" ></input>
+  </div>
+</div>
+</div>
+
+<div class="modal fade"  id="sample-picker-modal" tabindex="-1" role="dialog">
+  <div  class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:10px;">
+         <h4>Filter samples</h4>
+          <a href="#close" class="btn-close" aria-hidden="true">×</a>         
       </div>
-      <div style="margin-top:10px; margin-bottom:10px">
-         <span class="label"</span>Description of problem<textarea id="report-problem-note" ></textarea>
+      <div class="modal-body">
+
+        <div id="sample-picker" class="">
+            <div class="vcf-sample loader hide" style="text-align:center">
+              <span class="loader-label" >Initializing</span>
+              <img src="assets/images/loading_dots.gif" >
+            </div>
+              
+            <div id="vcf-sample-box" class="hide" style="text-align:center">
+              <div id="vcf-sample-select-box"  style="display:inline-block;">
+                <select id="vcf-sample-select"  data-placeholder="choose sample(s)...">
+                </select>
+              </div>
+                
+            </div>                            
+        </div>
+
       </div>
-      <span class="label"</label>Screen Capture</span>
-      <div id="report-problem-screen-capture">
-    </div>    
-    <div class="modal-footer">
-      <a  id="report-problem-button" href="#email-report-problem"  class="btn">Report</a>  <!--CHANGED TO "#close"-->
-    </div>
+      <div class="modal-footer" style="clear-both">
+          <button type="button" id="sample-go-button" class="btn" data-dismiss="modal">Load</button>
+      </div>
     </div>
   </div>
 </div>

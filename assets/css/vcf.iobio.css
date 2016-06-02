@@ -1,11 +1,13 @@
+label {
+    font-weight: 300;
+}
 #vcf-url-go-button  { 
   font:300 28px quicksand;
   vertical-align:middle;
 }
 
 #sample-go-button  { 
-  font:300 14px quicksand;
-  vertical-align:middle;
+
 }
 
 #all-text1 {
@@ -183,7 +185,8 @@ path.line {
     font-size: 12px;
     color: red;
     text-decoration: none;
-    visibility: hidden;
+    display: none;
+    
 }
 
 
@@ -279,16 +282,9 @@ section#bottom {
             flex: 1 0 180px;
     -webkit-order: 1;
             order: 1;
-    height: 270px;                        
+    height: 280px;                        
 }
 
-.panel#sample-picker {
-    -webkit-flex: 1 0 0px;
-            flex: 1 0 0px;
-    -webkit-order: 2;
-            order: 2;
-    height: 270px;                        
-}
 
 #primary-references {
     height: 200px;
@@ -305,7 +301,7 @@ section#bottom {
             flex: 1 0 60%;
     -webkit-order: 3;
            order: 3;
-    height: 270px;
+    height: 280px;
     position:relative;
 
 
@@ -418,6 +414,8 @@ section#bottom {
             flex: 0 0 auto;
     -webkit-order: 2;
             order: 2;
+    font-size: 14px;  
+
 
 }
 
@@ -425,19 +423,9 @@ section#bottom {
     margin-left:    30px;
 }
 
-#samples-filter-header #label {
-    webkit-flex: 0 0  auto;
-            flex: 0 0 auto;
-    -webkit-order: 1;
-            order: 1;
-    font-size: 26px;
-    color: #2687BE    
-}
 #samples-filter-header #sample-names {
-    webkit-flex: 0 0  auto;
-            flex: 0 0 auto;
-    -webkit-order: 2;
-            order: 2;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 #total-reads {
@@ -660,6 +648,64 @@ header .iobio-project {font-size:18px; letter-spacing:6px;margin-top:8px; margin
 header .iobio-project a {color: rgb(120,120,120)}
 header .iobio-project a:hover {color:#2d8fc1;}
 
+#show-sample-dialog {
+    padding: 3px 10px 3px 10px !important;
+    margin-top: 4px;
+}
+
+
+.modal-body .label {
+    font-weight: 400;
+    margin-right: 8px;
+    color: grey;
+    white-space: normal;
+    padding: 0;
+    font-size: 14px;
+}
+
+.btn {
+  background: #428bca;
+  border: #357ebd solid 1px;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  font-size: 14px;
+  padding: 8px 15px;
+  text-decoration: none;
+  text-align: center;
+  min-width: 60px;
+  position: relative;
+  transition: color .1s ease;
+  /* top: 40em;*/
+}
+.btn:hover {
+    color: white;
+}
+.btn:focus {
+    outline: none;
+    color: white;
+}
+
+
+#modal-report-problem .modal-dialog {
+    width: 810px;
+}
+.modal .btn-close {
+  color: #aaaaaa;
+  font-size: 30px;
+  text-decoration: none;
+  position: absolute;
+  right: 5px;
+  top: 0;
+}
+.modal  .btn-close:hover {
+  color: #919191;
+}
+#sample-picker-modal .modal-dialog {
+    width: 300px;
+}
+
+
 
 /* For mobile phones in portrait view */
 @media screen and (max-device-width:768px) and (orientation : portrait), 
@@ -699,9 +745,6 @@ header .iobio-project a:hover {color:#2d8fc1;}
          margin-top: -10px;
     }
 
-    #report-problem: {
-        margin-top: 10px;
-    }
 
     #banner-middle {
         -webkit-flex: 1 0 45%;
