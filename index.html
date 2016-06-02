@@ -20,6 +20,7 @@
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
         <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
         <link href="assets/css/modal.css" rel="stylesheet" type='text/css'>
+        <link href="assets/css/selectize.css" rel="stylesheet" type='text/css'>
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.core.css" />
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.default.css" />
@@ -32,6 +33,7 @@
         <script type="text/javascript" src="components/alertify.js/lib/alertify.min.js"></script>
         <script type="text/javascript" src="assets/js/class.js"></script>
         <script type="text/javascript" src="assets/js/rdp.js"></script>
+        <script type="text/javascript" src="assets/js/selectize.js"></script> 
 
         <script src="assets/js/binary.js"></script>
 
@@ -76,12 +78,15 @@
                 <div style="clear:both"></div>
 
             </div>
-            <div id='vcf-url' style="visibility:hidden" class="arrow_box">
-                <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input>
-            </div>
-            <div id="vcf-url-button-panel" style="visibility:hidden; width: 670px; margin-left: auto; margin-right: auto;">
+            <div id="vcf-url" style="visibility:hidden;">
+                <div class="arrow_box" style="display:inline-block;width:670px;">
+                    <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input>
+                </div>
                 <button id="vcf-url-go-button" onclick="onUrlEntered()">Go</button>
             </div>
+
+           
+                    
             
 
             <div style="clear:both"></div>
@@ -232,6 +237,21 @@
                                <option value=""></option>
                              </select>
                         </div>                    
+                    </div>
+                    <div id="sample-picker" class="panel hide">
+                        <div class="title">Samples</div>
+                        <div class="vcf-sample loader hide" style="text-align:center">
+                          <span class="loader-label" >Initializing</span>
+                          <img src="assets/images/loading_dots.gif" >
+                        </div>
+                          
+                        <div id="vcf-sample-box" class="hide" style="text-align:center">
+                          <div id="vcf-sample-select-box"  style="display:inline-block;">
+                            <select id="vcf-sample-select"  data-placeholder="choose sample(s)...">
+                            </select>
+                          </div>
+                            <button id="sample-go-button">filter</button>
+                        </div>                            
                     </div>
                     <div id="variant-density-panel" class="panel">
                         <div class="title">Variant Density</div>

@@ -65,6 +65,8 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
+  var samples = [];
+
   var refLengths_GRCh37 = 
   {
         "1":   +249250621,
@@ -100,6 +102,7 @@ vcfiobio = function module() {
   var vcfstatsAlive          = "nv-prod.iobio.io/vcfstatsalive/";
   var tabix                  = "nv-prod.iobio.io/tabix/";
   var vcfReadDepther         = "nv-prod.iobio.io/vcfdepther/"
+  var vt                     = "nv-prod.iobio.io/vt/";
 
   var vcfURL;
   var vcfReader;
@@ -163,6 +166,7 @@ vcfiobio = function module() {
 
   } 
 
+
   function showFileFormatMessage() {
     alertify.set(
       { 
@@ -186,6 +190,11 @@ vcfiobio = function module() {
   function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
   }
+
+  exports.setSamples = function(sampleNames) {
+    samples = sampleNames;
+  }
+
 
   exports.loadIndex = function(callbackData, callbackEnd) {
  
@@ -617,73 +626,81 @@ vcfiobio = function module() {
     var me = this;
     this._getRegions(refs, options);
 
-    var cmd = new iobio.cmd(
-      vcfstatsAlive,
-      ['-u', '1000', vcfFile],
-      {        
-        writeStream: function(stream) {  
-       
-          vcfReader.getHeader( function(header) {
-             stream.write(header + "\n");
-          });
+    // options to write stream of vcf records from local file to cmd
+    var opts = {        
+      writeStream: function(stream) {  
+     
+        vcfReader.getHeader( function(header) {
+           stream.write(header + "\n");
+        });
 
-          if (regions.length <= regionIndex) {
-            console.log("no regions to process. regionIndex=" + regionIndex + " regions.length=" + regions.length);
+        if (regions.length <= regionIndex) {
+          console.log("no regions to process. regionIndex=" + regionIndex + " regions.length=" + regions.length);
+        } else {
+          var regionObject = regions[regionIndex];
+          if (regionObject == null) {
+            console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
+          }
+        }
+
+        var streamNextRegion = function(records) {
+          // Stream the vcf records we just parsed for a region in the vcf, one records at a time
+          if (records) {
+            for (var r = 0; r < records.length; r++) {              
+              stream.write(records[r] + "\n");
+            }
+          } else {
+            // This is an error condition.  If vcfRecords can't return any
+            // records, we will hit this point in the code.
+            // Just log it for now and move on to the next region.
+            console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
+          }
+
+          // Now that we have streamed the vcf records for a region, continue on
+          // to the next region to stream
+          regionIndex++;
+          if (regionIndex > regions.length) {
+            return;
+          } else if (regionIndex == regions.length) {
+            // We have streamed all of the regions so now we will end the stream.
+            stream.end();
+            return;
           } else {
             var regionObject = regions[regionIndex];
             if (regionObject == null) {
               console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
-            }
-          }
-
-          var streamNextRegion = function(records) {
-            // Stream the vcf records we just parsed for a region in the vcf, one records at a time
-            if (records) {
-              for (var r = 0; r < records.length; r++) {              
-                stream.write(records[r] + "\n");
-              }
-            } else {
-              // This is an error condition.  If vcfRecords can't return any
-              // records, we will hit this point in the code.
-              // Just log it for now and move on to the next region.
-              console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
-            }
-
-            // Now that we have streamed the vcf records for a region, continue on
-            // to the next region to stream
-            regionIndex++;
-            if (regionIndex > regions.length) {
-              return;
-            } else if (regionIndex == regions.length) {
-              // We have streamed all of the regions so now we will end the stream.
-              stream.end();
-              return;
-            } else {
-              var regionObject = regions[regionIndex];
-              if (regionObject == null) {
-                console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
-              } 
-              // There are more regions to obtain vcf records for, so call getVcfRecords now
-              // that regionIndex has been incremented.
-              vcfReader.getRecords(regions[regionIndex].name, 
-                regions[regionIndex].start, 
-                regions[regionIndex].end, 
-                streamNextRegion);
             } 
-          }
-
-
-          // Stream vcf records for each region in a serial fashion.  (Once vcf records for a region 
-          // have been streamed, continue on to the next region to stream its vcf records).
-          vcfReader.getRecords(
-              regions[regionIndex].name, 
+            // There are more regions to obtain vcf records for, so call getVcfRecords now
+            // that regionIndex has been incremented.
+            vcfReader.getRecords(regions[regionIndex].name, 
               regions[regionIndex].start, 
               regions[regionIndex].end, 
-              streamNextRegion);        
-        }  
-      }
-    );        
+              streamNextRegion);
+          } 
+        }
 
+
+        // Stream vcf records for each region in a serial fashion.  (Once vcf records for a region 
+        // have been streamed, continue on to the next region to stream its vcf records).
+        vcfReader.getRecords(
+            regions[regionIndex].name, 
+            regions[regionIndex].start, 
+            regions[regionIndex].end, 
+            streamNextRegion);        
+      }  
+    };
+
+
+    var cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);       
+    /*
+    if (samples && samples.length > 0) {
+      cmd = new iobio.cmd(vt, ["subset", "-s", samples.join(","), vcfFile], opts)
+                     .pipe(vcfstatsAlive, ['-u', '1000']);
+    } else {
+      cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);        
+    }
+    */
+    
     var buffer = "";
     // parse stats
     cmd.on('data', function(results) {
@@ -710,7 +727,6 @@ vcfiobio = function module() {
     });
 
     cmd.on('error', function(error) {
-      alert("Unable to get vcf stats due to the following error: " + error);
       console.log("error while annotating vcf records " + error);        
     });
 
@@ -732,12 +748,16 @@ vcfiobio = function module() {
       regionStr += " " + region.name + ":" + region.start + "-" + region.end 
     });
 
-    var cmd = new iobio.cmd(
-        tabix,
-        ['-h', vcfURL, regionStr],
-        { 'urlparams': {'encoding':'binary'} })
-    .pipe( vcfstatsAlive, ['-u', '1000'] ); // chain command
-
+    var cmd = null;
+    if (samples && samples.length > 0) {
+      cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+                        .pipe(vt, ["subset", "-s", samples.join(",")])
+                        .pipe( vcfstatsAlive, ['-u', '1000'] );
+    } else {
+      cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+                        .pipe( vcfstatsAlive, ['-u', '1000'] );
+    }
+    
 
     // Run like normal
     cmd.run(); 
@@ -768,7 +788,6 @@ vcfiobio = function module() {
     });
 
     cmd.on('error', function(error) {
-      alert("Unable to get vcf stats due to the following error: " + error);
       console.log("error while annotating vcf records " + error);        
     });
 
@@ -776,6 +795,82 @@ vcfiobio = function module() {
   }; 
 
 
+    // NEW
+  exports.getSampleNames = function(callback) {
+    if (sourceType == SOURCE_TYPE_URL) {
+      this._getRemoteSampleNames(callback);
+    } else {
+      this._getLocalSampleNames(callback);
+    }
+  }
+ 
+  // NEW
+  exports._getLocalSampleNames = function(callback) {
+    var me = this;
+
+    var vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
+      var sampleNames = [];
+      sampleNames.length = 0;
+
+      var headerRecords = [];
+      vcfReader.getHeader( function(header) {
+         headerRecords = header.split("\n");
+         headerRecords.forEach(function(headerRec) {
+            if (headerRec.indexOf("#CHROM") == 0) {
+              var headerFields = headerRec.split("\t");
+              sampleNames = headerFields.slice(9);
+              callback(sampleNames);
+            }
+         });
+
+      });
+   });
+    
+    
+
+  }
+
+  // NEW
+  exports._getRemoteSampleNames = function(callback) {
+    var me = this;
+    
+    var cmd = new iobio.cmd(
+        tabix,
+        ['-h', vcfURL, '1:1-1']);
+
+
+
+    cmd.http();
+
+
+    var headerData = "";
+    // Use Results
+    cmd.on('data', function(data) {
+         if (data == undefined) {
+            return;
+         } 
+         headerData += data;
+    });
+
+    cmd.on('end', function(data) {
+        var headerRecords = headerData.split("\n");
+         headerRecords.forEach(function(headerRec) {
+              if (headerRec.indexOf("#CHROM") == 0) {
+                var headerFields = headerRec.split("\t");
+                var sampleNames = headerFields.slice(9);
+                callback(sampleNames);
+              }
+         });
+
+    });
+
+    cmd.on('error', function(error) {
+      console.log(error);
+    });
+    
+    cmd.run(); 
+
+  }
 
  
 

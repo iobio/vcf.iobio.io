@@ -105,6 +105,15 @@ function init() {
 	// Setup event handlers for File input
 	document.getElementById('file').addEventListener('change', onFilesSelected, false);
 
+	$('#vcf-sample-select').selectize(
+		{ 	
+			create: true, 
+			maxItems: null,  
+			valueField: 'value',
+	    	labelField: 'value',
+	    	searchField: ['value']
+		}
+	);
 
 	// Get the container dimensions to determine the chart dimensions
 	getChartDimensions();
@@ -381,6 +390,8 @@ function _loadVcfFromUrl(url) {
 
     vcfiobio.openVcfUrl( url );
 
+    $('.vcf-sample.loader').removeClass("hide");
+
 	d3.select("#vcf_file").text(url);
 
 	d3.select("#selectData")
@@ -390,12 +401,12 @@ function _loadVcfFromUrl(url) {
 	d3.select("#showData")
 	  .style("visibility", "visible");
 
-	vcfiobio.loadRemoteIndex(url, onReferencesLoading, onReferencesLoaded);
-
+	vcfiobio.loadRemoteIndex(url, onReferencesLoading, onReferencesLoaded);   
 }
 
 function onFilesSelected(event) {
 	vcfiobio.openVcfFile( event, function(vcfFile) {
+		 $('.vcf-sample.loader').removeClass("hide");
 
 		d3.select("#vcf_file").text(vcfFile.name);
 
@@ -405,18 +416,37 @@ function onFilesSelected(event) {
 
 		d3.select("#showData")
 		  .style("visibility", "visible");
-
 		
-
-		vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded);
-
+		vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded);	    
 	});
 }
+
 
 function onReferencesLoaded(refData) {
 	// Show "ALL" references as first view
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	chromosomeChart.clickAllSlices(pieChartRefData);	
+
+	vcfiobio.setSamples([]);
+    vcfiobio.getSampleNames(function(sampleNames) {
+    	$('.vcf-sample.loader').addClass("hide");
+    	if (sampleNames.length > 1) {    		
+			$('#sample-picker').removeClass("hide");	
+    		sampleNames.forEach( function(sampleName) {
+    			$('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
+    		});
+
+    		$('#vcf-sample-box').removeClass("hide");
+
+			$('#sample-go-button').off('click');
+			$('#sample-go-button').on('click', function() {
+				vcfiobio.setSamples($('#vcf-sample-select')[0].selectize.items);
+				loadStats(chromosomeIndex);
+			});	
+    	} else {
+    		_loadVcfIndexFromUrl(url);
+    	}
+    });
 }
 
 function onReferencesLoading(refData) {

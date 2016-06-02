@@ -1,7 +1,11 @@
 #vcf-url-go-button  { 
   font:300 28px quicksand;
-  margin-top: 4px;
-  float: right;
+  vertical-align:middle;
+}
+
+#sample-go-button  { 
+  font:300 14px quicksand;
+  vertical-align:middle;
 }
 
 #all-text1 {
@@ -56,7 +60,7 @@ text.y.axis.label {
 
 #vcf-url {
     margin-top:24px;
-    width:670px;
+    text-align:center;
     margin-left:auto;
     margin-right:auto;
 }
@@ -278,6 +282,14 @@ section#bottom {
     height: 270px;                        
 }
 
+.panel#sample-picker {
+    -webkit-flex: 1 0 150px;
+            flex: 1 0 150px;
+    -webkit-order: 2;
+            order: 2;
+    height: 270px;                        
+}
+
 #primary-references {
     height: 200px;
     padding: 0px;
@@ -289,10 +301,10 @@ section#bottom {
     display: none;
 }
 #variant-density-panel {
-    -webkit-flex: 1 0 70%;
-            flex: 1 0 70%;
-    -webkit-order: 2;
-           order: 2;
+    -webkit-flex: 1 0 60%;
+            flex: 1 0 60%;
+    -webkit-order: 3;
+           order: 3;
     height: 270px;
     position:relative;
 
@@ -560,8 +572,37 @@ section#bottom {
     color: #2687BE;
 }
 
+.vcf-sample.loader {
+    font-size:24px;
+    color:#2687BE;
+    position:relative;
+    margin-top: 70px;
+    margin-left:-6px;
+    display:block;
+}
+.vcf-sample.loader img {
+    height:16px;
+    margin-left: 10px;
+}
+
 .hide {
     display: none !important;
+}
+
+#vcf-sample-box {
+    margin-top: 14px;
+}
+
+#vcf-sample-select-box .selectize-dropdown, 
+#vcf-sample-select-box .selectize-input, 
+#vcf-sample-select-box .selectize-input input {
+    font-size: 14px;
+    width: 140px !important;
+    color: rgb(110,110,110);
+    vertical-align:middle;
+}
+#vcf-sample-select-box .selectize-dropdown-content .option {
+    line-height: 14px;
 }
 
 #info { margin: 70px auto 0px auto; width:100%;text-align: center;}
