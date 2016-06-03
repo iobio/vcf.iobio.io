@@ -451,7 +451,11 @@ function onReferencesLoaded(refData) {
 				var samples =  $('#vcf-sample-select')[0].selectize.items;
 				if (samples.length > 0) {
 		    	    $('#samples-filter-header #sample-names').removeClass("hide");
-					$('#samples-filter-header #sample-names').text(samples.join(" "));
+		    	    if (samples.length > 6) {
+						$('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
+		    	    } else {
+						$('#samples-filter-header #sample-names').text(samples.join(" "));
+		    	    }
 				} else {
 		    	    $('#samples-filter-header #sample-names').addClass("hide");
 				}
