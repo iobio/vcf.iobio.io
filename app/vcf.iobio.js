@@ -490,13 +490,7 @@ vcfiobio = function module() {
         });
         }
         
-        // We need to mark the end of the ref if the last post < ref length
-        if (refObject.calcRefLength < refObject.refLength) {
-          var points = refDensityObject.points;
-          var lastPos = points[points.length-1][0];
-          points.push([lastPos+1, 0]);
-          points.push([refObject.refLength-1, 0]);
-        }
+       
   };
 
   exports.getReferences = function(minLengthPercent, maxLengthPercent) {
@@ -530,7 +524,7 @@ vcfiobio = function module() {
 
 
   exports.getEstimatedDensity = function(ref, useLinearIndex, removeTheDataSpikes, maxPoints, rdpEpsilon) {
-    var points = useLinearIndex ? refDensity[ref].intervalPoints.concat() : refDensity[ref].points.concat();
+    var points = useLinearIndex ? refDensity[ref].intervalPoints.concat() : refDensity[ref.name].points.concat();
 
     if (removeTheDataSpikes) {
       var filteredPoints = this._applyCeiling(points);
@@ -550,6 +544,16 @@ vcfiobio = function module() {
     if (rdpEpsilon) {
       points = this._performRDP(points, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
     }
+
+
+    // We need to mark the end of the ref if the last post < ref length
+    var lastPos = points[points.length-1][0];
+    if (lastPos < ref.refLength) {        
+      points.push([lastPos+1, 0]);
+      points.push([ref.refLength-1, 0]);
+    }
+
+
 
     return points;
   }
@@ -586,12 +590,13 @@ vcfiobio = function module() {
       if (rdpEpsilon) {
         points = this._performRDP(points, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
       }
-  
-      // Add one more point to the end of the ref density points, taking the depth back down to zero.
-      // This represents the boundary from one ref to another in the global density; otherwise,
-      // it looks like a big spike or dropoff between refs when the end of one ref has a density
-      // quite different than the beginning of the next ref.
-      points.push([refData[i].refLength, 0]);
+
+      // We need to mark the end of the ref if the last post < ref length
+      var lastPos = points[points.length-1][0];
+      if (lastPos < refData[i].refLength) {        
+        points.push([lastPos+1, 0]);
+        points.push([refData[i].refLength-1, 0]);
+      }
 
       var offsetPoints = [];
       for (var x = 0; x < points.length; x++) {

@@ -559,7 +559,7 @@ function loadVariantDensityData(ref, i) {
 	 d3.selectAll("section#top .svg-alt").style("visibility", "visible");
 
 	// Get the point data (the estimated density)
-	var data = vcfiobio.getEstimatedDensity(ref.name, 
+	var data = vcfiobio.getEstimatedDensity(ref, 
 		false, densityOptions.removeSpikes, densityOptions.maxPoints, densityOptions.epsilonRDP);
 
 
