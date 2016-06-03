@@ -601,8 +601,8 @@ section#bottom {
 #vcf-sample-select-box .selectize-dropdown, 
 #vcf-sample-select-box .selectize-input, 
 #vcf-sample-select-box .selectize-input input {
-    font-size: 14px;
-    width: 140px !important;
+    font-size: 13px;
+    width: 600px !important;
     color: rgb(110,110,110);
     vertical-align:middle;
 }
@@ -702,7 +702,7 @@ header .iobio-project a:hover {color:#2d8fc1;}
   color: #919191;
 }
 #sample-picker-modal .modal-dialog {
-    width: 300px;
+    width: 650px;
 }
 
 
