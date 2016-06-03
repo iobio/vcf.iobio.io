@@ -766,8 +766,7 @@ function renderStats(stats) {
 	}
 
 	// Alelle Frequency
-	if (stats.af_hist)
-	var afObj = stats.af_hist;
+	var afObj = stats.af_hist.afHistBins;
 	afData = vcfiobio.jsonToArray2D(afObj);	
 	if (afData.length > 0) {
 		var afSelection = d3.select("#allele-freq-histogram")
