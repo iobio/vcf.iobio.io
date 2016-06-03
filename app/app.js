@@ -689,7 +689,7 @@ function renderStats(stats) {
 	varTypeChart(varTypeSelection);
 
 	// Alelle Frequency
-	var afObj = stats.af_hist;
+	var afObj = stats.af_hist.afHistBins;
 	afData = vcfiobio.jsonToArray2D(afObj);	
 	var afSelection = d3.select("#allele-freq-histogram")
 					    .datum(afData);
