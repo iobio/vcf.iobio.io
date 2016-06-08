@@ -198,18 +198,25 @@ vcfiobio = function module() {
   }
 
   exports.loadIndex = function(callback) {
+    var me = this;
  
     vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
       var tbiIdx = tbiR;
       refDensity.length = 0;
 
+      var referenceNames = [];
       for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {
         var ref   = tbiIdx.idxContent.head.names[i];
+        referenceNames.push(ref);
+      }
+
+      for (var i = 0; i < referenceNames.length; i++) {
+        var ref   = referenceNames[i];
 
         var indexseq = tbiIdx.idxContent.indexseq[i];
         var calcRefLength = indexseq.n_intv * size16kb;
 
-        var refLength = refLengths_GRCh37[ref];
+        var refLength = refLengths_GRCh37[me.stripChr(ref)];
 
         // Use the linear index to load the estimated density data
         var intervalPoints = [];
@@ -239,10 +246,10 @@ vcfiobio = function module() {
       // Call function from js-bv-sampling to obtain point data.
       estimateCoverageDepth(tbiIdx, function(estimates) {
 
-      for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {
+      for (var i = 0; i < referenceNames.length; i++) {
 
           
-          var refName   = tbiIdx.idxContent.head.names[i];
+          var refName   = referenceNames[i];
           var pointData = estimates[i];
           var refDataLength  =  refData[i].refLength;
          
@@ -263,7 +270,7 @@ vcfiobio = function module() {
 
           // Make sure to zero fill to the end of the reference
           var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
-          var refLength = refLengths_GRCh37[refName];
+          var refLength = refLengths_GRCh37[me.stripChr(refName)];
           if (refLength == null) {
             refLength = calcRefLength;
           }
@@ -334,6 +341,9 @@ vcfiobio = function module() {
 
       });
 
+      // sort the ref data sor that references are ordered numerically
+      refData = me.sortRefData(refData);
+
 
       callback.call(this, refData);
     
@@ -341,8 +351,16 @@ vcfiobio = function module() {
 
   }
 
+  exports.stripChr = function(ref) {
+    if (ref.indexOf("chr") == 0) {
+      return ref.split("chr")[1];
+    } else {
+      return ref;
+    }
+  }
 
   exports.loadRemoteIndex = function(theVcfUrl, callback) {
+    var me = this;
     vcfURL = theVcfUrl;
     sourceType = SOURCE_TYPE_URL;
 
@@ -362,7 +380,7 @@ vcfiobio = function module() {
                refIndex = tokens[0];
                refName = tokens[1];
                var calcRefLength = tokens[2];
-               var refLength = refLengths_GRCh37[refName];
+               var refLength = refLengths_GRCh37[me.stripChr(refName)];
                if (refLength == null) {
                    refLength = calcRefLength;
                }
@@ -388,6 +406,10 @@ vcfiobio = function module() {
       });
 
       stream.on('end', function() {
+
+        // sort refData so references or ordered numerically
+        refData = me.sortRefData(refData);
+
          for(var i = 0; i < refData.length; i++) {
             var refObject = refData[i];
             var refDensityObject = refDensity[refObject.name];
@@ -423,6 +445,29 @@ vcfiobio = function module() {
 
   };
 
+  exports.sortRefData = function(refData) {
+    var me = this;
+    return refData.sort(function(refa,refb) {
+          var x = me.stripChr(refa.name); 
+          var y = me.stripChr(refb.name);
+          if (me.isNumeric(x) && me.isNumeric(y)) {
+            return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+          } else {
+             if (!me.isNumeric(x) && !me.isNumeric(y)) {
+                return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+             } else if (!me.isNumeric(x)) {
+                return 1;
+             } else {
+                return -1;
+             }
+          }
+          
+      });      
+  }
+
+  exports.isNumeric = function(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  }
 
   exports.getReferences = function(minLengthPercent, maxLengthPercent) {
     var references = [];
