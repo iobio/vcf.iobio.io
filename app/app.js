@@ -465,7 +465,7 @@ function onReferencesLoaded(refData) {
 			
     	} else {
     		$('#show-sample-dialog').addClass("hide");
-    		_loadVcfIndexFromUrl(url);
+    		loadStats(chromosomeIndex);
     	}
     });
 }
