@@ -209,24 +209,7 @@ vcfiobio = function module() {
       for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {
         var ref   = tbiIdx.idxContent.head.names[i];
         referenceNames.push(ref);
-      }
-      referenceNames = referenceNames.sort(function(refa,refb) {
-          var x = me.stripChr(refa); 
-          var y = me.stripChr(refb);
-          if (me.isNumeric(x) && me.isNumeric(y)) {
-            return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
-          } else {
-             if (!me.isNumeric(x) && !me.isNumeric(y)) {
-                return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
-             } else if (!me.isNumeric(x)) {
-                return 1;
-             } else {
-                return -1;
-             }
-          }
-          
-      });  
-
+      }      
 
       for (var i = 0; i < referenceNames.length; i++) {
         var ref   = referenceNames[i];
@@ -353,6 +336,9 @@ vcfiobio = function module() {
             var point = [pointData[x].pos, pointData[x].depth];
             refObject.points.push(point);
           }
+          // Sort ref data so that refs are ordered numerically
+          refData = me.sortRefData(refData);
+
           if (callbackData) {
             callbackData(refData);
           }
@@ -362,6 +348,9 @@ vcfiobio = function module() {
 
       });
 
+      // Sort ref data so that refs are ordered numerically
+      refData = me.sortRefData(refData);
+    
       if (callbackEnd) {
         callbackEnd(refData);
       }
@@ -475,22 +464,7 @@ vcfiobio = function module() {
     // All data has been streamed.
     cmd.on('end', function() {
       // sort refData so references or ordered numerically
-      refData = refData.sort(function(refa,refb) {
-          var x = me.stripChr(refa.name); 
-          var y = me.stripChr(refb.name);
-          if (me.isNumeric(x) && me.isNumeric(y)) {
-            return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
-          } else {
-             if (!me.isNumeric(x) && !me.isNumeric(y)) {
-                return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
-             } else if (!me.isNumeric(x)) {
-                return 1;
-             } else {
-                return -1;
-             }
-          }
-          
-      });  
+      refData = me.sortRefData(refData);
 
 
       // Zero fill the previous reference point data and callback with the
@@ -542,6 +516,28 @@ vcfiobio = function module() {
         
        
   };
+
+
+  exports.sortRefData = function(refData) {
+    var me = this;
+    return refData.sort(function(refa,refb) {
+          var x = me.stripChr(refa.name); 
+          var y = me.stripChr(refb.name);
+          if (me.isNumeric(x) && me.isNumeric(y)) {
+            return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+          } else {
+             if (!me.isNumeric(x) && !me.isNumeric(y)) {
+                return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+             } else if (!me.isNumeric(x)) {
+                return 1;
+             } else {
+                return -1;
+             }
+          }
+          
+      });      
+  }
+
 
  
   exports.isNumeric = function(n) {
