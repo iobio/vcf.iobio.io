@@ -117,49 +117,115 @@ vcfiobio = function module() {
   var regionIndex = 0;
   var stream = null;
 
-
-
-  exports.openVcfUrl = function(url) {
-    sourceType = SOURCE_TYPE_URL;
-    vcfURL = url;
+  var errorMessageMap =  {
+    "tabix Error: stderr - Could not load .tbi":  "Unable to load the index (.tbi) file, which has to exist in same directory and be given the same name as the .vcf.gz with the file extension of .vcf.gz.tbi.",
+    "tabix Error: stderr - [E::hts_open] fail to open file": "Unable to access the .vcf.gz file.  "
   }
 
-  exports.openVcfFile = function(event, callback) {
+
+
+  exports.openVcfUrl = function(url, callback) {
+    var me = this;
+    sourceType = SOURCE_TYPE_URL;
+    vcfURL = url;
+
+    var fileType0 = /([^.]*)\.(vcf\.gz)$/.exec(url);
+    var fileExt0 = fileType0 && fileType0.length > 1 ? fileType0[2] : null;
+    if (fileExt0 == null) {
+      callback(false, "Please specify a URL to a compressed, indexed vcf file with the file extension vcf.gz");
+    } else {
+      this.checkVcfUrl(url,function(success, message) {
+          callback(success, message);
+      });      
+    }
+
+  }
+
+  exports.checkVcfUrl = function(url, callback) {
+    var me = this;
+    var success = null;
+    var cmd = new iobio.cmd(
+        tabix,
+        ['-H', url]
+    );
+
+    cmd.on('data', function(data) {      
+      if (data != undefined) {
+        success = true;
+      }
+    });
+
+    cmd.on('end', function() {
+        if (success == null) {
+          success = true;
+          callback(success);          
+        }
+    });
+
+    cmd.on('error', function(error) {
+      if (success == null) {
+        success = false;
+        callback(success, me.translateErrorMessage(error));            
+      }
+    });
+
+    cmd.run();
+  }
+
+  exports.translateErrorMessage = function(error) {
+    var me = this;
+    var message = null;
+    for (err in errorMessageMap) {
+      if (message == null && error.indexOf(err) == 0) {
+        message = errorMessageMap[err];
+      }
+    }    
+    return message ? message : error;
+  }
+
+  exports.openVcfFile = function(event, callback, errorCallback) {
     sourceType = SOURCE_TYPE_FILE;
                 
     if (event.target.files.length != 2) {
-       alert('must select 2 files, both a .vcf.gz and .vcf.gz.tbi file');
-       return;
+       errorCallback('must select 2 files, both a .vcf.gz and .vcf.gz.tbi file');
     }
 
     if (endsWith(event.target.files[0].name, ".vcf") ||
         endsWith(event.target.files[1].name, ".vcf")) {
-      showFileFormatMessage();
-      return;
+      errorCallback('You must select a compressed vcf file (.vcf.gz), not a vcf file');
     }
 
     var fileType0 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[0].name);
     var fileType1 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[1].name);
 
-    fileExt0 = fileType0[2];
-    fileExt1 = fileType1[2];
+    var fileExt0 = fileType0 && fileType0.length > 1 ? fileType0[2] : null;
+    var fileExt1 = fileType1 && fileType1.length > 1 ? fileType1[2] : null;
 
-    if (fileExt0 == 'vcf' || fileExt1 == 'vcf') {
-      showFileFormatMessage();
-    } else if (fileType0 == null || fileType0.length < 3 || fileType1 == 0 || fileType1.length <  3) {
-      alert('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
-      return;
-    }
+    var rootFileName0 = fileType0 && fileType0.length > 1 ? fileType0[1] : null;
+    var rootFileName1 = fileType1 && fileType1.length > 1 ? fileType1[1] : null;
+
+
+    if (fileType0 == null || fileType0.length < 3 || fileType1 == null || fileType1.length <  3) {
+      errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
+    } 
+
 
     if (fileExt0 == 'vcf.gz' && fileExt1 == 'vcf.gz.tbi') {
-      vcfFile   = event.target.files[0];
-      tabixFile = event.target.files[1];
+      if (rootFileName0 != rootFileName1) {
+        errorCallback('The index (.tbi) file must be named ' +  rootFileName0 + ".tbi");
+      } else {
+        vcfFile   = event.target.files[0];
+        tabixFile = event.target.files[1];
+      }    
     } else if (fileExt1 == 'vcf.gz' && fileExt0 == 'vcf.gz.tbi') {
-      vcfFile   = event.target.files[1];
-      tabixFile = event.target.files[0];
+      if (rootFileName0 != rootFileName1) {
+        errorCallback('The index (.tbi) file must be named ' +  rootFileName1 + ".tbi");
+      } else {
+        vcfFile   = event.target.files[1];
+        tabixFile = event.target.files[0];
+      }
     } else {
-
-      showFileFormatMessage();
+      errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
     }
 
     callback(vcfFile);

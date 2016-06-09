@@ -76,7 +76,8 @@
                     <input type="file" name="files[]" id="file"  multiple />
                     <label class="file-button" for="file" >choose vcf file</label>
                 </div>
-                <div class="file-button" style="text-align:center" onClick="displayVcfUrlBox()">choose vcf url</div>
+                <div class="file-button" style="text-align:center" onClick="displayVcfUrlBox()">choose vcf url
+                </div>
                 <div style="clear:both"></div>
 
             </div>
@@ -85,6 +86,8 @@
                     <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input>
                 </div>
                 <button id="vcf-url-go-button" onclick="onUrlEntered()">Go</button>
+            </div>
+            <div id="file-alert"  style="visibility:hidden;min-height:50px;text-align:center;margin-top:10px;margin-left:auto; margin-right:auto;width:700px;font-weight: 400;font-size:18px" class=" alert alert-danger" role="alert">
             </div>
 
            
@@ -101,7 +104,7 @@
             </div>
 
             
-            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 30px">
+            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 10px">
 
                 <strong>Variant files to try</strong>
 

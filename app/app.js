@@ -387,38 +387,79 @@ function onUrlEntered() {
 }
 
 function _loadVcfFromUrl(url) {
+	$("#file-alert").css("visibility", "hidden");	
+    vcfiobio.openVcfUrl( url, function( success, message) {
+	    if (success) {
+	    	d3.select("#selectData")
+			  .style("visibility", "hidden")
+			  .style("display", "none");
 
-    vcfiobio.openVcfUrl( url );
+			d3.select("#showData")
+			  .style("visibility", "visible");
 
-    $('.vcf-sample.loader').removeClass("hide");
+		    $('.vcf-sample.loader').removeClass("hide");
 
-	d3.select("#vcf_file").text(url);
+			d3.select("#vcf_file").text(url);
 
-	d3.select("#selectData")
-	  .style("visibility", "hidden")
-	  .style("display", "none");
+			d3.select("#selectData")
+			  .style("visibility", "hidden")
+			  .style("display", "none");
 
-	d3.select("#showData")
-	  .style("visibility", "visible");
+			d3.select("#showData")
+			  .style("visibility", "visible");
 
-	vcfiobio.loadRemoteIndex(url, onReferencesLoading, onReferencesLoaded);   
+			vcfiobio.loadRemoteIndex(url, onReferencesLoading, onReferencesLoaded); 
+		} else {
+			d3.select("#selectData")
+			  .style("visibility", "visible")
+			  .style("display", "block");
+
+			d3.select("#showData")
+			  .style("visibility", "hidden");
+
+			$('#vcf-url').css("visibility", "visible");
+			$("#url-input").focus();
+			$("#url-input").val(url);
+
+			$("#file-alert").text(message);
+			$("#file-alert").css("visibility", "visible");			
+
+
+		}
+
+    });
+
+  
 }
 
 function onFilesSelected(event) {
-	vcfiobio.openVcfFile( event, function(vcfFile) {
-		 $('.vcf-sample.loader').removeClass("hide");
+	$("#file-alert").css("visibility", "hidden");	
+	vcfiobio.openVcfFile( event, 
+		function(vcfFile) {
+			$('.vcf-sample.loader').removeClass("hide");
 
-		d3.select("#vcf_file").text(vcfFile.name);
+			d3.select("#vcf_file").text(vcfFile.name);
 
-		d3.select("#selectData")
-		  .style("visibility", "hidden")
-		  .style("display", "none");
+			d3.select("#selectData")
+			  .style("visibility", "hidden")
+			  .style("display", "none");
 
-		d3.select("#showData")
-		  .style("visibility", "visible");
-		
-		vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded);	    
-	});
+			d3.select("#showData")
+			  .style("visibility", "visible");
+			
+			vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded);	    
+		},
+		function(errorMessage) {
+			d3.select("#selectData")
+			  .style("visibility", "visible")
+			  .style("display", "block");
+
+			d3.select("#showData")
+			  .style("visibility", "hidden");
+
+			$("#file-alert").text(errorMessage);
+			$("#file-alert").css("visibility", "visible");			
+		});
 }
 
 function showSamplesDialog() {

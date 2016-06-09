@@ -610,7 +610,7 @@ section#bottom {
     line-height: 14px;
 }
 
-#info { margin: 70px auto 0px auto; width:100%;text-align: center;}
+#info { margin: 20px auto 0px auto; width:100%;text-align: center;}
 #info ul{margin: 0px; padding: 0px; list-style-type: none; }
 #info li {display:inline; margin: 0px 0px 0px 20px;}      
 
