@@ -25,7 +25,8 @@
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.core.css" />
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.default.css" />
-		<link href="assets/css/iobio.css" rel="stylesheet" type='text/css'>
+        <link href="assets/css/iobio.css" rel="stylesheet" type='text/css'>
+		<link href="assets/css/iobio.viz.min.css" rel="stylesheet" type='text/css'>
 		<link href="assets/css/vcf.iobio.css" rel="stylesheet" type='text/css'/>
 
 		<script type="text/javascript" src="components/d3/d3.js"></script>
@@ -36,6 +37,7 @@
         <script type="text/javascript" src="assets/js/class.js"></script>
         <script type="text/javascript" src="assets/js/rdp.js"></script>
         <script type="text/javascript" src="assets/js/selectize.js"></script> 
+        <script type="text/javascript" src="assets/js/iobio.viz.min.js"></script>
 
         <script src="assets/js/binary.js"></script>
 
@@ -87,12 +89,9 @@
                 </div>
                 <button id="vcf-url-go-button" onclick="onUrlEntered()">Go</button>
             </div>
-            <div id="file-alert"  style="visibility:hidden;min-height:50px;text-align:center;margin-top:10px;margin-left:auto; margin-right:auto;width:700px;font-weight: 400;font-size:18px" class=" alert alert-danger" role="alert">
+            <div id="file-alert"  style="visibility:hidden;min-height:50px;text-align:center;margin-top:10px;margin-left:auto; margin-right:auto;width:700px;font-weight: 400;font-size:16px" class=" alert alert-danger" role="alert">
             </div>
 
-           
-                    
-            
 
             <div style="clear:both"></div>
             <div id="info">                                
@@ -313,9 +312,25 @@
                         </div>
 
                         <div id="indel-length" class="panel">
-                             <div class="title">Insertion &amp; Deletion Lengths</div>
+                            <div>
+                                <div class="title" style="display:inline-block">Insertion &amp; Deletion Lengths</div>
+                                <span class="checkbox" class="svg-alt" style="display:inline-block">
+                                    <label>
+                                        <input type="checkbox" checked value="true">Outliers
+                                    </label>
+                                </span>
+                            </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-                            <svg id="indel-length-histogram"/>
+   
+                            <div id="indel-length-histogram"></div>
+
+                            <div class="svg-alt">
+                                <span style="font-weight:bold;font-size:13px;">Deletions</span>
+                                <div id="legend-del"></div>
+                                <span  style="font-weight:bold;font-size:13px;">Insertions</span>
+                                <div id="legend-ins"></div>
+                            </div>
+                            
                             <div class='no-values hide'>No values present</div>
                         </div>
 

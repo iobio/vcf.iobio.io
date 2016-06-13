@@ -28,6 +28,8 @@ var regionStart = null;
 var regionEnd = null;
 var afData = null;
 
+var statsData = null;
+
 
 var densityOptions = {
 	removeSpikes: false,
@@ -50,6 +52,8 @@ var statsOptions = {
     binNumber : 50,
     start : 1
 };
+
+var colorScaleHistograms = d3.scale.category20b();
 
 
 //
@@ -226,7 +230,7 @@ function init() {
 	mutSpectrumChart.width(355)
 	    .height(120)
 	    .widthPercent("95%")
-	    .heightPercent("85%")
+	    .heightPercent("80%")
 		.margin( {left: 45, right: 0, top: 15, bottom: 30})
 		.categories( ["1", "2", "3"] )
 		.categoryPadding(.5)
@@ -261,6 +265,7 @@ function init() {
 
 
 	// Indel length chart
+	/*
 	indelLengthChart = histogramD3();
 	indelLengthChart.width( $("#indel-length").width() )
 		.height( $("#indel-length").height()  - 20)
@@ -273,6 +278,36 @@ function init() {
 			return d[1]  + ' variants with a ' +  Math.abs(d[0]) + " bp " + (d[0] < 0 ? "deletion" : "insertion"); 
 		 })
 		.xAxisLabel( function() { return 'Deletions: x < 0,    Insertions: x > 0'})
+	*/
+
+	indelLengthChart = iobio.viz.barViewer()
+                    .xValue(function(d) { return d[0]; })
+                    .yValue(function(d) { return d[1]; })
+                    .wValue(function() { return 1; })
+                    .tooltip(function(d) {
+                    	return d[1]  + ' variants with a ' +  Math.abs(d[0]) + " bp " + (d[0] < 0 ? "deletion" : "insertion"); 
+                    })
+                    .height(d3.round(+$("#indel-length").height() - 65))
+                    .width(d3.round(+$("#indel-length").width() - 20))
+                    .margin({top: 10, right: 10, bottom: 18, left: 40})
+                    .sizeRatio(.65)
+                    .color( function(d,i) {
+                    	if (d[0] < 0) {
+                    		return colorMS[3];
+                    	} else {
+                    		return colorMS[2];
+                    	}
+                    }) 
+                    .tooltip( function(d) {
+                    	return d[1] + " variants with a " + Math.abs(d[0]) + " bp " + (d[0] < 0 ? "deletion" : "insertion");
+                    })                  
+    indelLengthChart.xAxis().tickFormat(tickFormatter);
+    indelLengthChart.yAxis().tickFormat(tickFormatter);
+
+    $("#indel-length input[type='checkbox']").change(function(){
+        var outliers = this.checked;
+        fillInDelLengthChart(window.statsData, outliers);
+    });	
 
 
 	// QC score histogram chart
@@ -309,6 +344,14 @@ function init() {
 
     $('#report-problem-button').on('click', emailProblem);
 
+}
+
+function tickFormatter (d) {
+  if ((d / 1000000) >= 1)
+    d = d / 1000000 + "M";
+  else if ((d / 1000) >= 1)
+    d = d / 1000 + "K";
+  return d;            
 }
 
 function getParameterByName(name) {
@@ -410,20 +453,11 @@ function _loadVcfFromUrl(url) {
 
 			vcfiobio.loadRemoteIndex(url, onReferencesLoading, onReferencesLoaded); 
 		} else {
-			d3.select("#selectData")
-			  .style("visibility", "visible")
-			  .style("display", "block");
-
-			d3.select("#showData")
-			  .style("visibility", "hidden");
+			displayFileError(message);
 
 			$('#vcf-url').css("visibility", "visible");
 			$("#url-input").focus();
 			$("#url-input").val(url);
-
-			$("#file-alert").text(message);
-			$("#file-alert").css("visibility", "visible");			
-
 
 		}
 
@@ -447,19 +481,23 @@ function onFilesSelected(event) {
 			d3.select("#showData")
 			  .style("visibility", "visible");
 			
-			vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded);	    
+			vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
 		},
 		function(errorMessage) {
-			d3.select("#selectData")
-			  .style("visibility", "visible")
-			  .style("display", "block");
-
-			d3.select("#showData")
-			  .style("visibility", "hidden");
-
-			$("#file-alert").text(errorMessage);
-			$("#file-alert").css("visibility", "visible");			
+			displayFileError(errorMessage)	
 		});
+}
+
+function displayFileError(errorMessage) {
+	d3.select("#selectData")
+	  .style("visibility", "visible")
+	  .style("display", "block");
+
+	d3.select("#showData")
+	  .style("visibility", "hidden");
+
+	$("#file-alert").text(errorMessage);
+	$("#file-alert").css("visibility", "visible");		
 }
 
 function showSamplesDialog() {
@@ -738,6 +776,7 @@ function loadStats(i) {
 
 
 function renderStats(stats) {
+	window.statsData = stats;
 
 
 	d3.selectAll("section#middle svg").classed("hide", false);
@@ -876,16 +915,9 @@ function renderStats(stats) {
 
 
 	// Indel length distribution
-	var indelData = vcfiobio.jsonToArray2D(stats.indel_size);
-	if (indelData.length > 0) {
-		var indelSelection = d3.select("#indel-length-histogram")
-						    .datum(indelData);
-		var indelOptions = {outliers: true, averageLine: false};
-		indelLengthChart(indelSelection, indelOptions);			
-	} else {
-		d3.selectAll('#indel-length svg').classed("hide", true);
-		d3.selectAll('#indel-length .no-values').classed("hide", false);
-	}
+	var outliers = $("#indel-length input[type='checkbox']").is(":checked")
+	fillInDelLengthChart(stats, outliers);
+
 
 	// Reset the sampling multiplier back to one
 	// so that next time we get stats, we start
@@ -894,6 +926,21 @@ function renderStats(stats) {
 	statsOptions.samplingMultiplier = 1;
 
 	
+}
+
+function fillInDelLengthChart(statsData, outliers) {
+    var indelData = vcfiobio.jsonToArray2D(statsData.indel_size);
+    if (!outliers) {
+    	indelData = iobio.viz.layout.outlier()(indelData);
+    } 
+    var selection = d3.select("#indel-length-histogram");
+    if (indelData.length > 0) {
+        selection.datum(indelData);
+        window.indelLengthChart(selection, {'outliers':outliers});
+    } else {
+		d3.selectAll('#indel-length svg').classed("hide", true);
+		d3.selectAll('#indel-length .no-values').classed("hide", false);
+    }
 }
 
 

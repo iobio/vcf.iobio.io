@@ -119,7 +119,12 @@ vcfiobio = function module() {
 
   var errorMessageMap =  {
     "tabix Error: stderr - Could not load .tbi":  "Unable to load the index (.tbi) file, which has to exist in same directory and be given the same name as the .vcf.gz with the file extension of .vcf.gz.tbi.",
-    "tabix Error: stderr - [E::hts_open] fail to open file": "Unable to access the .vcf.gz file.  "
+    "tabix Error: stderr - [E::hts_open] fail to open file": "Unable to access the .vcf.gz file.  ",
+    "tabix Error: stderr - [M::test_and_fetch] downloading file": "Invalid index or compressed vcf.  Try bgzipping the vcf and recreating the index with tabix."
+  }
+
+  var ignoreMessageMap =  {
+    //"tabix Error: stderr - [M::test_and_fetch] downloading file": {ignore: true}
   }
 
 
@@ -156,20 +161,38 @@ vcfiobio = function module() {
     });
 
     cmd.on('end', function() {
-        if (success == null) {
-          success = true;
-          callback(success);          
-        }
-    });
-
-    cmd.on('error', function(error) {
       if (success == null) {
-        success = false;
-        callback(success, me.translateErrorMessage(error));            
+        success = true;
+        callback(success);          
       }
     });
 
+    cmd.on('error', function(error) {
+      if (ignoreErrorMessage(error)) {
+        success = true;
+        callback(success)
+      } else {
+        if (success == null) {
+          success = false;
+          callback(success, me.translateErrorMessage(error));            
+        }        
+      }
+
+    });
+
     cmd.run();
+  }
+
+  exports.ignoreErrorMessage = function(error) {
+    var me = this;
+    var ignore = false;
+    for (err in ignoreMessageMap) {
+      if (error.indexOf(err) == 0) {
+        ignore = ignoreMessageMap[err].ignore;
+      }
+    }    
+    return ignore;
+
   }
 
   exports.translateErrorMessage = function(error) {
@@ -264,12 +287,21 @@ vcfiobio = function module() {
     return samples;
   }
 
-  exports.loadIndex = function(callbackData, callbackEnd) {
+  exports.loadIndex = function(callbackData, callbackEnd, callbackError) {
     var me = this;
  
     vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
       var tbiIdx = tbiR;
       refDensity.length = 0;
+
+      if (tbiIdx.idxContent.head.n_ref == 0) {
+        var errorMsg = "Invalid index file.  The number of references is set to zero.  Try recompressing the vcf with bgzip and regenerating the index with tabix."
+        if (callbackError) {
+          callbackError(errorMsg);
+        }
+        console.log(errorMsg);
+        return;
+      }
 
       var referenceNames = [];
       for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {

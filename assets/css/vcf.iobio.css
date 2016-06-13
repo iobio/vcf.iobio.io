@@ -6,6 +6,19 @@ label {
   vertical-align:middle;
 }
 
+
+/* Work around problem with flatui incompatibility with bootstrap checkboxes */
+.checkbox input, .radio input {    
+    display: initial;
+}
+
+/* Get correct vertical alignment of label to checkbox, overriding iobio.css */
+.checkbox, .checkbox .icons {
+    height: 13px;
+    line-height: 20px;
+    font-size: 12px;
+}
+
 #sample-go-button  { 
 
 }
@@ -275,7 +288,7 @@ section#bottom {
 
 
 
-.panel > .title { font-size: 22px}
+.panel  .title { font-size: 22px}
 
 .panel#chromosome-picker {
     -webkit-flex: 1 0 180px;
@@ -508,7 +521,7 @@ section#bottom {
             flex: 1 0 188px;
     -webkit-order: 1;
             order: 1;
-    height: 200px;
+    height: 225px;
 
 }
 
@@ -517,7 +530,7 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 2;
             order: 2;
-    height: 200px;
+    height: 225px;
 
 }
 
@@ -526,11 +539,32 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 3;
             order: 3;
-     height: 200px;                               
+     height: 225px;                               
 }
 
 
+/* Don't show the view finder for indel histogram */
+#indel-length  div.iobio-bar-1.iobio-barViewer {
+    /*display: none;*/
+}
 
+#legend-del {
+    width: 8px;
+    height: 9px;
+    background-color:  #ad494a;
+    display: inline-block;
+    margin-left: 4px;
+
+
+}
+#legend-ins {
+    width: 8px;
+    height: 9px;
+    background-color: #1f77b4;
+    display: inline-block;
+    margin-left: 4px;
+     
+}
 
 
 #ratio-value {
