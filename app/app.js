@@ -15,6 +15,8 @@ var varTypeChart;
 var qualDistributionChart;
 var indelLengthChart; 
 
+var chromosomePieLayout;
+
 
 var densityPanelDimensions = {
 	width: 0,
@@ -53,7 +55,7 @@ var statsOptions = {
     start : 1
 };
 
-var colorScaleHistograms = d3.scale.category20b();
+var colorScale = d3.scale.category20b();
 
 
 //
@@ -125,6 +127,7 @@ function init() {
 
 	// Create the chromosome picker chart. Listen for the click event on one of the arcs.
 	// This event is dispatched when the user clicks on a particular chromosome.
+	/*
 	chromosomeChart = donutChooserD3()
 		                .width(220)
 		                .height(220)
@@ -141,6 +144,34 @@ function init() {
 							regionEnd = null;
 							onAllReferencesSelected();
 						});
+	*/
+	var r = 90;
+    chromosomeChart = iobio.viz.pieChooser()
+        .radius(r)
+        .innerRadius(r*.5)
+        .padding(30)        
+        .color( function(d,i) { 
+          return colorScale(i); 
+        })
+        .on("click", function(d,i) {
+            chromosomeIndex = d.data.idx;
+			regionStart = null;
+			regionEnd = null;
+			onReferenceSelected(d.data, d.data.idx);
+        })
+        .on("clickall", function(d,i) {
+            chromosomeIndex = -1;
+			regionStart = null;
+			regionEnd = null;
+			onAllReferencesSelected();
+        })
+        .tooltip( function(d) {
+          return d.data.name;
+        });
+    chromosomePieLayout = d3.layout.pie()
+                                   .sort(null)
+                                   .value(function(d,i) {return +d.value});  
+
 
 
 	// Create the variant density chart
@@ -506,9 +537,12 @@ function showSamplesDialog() {
 
 
 function onReferencesLoaded(refData) {
-	// Show "ALL" references as first view
+
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
-	chromosomeChart.clickAllSlices(pieChartRefData);	
+
+    // Select 'all' chromosomes (for genome level view)
+	chromosomeChart.clickAllSlices(pieChartRefData);
+	onAllReferencesSelected();	
 
 	vcfiobio.setSamples([]);
     vcfiobio.getSampleNames(function(sampleNames) {
@@ -559,10 +593,11 @@ function onReferencesLoading(refData) {
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	
 	d3.select("#primary-references svg").remove();
+	//chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
+	
+	var selection = d3.select("#primary-references").datum( chromosomePieLayout(pieChartRefData) );    
+    chromosomeChart( selection );
 
-	chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
-	
-	
 	
 	//chromosomeIndex = 0;
 	//chromosomeChart.clickSlice(chromosomeIndex);
