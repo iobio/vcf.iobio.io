@@ -126,25 +126,7 @@ function init() {
 
 
 	// Create the chromosome picker chart. Listen for the click event on one of the arcs.
-	// This event is dispatched when the user clicks on a particular chromosome.
-	/*
-	chromosomeChart = donutChooserD3()
-		                .width(220)
-		                .height(220)
-		                .options({showTooltip: false})
-						.on("clickslice", function(d, i) {
-							chromosomeIndex = d.idx;
-							regionStart = null;
-							regionEnd = null;
-							onReferenceSelected(d, d.idx);
-						})
-						.on("clickall", function() {
-							chromosomeIndex = -1;
-							regionStart = null;
-							regionEnd = null;
-							onAllReferencesSelected();
-						});
-	*/
+	// This event is dispatched when the user clicks on a particular chromosome.	
 	var r = 90;
     chromosomeChart = iobio.viz.pieChooser()
         .radius(r)
@@ -538,9 +520,8 @@ function showSamplesDialog() {
 
 function onReferencesLoaded(refData) {
 
-	pieChartRefData = vcfiobio.getReferences(.005, 1);
-
     // Select 'all' chromosomes (for genome level view)
+	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	chromosomeChart.clickAllSlices(pieChartRefData);
 	onAllReferencesSelected();	
 
@@ -593,15 +574,9 @@ function onReferencesLoading(refData) {
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	
 	d3.select("#primary-references svg").remove();
-	//chromosomeChart(d3.select("#primary-references").datum(pieChartRefData));	
-	
 	var selection = d3.select("#primary-references").datum( chromosomePieLayout(pieChartRefData) );    
     chromosomeChart( selection );
 
-	
-	//chromosomeIndex = 0;
-	//chromosomeChart.clickSlice(chromosomeIndex);
-	//onReferenceSelected(refData[chromosomeIndex], chromosomeIndex);
 	
 	otherRefData = vcfiobio.getReferences(0, .005);
 
