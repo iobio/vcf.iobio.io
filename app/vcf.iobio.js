@@ -99,10 +99,10 @@ vcfiobio = function module() {
 
   var emailServer            = "ws://localhost:7068";
 
-  var vcfstatsAlive          = "nv-prod.iobio.io/vcfstatsalive/";
-  var tabix                  = "nv-prod.iobio.io/tabix/";
-  var vcfReadDepther         = "nv-prod.iobio.io/vcfdepther/"
-  var vt                     = "services.iobio.io/vt/";
+  var vcfstatsAlive          = "nv-green.iobio.io/vcfstatsalive/";
+  var tabix                  = "nv-green.iobio.io/tabix/";
+  var vcfReadDepther         = "nv-green.iobio.io/vcfdepther/"
+  var vt                     = "nv-green.iobio.io/vt/";
 
   var vcfURL;
   var vcfReader;
@@ -162,13 +162,15 @@ vcfiobio = function module() {
 
     cmd.on('end', function() {
       if (success == null) {
-        success = true;
-        callback(success);          
+        success = true;            
+      }
+      if (success) {
+        callback(success);      
       }
     });
 
     cmd.on('error', function(error) {
-      if (ignoreErrorMessage(error)) {
+      if (me.ignoreErrorMessage(error)) {
         success = true;
         callback(success)
       } else {
@@ -615,6 +617,25 @@ vcfiobio = function module() {
        
   };
 
+  exports.sortRefData = function(refData) {
+    var me = this;
+    return refData.sort(function(refa,refb) {
+          var x = me.stripChr(refa.name); 
+          var y = me.stripChr(refb.name);
+          if (me.isNumeric(x) && me.isNumeric(y)) {
+            return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+          } else {
+             if (!me.isNumeric(x) && !me.isNumeric(y)) {
+                return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+             } else if (!me.isNumeric(x)) {
+                return 1;
+             } else {
+                return -1;
+             }
+          }
+          
+      });      
+  }
 
   exports.sortRefData = function(refData) {
     var me = this;
