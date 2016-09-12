@@ -1,5 +1,5 @@
 #report-problem-screen-capture {
-    height: 100%;
+    height: initial;
     width: 800px;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -12,15 +12,27 @@
 
 #variant-density-vf {
     margin-top: -170px;
+    height: 20px;
 }
 
 #variant-density-ref-vf {
-    margin-top: -170px;
+    height: 20px;
+    margin-top: -17px;
+}
+
+.panel#chromosome-picker {
+    height: 180px;
+}
+
+#variant-density-panel {
+    height:  180px;
 }
 
 #variant-density {
-    margin-top: -50px;
+    margin-top: -5px;
+    height: 140px;
 }
+
 #sample-more-button {
     display: none;
     visibility: hidden;

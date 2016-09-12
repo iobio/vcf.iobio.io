@@ -421,6 +421,8 @@ function emailProblem() {
 
 	vcfiobio.sendEmail(email_body, email, note);
 
+	$('#modal-report-problem').modal('hide');
+
 	
     
 }

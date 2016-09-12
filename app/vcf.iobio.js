@@ -97,7 +97,7 @@ vcfiobio = function module() {
 
 
 
-  var emailServer            = "ws://localhost:7068";
+  var emailServer            = "ws://nv-dev.iobio.io/email/";
 
   var vcfstatsAlive          = "nv-green.iobio.io/vcfstatsalive/";
   var tabix                  = "nv-green.iobio.io/tabix/";
@@ -1135,7 +1135,7 @@ vcfiobio = function module() {
       var stream = client.createStream(
       {
         'from':     email, 
-        'to':       'vcfiobio@googlegroups.com',
+        'to':       'iobio.arup@gmail.com',
         'subject':  'vcf.iobio.io Issue',
         'filename': 'vcfiobio_snapshot.html',
         'body':     htmlBody
