@@ -118,14 +118,26 @@ vcfiobio = function module() {
   var stream = null;
 
   var errorMessageMap =  {
-    "tabix Error: stderr - Could not load .tbi":  "Unable to load the index (.tbi) file, which has to exist in same directory and be given the same name as the .vcf.gz with the file extension of .vcf.gz.tbi.",
-    "tabix Error: stderr - [E::hts_open] fail to open file": "Unable to access the .vcf.gz file.  ",
-    "tabix Error: stderr - [M::test_and_fetch] downloading file": "Invalid index or compressed vcf.  Try bgzipping the vcf and recreating the index with tabix."
+    "tabix Could not load .tbi": { 
+        regExp: /tabix\sError:\s.*:\sstderr\s-\sCould not load .tbi.*/,
+        message:  "Unable to load the index (.tbi) file, which has to exist in same directory and be given the same name as the .vcf.gz with the file extension of .vcf.gz.tbi.  "
+    },
+     "tabix [E::hts_open]": {
+        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open\]\sfail\sto\sopen\sfile/,
+        message: "Unable to access the file.  "
+     },
+     "tabix [E::hts_open_format]": {
+        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open_format\]\sfail\sto\sopen\sfile/,
+        message: "Unable to access the file. "
+     }
   }
 
-  var ignoreMessageMap =  {
-    //"tabix Error: stderr - [M::test_and_fetch] downloading file": {ignore: true}
-  }
+  var ignoreMessages =  [
+    /tabix\sError:\s.*:\sstderr\s-\s\[M::test_and_fetch\]\sdownloading\sfile\s.*/,
+    /tabix\sError:\s.*:\sstderr\s-\s.*to local directory/
+  ];
+
+
 
 
 
@@ -146,9 +158,12 @@ vcfiobio = function module() {
 
   }
 
+
   exports.checkVcfUrl = function(url, callback) {
     var me = this;
     var success = null;
+    var buffer = "";
+    var recordCount = 0;
     var cmd = new iobio.cmd(
         tabix,
         ['-H', url]
@@ -157,6 +172,7 @@ vcfiobio = function module() {
     cmd.on('data', function(data) {      
       if (data != undefined) {
         success = true;
+        buffer += data;
       }
     });
 
@@ -164,20 +180,19 @@ vcfiobio = function module() {
       if (success == null) {
         success = true;            
       }
-      if (success) {
-        callback(success);      
+      if (success && buffer.length > 0) {
+        callback(success);
       }
     });
 
     cmd.on('error', function(error) {
       if (me.ignoreErrorMessage(error)) {
-        success = true;
-        callback(success)
       } else {
         if (success == null) {
           success = false;
-          callback(success, me.translateErrorMessage(error));            
-        }        
+          console.log(error);
+          callback(success, me.translateErrorMessage(error));
+        }
       }
 
     });
@@ -187,12 +202,12 @@ vcfiobio = function module() {
 
   exports.ignoreErrorMessage = function(error) {
     var me = this;
-    var ignore = false;
-    for (err in ignoreMessageMap) {
-      if (error.indexOf(err) == 0) {
-        ignore = ignoreMessageMap[err].ignore;
+    var ignore = false;    
+    ignoreMessages.forEach( function(regExp) {
+      if (error.match(regExp)) {
+        ignore = true;
       }
-    }    
+    });
     return ignore;
 
   }
@@ -200,11 +215,12 @@ vcfiobio = function module() {
   exports.translateErrorMessage = function(error) {
     var me = this;
     var message = null;
-    for (err in errorMessageMap) {
-      if (message == null && error.indexOf(err) == 0) {
-        message = errorMessageMap[err];
+    for (key in errorMessageMap) {
+      var errMsg = errorMessageMap[key];
+      if (message == null && error.match(errMsg.regExp)) {
+        message = errMsg.message;
       }
-    }    
+    }
     return message ? message : error;
   }
 
