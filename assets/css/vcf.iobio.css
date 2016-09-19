@@ -1,7 +1,26 @@
+label {
+    font-weight: 300;
+}
 #vcf-url-go-button  { 
   font:300 28px quicksand;
-  margin-top: 4px;
-  float: right;
+  vertical-align:middle;
+}
+
+
+/* Work around problem with flatui incompatibility with bootstrap checkboxes */
+.checkbox input, .radio input {    
+    display: initial;
+}
+
+/* Get correct vertical alignment of label to checkbox, overriding iobio.css */
+.checkbox, .checkbox .icons {
+    height: 13px;
+    line-height: 20px;
+    font-size: 12px;
+}
+
+#sample-go-button  { 
+
 }
 
 #all-text1 {
@@ -56,7 +75,7 @@ text.y.axis.label {
 
 #vcf-url {
     margin-top:24px;
-    width:670px;
+    text-align:center;
     margin-left:auto;
     margin-right:auto;
 }
@@ -179,7 +198,8 @@ path.line {
     font-size: 12px;
     color: red;
     text-decoration: none;
-    visibility: hidden;
+   
+    
 }
 
 
@@ -268,15 +288,16 @@ section#bottom {
 
 
 
-.panel > .title { font-size: 22px}
+.panel  .title { font-size: 22px}
 
 .panel#chromosome-picker {
-    -webkit-flex: 1 0 200px;
-            flex: 1 0 200px;
+    -webkit-flex: 1 0 180px;
+            flex: 1 0 180px;
     -webkit-order: 1;
             order: 1;
-    height: 270px;                        
+    height: 280px;                        
 }
+
 
 #primary-references {
     height: 200px;
@@ -289,11 +310,11 @@ section#bottom {
     display: none;
 }
 #variant-density-panel {
-    -webkit-flex: 1 0 70%;
-            flex: 1 0 70%;
-    -webkit-order: 2;
-           order: 2;
-    height: 270px;
+    -webkit-flex: 1 0 60%;
+            flex: 1 0 60%;
+    -webkit-order: 3;
+           order: 3;
+    height: 280px;
     position:relative;
 
 
@@ -374,12 +395,12 @@ section#bottom {
     display: -webkit-flex;
     display:         flex;
     display: -ms-flexbox;
-    -webkit-flex-flow: column;
-            flex-flow: column;
+    -webkit-flex-flow: row;
+            flex-flow: row;
     -webkit-justify-content: center;        
             justify-content: center;
-    -webkit-align-items: center;
-           align-items: center;        
+    -webkit-align-items: flex-start;
+           align-items: flex-start;        
 }
 
 
@@ -406,9 +427,18 @@ section#bottom {
             flex: 0 0 auto;
     -webkit-order: 2;
             order: 2;
+    font-size: 14px;  
 
 
+}
 
+#samples-filter-header {
+    margin-left:    30px;
+}
+
+#samples-filter-header #sample-names {
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 #total-reads {
@@ -491,7 +521,7 @@ section#bottom {
             flex: 1 0 188px;
     -webkit-order: 1;
             order: 1;
-    height: 200px;
+    height: 225px;
 
 }
 
@@ -500,7 +530,7 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 2;
             order: 2;
-    height: 200px;
+    height: 225px;
 
 }
 
@@ -509,11 +539,32 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 3;
             order: 3;
-     height: 200px;                               
+     height: 225px;                               
 }
 
 
+/* Don't show the view finder for indel histogram */
+#indel-length  div.iobio-bar-1.iobio-barViewer {
+    /*display: none;*/
+}
 
+#legend-del {
+    width: 8px;
+    height: 9px;
+    background-color:  #ad494a;
+    display: inline-block;
+    margin-left: 4px;
+
+
+}
+#legend-ins {
+    width: 8px;
+    height: 9px;
+    background-color: #1f77b4;
+    display: inline-block;
+    margin-left: 4px;
+     
+}
 
 
 #ratio-value {
@@ -546,7 +597,54 @@ section#bottom {
 }
 
 
-#info { margin: 70px auto 0px auto; width:100%;text-align: center;}
+.samplingLoader {
+    display: block;
+}
+
+.samplingLoader.big {
+     display:block;
+}
+.no-values {
+    position: relative;
+    top: 30px;
+    font-size: 14px;
+    color: #2687BE;
+}
+
+.vcf-sample.loader {
+    font-size:24px;
+    color:#2687BE;
+    position:relative;
+    margin-top: 70px;
+    margin-left:-6px;
+    display:block;
+}
+.vcf-sample.loader img {
+    height:16px;
+    margin-left: 10px;
+}
+
+.hide {
+    display: none !important;
+}
+
+#vcf-sample-box {
+    margin-top: 14px;
+}
+
+#vcf-sample-select-box .selectize-dropdown, 
+#vcf-sample-select-box .selectize-input, 
+#vcf-sample-select-box .selectize-input input {
+    font-size: 13px;
+    width: 600px !important;
+    color: rgb(110,110,110);
+    vertical-align:middle;
+}
+#vcf-sample-select-box .selectize-dropdown-content .option {
+    line-height: 14px;
+}
+
+#info { margin: 20px auto 0px auto; width:100%;text-align: center;}
 #info ul{margin: 0px; padding: 0px; list-style-type: none; }
 #info li {display:inline; margin: 0px 0px 0px 20px;}      
 
@@ -583,6 +681,64 @@ header {margin-bottom: -6px;}
 header .iobio-project {font-size:18px; letter-spacing:6px;margin-top:8px; margin-right: 33px; color: rgb(120,120,120)}
 header .iobio-project a {color: rgb(120,120,120)}
 header .iobio-project a:hover {color:#2d8fc1;}
+
+#show-sample-dialog {
+    padding: 3px 10px 3px 10px !important;
+    margin-top: 4px;
+}
+
+
+.modal-body .label {
+    font-weight: 400;
+    margin-right: 8px;
+    color: grey;
+    white-space: normal;
+    padding: 0;
+    font-size: 14px;
+}
+
+.btn {
+  background: #428bca;
+  border: #357ebd solid 1px;
+  border-radius: 3px;
+  color: #fff;
+  display: inline-block;
+  font-size: 14px;
+  padding: 8px 15px;
+  text-decoration: none;
+  text-align: center;
+  min-width: 60px;
+  position: relative;
+  transition: color .1s ease;
+  /* top: 40em;*/
+}
+.btn:hover {
+    color: white;
+}
+.btn:focus {
+    outline: none;
+    color: white;
+}
+
+
+#modal-report-problem .modal-dialog {
+    width: 810px;
+}
+.modal .btn-close {
+  color: #aaaaaa;
+  font-size: 30px;
+  text-decoration: none;
+  position: absolute;
+  right: 5px;
+  top: 0;
+}
+.modal  .btn-close:hover {
+  color: #919191;
+}
+#sample-picker-modal .modal-dialog {
+    width: 650px;
+}
+
 
 
 /* For mobile phones in portrait view */
@@ -623,9 +779,6 @@ header .iobio-project a:hover {color:#2d8fc1;}
          margin-top: -10px;
     }
 
-    #report-problem: {
-        margin-top: 10px;
-    }
 
     #banner-middle {
         -webkit-flex: 1 0 45%;

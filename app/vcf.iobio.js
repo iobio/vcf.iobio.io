@@ -65,6 +65,8 @@ vcfiobio = function module() {
   var SOURCE_TYPE_FILE = "file";
   var sourceType = "url";
 
+  var samples = [];
+
   var refLengths_GRCh37 = 
   {
         "1":   +249250621,
@@ -93,23 +95,14 @@ vcfiobio = function module() {
         "Y":   +59373566
       };
 
-  //var vcfstatsAliveServer    = "ws://localhost:7070";
-  //var tabixServer            = "ws://localhost:7090";
-  //var vcfReadDeptherServer   = "ws://localhost:7062";
-  //var emailServer            = "ws://localhost:7068";
-  //var catInputServer         = "ws://localhost:7063";
 
-  // var vcfstatsAliveServer    = "wss://vcfstatsalive.iobio.io";
-  // var tabixServer            = "wss://tabix.iobio.io";
-  // var vcfReadDeptherServer   = "wss://vcfreaddepther.iobio.io";
-  // var emailServer            = "ws://localhost:7068";
-  // var catInputServer         = "ws://localhost:7063";
 
-  var vcfstatsAliveServer    = "wss://nv-prod.iobio.io/vcfstatsalive/";
-  var tabixServer            = "wss://nv-prod.iobio.io/tabix/";
-  var vcfReadDeptherServer   = "wss://nv-prod.iobio.io/vcfdepther/";
-  var emailServer            = "wss://nv-prod.iobio.io/localhost:7068";
-  var catInputServer         = "wss://services.iobio.io/localhost:7063";
+  var emailServer            = "ws://nv-dev.iobio.io/email/";
+
+  var vcfstatsAlive          = "nv-green.iobio.io/vcfstatsalive/";
+  var tabix                  = "nv-green.iobio.io/tabix/";
+  var vcfReadDepther         = "nv-green.iobio.io/vcfdepther/"
+  var vt                     = "nv-green.iobio.io/vt/";
 
   var vcfURL;
   var vcfReader;
@@ -124,54 +117,162 @@ vcfiobio = function module() {
   var regionIndex = 0;
   var stream = null;
 
-
-
-  exports.openVcfUrl = function(url) {
-    sourceType = SOURCE_TYPE_URL;
-    vcfURL = url;
+  var errorMessageMap =  {
+    "tabix Could not load .tbi": { 
+        regExp: /tabix\sError:\s.*:\sstderr\s-\sCould not load .tbi.*/,
+        message:  "Unable to load the index (.tbi) file, which has to exist in same directory and be given the same name as the .vcf.gz with the file extension of .vcf.gz.tbi.  "
+    },
+     "tabix [E::hts_open]": {
+        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open\]\sfail\sto\sopen\sfile/,
+        message: "Unable to access the file.  "
+     },
+     "tabix [E::hts_open_format]": {
+        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open_format\]\sfail\sto\sopen\sfile/,
+        message: "Unable to access the file. "
+     }
   }
 
-  exports.openVcfFile = function(event, callback) {
+  var ignoreMessages =  [
+    /tabix\sError:\s.*:\sstderr\s-\s\[M::test_and_fetch\]\sdownloading\sfile\s.*/,
+    /tabix\sError:\s.*:\sstderr\s-\s.*to local directory/
+  ];
+
+
+
+
+
+  exports.openVcfUrl = function(url, callback) {
+    var me = this;
+    sourceType = SOURCE_TYPE_URL;
+    vcfURL = url;
+
+    var fileType0 = /([^.]*)\.(vcf\.gz)$/.exec(url);
+    var fileExt0 = fileType0 && fileType0.length > 1 ? fileType0[2] : null;
+    if (fileExt0 == null) {
+      callback(false, "Please specify a URL to a compressed, indexed vcf file with the file extension vcf.gz");
+    } else {
+      this.checkVcfUrl(url,function(success, message) {
+          callback(success, message);
+      });      
+    }
+
+  }
+
+
+  exports.checkVcfUrl = function(url, callback) {
+    var me = this;
+    var success = null;
+    var buffer = "";
+    var recordCount = 0;
+    var cmd = new iobio.cmd(
+        tabix,
+        ['-H', url]
+    );
+
+    cmd.on('data', function(data) {      
+      if (data != undefined) {
+        success = true;
+        buffer += data;
+      }
+    });
+
+    cmd.on('end', function() {
+      if (success == null) {
+        success = true;            
+      }
+      if (success && buffer.length > 0) {
+        callback(success);
+      }
+    });
+
+    cmd.on('error', function(error) {
+      if (me.ignoreErrorMessage(error)) {
+      } else {
+        if (success == null) {
+          success = false;
+          console.log(error);
+          callback(success, me.translateErrorMessage(error));
+        }
+      }
+
+    });
+
+    cmd.run();
+  }
+
+  exports.ignoreErrorMessage = function(error) {
+    var me = this;
+    var ignore = false;    
+    ignoreMessages.forEach( function(regExp) {
+      if (error.match(regExp)) {
+        ignore = true;
+      }
+    });
+    return ignore;
+
+  }
+
+  exports.translateErrorMessage = function(error) {
+    var me = this;
+    var message = null;
+    for (key in errorMessageMap) {
+      var errMsg = errorMessageMap[key];
+      if (message == null && error.match(errMsg.regExp)) {
+        message = errMsg.message;
+      }
+    }
+    return message ? message : error;
+  }
+
+  exports.openVcfFile = function(event, callback, errorCallback) {
     sourceType = SOURCE_TYPE_FILE;
                 
     if (event.target.files.length != 2) {
-       alert('must select 2 files, both a .vcf.gz and .vcf.gz.tbi file');
-       return;
+       errorCallback('must select 2 files, both a .vcf.gz and .vcf.gz.tbi file');
     }
 
     if (endsWith(event.target.files[0].name, ".vcf") ||
         endsWith(event.target.files[1].name, ".vcf")) {
-      showFileFormatMessage();
-      return;
+      errorCallback('You must select a compressed vcf file (.vcf.gz), not a vcf file');
     }
 
     var fileType0 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[0].name);
     var fileType1 = /([^.]*)\.(vcf\.gz(\.tbi)?)$/.exec(event.target.files[1].name);
 
-    fileExt0 = fileType0[2];
-    fileExt1 = fileType1[2];
+    var fileExt0 = fileType0 && fileType0.length > 1 ? fileType0[2] : null;
+    var fileExt1 = fileType1 && fileType1.length > 1 ? fileType1[2] : null;
 
-    if (fileExt0 == 'vcf' || fileExt1 == 'vcf') {
-      showFileFormatMessage();
-    } else if (fileType0 == null || fileType0.length < 3 || fileType1 == 0 || fileType1.length <  3) {
-      alert('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
-      return;
-    }
+    var rootFileName0 = fileType0 && fileType0.length > 1 ? fileType0[1] : null;
+    var rootFileName1 = fileType1 && fileType1.length > 1 ? fileType1[1] : null;
+
+
+    if (fileType0 == null || fileType0.length < 3 || fileType1 == null || fileType1.length <  3) {
+      errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
+    } 
+
 
     if (fileExt0 == 'vcf.gz' && fileExt1 == 'vcf.gz.tbi') {
-      vcfFile   = event.target.files[0];
-      tabixFile = event.target.files[1];
+      if (rootFileName0 != rootFileName1) {
+        errorCallback('The index (.tbi) file must be named ' +  rootFileName0 + ".tbi");
+      } else {
+        vcfFile   = event.target.files[0];
+        tabixFile = event.target.files[1];
+      }    
     } else if (fileExt1 == 'vcf.gz' && fileExt0 == 'vcf.gz.tbi') {
-      vcfFile   = event.target.files[1];
-      tabixFile = event.target.files[0];
+      if (rootFileName0 != rootFileName1) {
+        errorCallback('The index (.tbi) file must be named ' +  rootFileName1 + ".tbi");
+      } else {
+        vcfFile   = event.target.files[1];
+        tabixFile = event.target.files[0];
+      }
     } else {
-
-      showFileFormatMessage();
+      errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
     }
 
     callback(vcfFile);
 
   } 
+
 
   function showFileFormatMessage() {
     alertify.set(
@@ -197,18 +298,34 @@ vcfiobio = function module() {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
   }
 
-  exports.loadIndex = function(callback) {
+  exports.setSamples = function(sampleNames) {
+    samples = sampleNames;
+  }
+  exports.getSamples = function() {
+    return samples;
+  }
+
+  exports.loadIndex = function(callbackData, callbackEnd, callbackError) {
     var me = this;
  
     vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
       var tbiIdx = tbiR;
       refDensity.length = 0;
 
+      if (tbiIdx.idxContent.head.n_ref == 0) {
+        var errorMsg = "Invalid index file.  The number of references is set to zero.  Try recompressing the vcf with bgzip and regenerating the index with tabix."
+        if (callbackError) {
+          callbackError(errorMsg);
+        }
+        console.log(errorMsg);
+        return;
+      }
+
       var referenceNames = [];
       for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {
         var ref   = tbiIdx.idxContent.head.names[i];
         referenceNames.push(ref);
-      }
+      }      
 
       for (var i = 0; i < referenceNames.length; i++) {
         var ref   = referenceNames[i];
@@ -335,21 +452,29 @@ vcfiobio = function module() {
             var point = [pointData[x].pos, pointData[x].depth];
             refObject.points.push(point);
           }
+          // Sort ref data so that refs are ordered numerically
+          refData = me.sortRefData(refData);
+
+          if (callbackData) {
+            callbackData(refData);
+          }
 
          
         }
 
       });
 
-      // sort the ref data sor that references are ordered numerically
+      // Sort ref data so that refs are ordered numerically
       refData = me.sortRefData(refData);
-
-
-      callback.call(this, refData);
+    
+      if (callbackEnd) {
+        callbackEnd(refData);
+      }
     
     });
 
   }
+
 
   exports.stripChr = function(ref) {
     if (ref.indexOf("chr") == 0) {
@@ -358,91 +483,154 @@ vcfiobio = function module() {
       return ref;
     }
   }
+  
 
-  exports.loadRemoteIndex = function(theVcfUrl, callback) {
+  exports.loadRemoteIndex = function(theVcfUrl, callbackData, callbackEnd) {
     var me = this;
     vcfURL = theVcfUrl;
     sourceType = SOURCE_TYPE_URL;
+    var me = this;
+    var buffer = "";
+    var refName;
+    
+    var cmd = new iobio.cmd(
+        vcfReadDepther,
+        ['-i', vcfURL + '.tbi']
+    );
 
-    var client = BinaryClient(vcfReadDeptherServer);
-    var url = encodeURI( vcfReadDeptherServer + '?cmd= -i ' + vcfURL + ".tbi");
+    cmd.on('data', function(data) {
+      
+      if (data == undefined) {
+        return;
+      }
 
-    client.on('open', function(stream){
-      var stream = client.createStream({event:'run', params : {'url':url}});
-      var currentSequence;
-      var refName;
-      stream.on('data', function(data, options) {
-         data = data.split("\n");
-         for (var i=0; i < data.length; i++)  {
-            if ( data[i][0] == '#' ) {
-               
-               var tokens = data[i].substr(1).split("\t");
-               refIndex = tokens[0];
-               refName = tokens[1];
-               var calcRefLength = tokens[2];
-               var refLength = refLengths_GRCh37[me.stripChr(refName)];
-               if (refLength == null) {
-                   refLength = calcRefLength;
-               }
+      data = buffer + data;
 
-               
-               refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "calcRefLength": +calcRefLength, "idx": +refIndex});
-               refDensity[refName] =  {"idx": refIndex, "points": [], "intervalPoints": []};
-            }
-            else {
-               if (data[i] != "") {
-                  var d = data[i].split("\t");
-                  var point = [ parseInt(d[0]), parseInt(d[1]) ];
-                  refDensity[refName].points.push(point);
-                  refDensity[refName].intervalPoints.push(point);
+      var recs = data.split("\n");
+      if (recs.length > 0) {     
+        for (var i=0; i < recs.length; i++)  {
+          if (recs[i] == undefined) {
+            return;
+          }
 
-               }
-            }                  
-         }         
-      });
+          var success = true;
+          if ( recs[i][0] == '#' ) {
+          var tokens = recs[i].substr(1).split("\t");
+            if (tokens.length >= 3) {
+              var refNamePrev = refName;
+              refIndex = tokens[0];
+              refName = tokens[1];     
 
-      stream.on("error", function(error) {
-
-      });
-
-      stream.on('end', function() {
-
-        // sort refData so references or ordered numerically
-        refData = me.sortRefData(refData);
-
-         for(var i = 0; i < refData.length; i++) {
-            var refObject = refData[i];
-            var refDensityObject = refDensity[refObject.name];
-
-            // If we have sparse data, keep track of these regions
-            var realPointCount = 0;
-            refDensityObject.points.forEach( function (point) {
-              if (point[1] > 0) {
-                realPointCount++;
+              var calcRefLength = tokens[2];
+              var refLength = refLengths_GRCh37[me.stripChr(refName)];
+              if (refLength == null) {
+                 refLength = calcRefLength;
               }
-            });
-            if (realPointCount < 100) {
-              refObject.sparsePointData = [];
-              refDensityObject.points.forEach( function (point) {
-              if (point[1] > 0) {
-                refObject.sparsePointData.push( {pos: point[0], depth: point[1]});
+
+              // Zero fill the previous reference point data and callback with the
+              // data we have loaded so far.
+              if (refData.length > 0) {
+                var refDataPrev = refData[refData.length - 1];
+                me.zeroFillPointData(refDataPrev);
+                if (callbackData) {
+                  callbackData(refData);
+                }
               }
-            });
-            }
-            
-            // We need to mark the end of the ref if the last post < ref length
-            if (refObject.calcRefLength < refObject.refLength) {
-              var points = refDensityObject.points;
-              var lastPos = points[points.length-1][0];
-              points.push([lastPos+1, 0]);
-              points.push([refObject.refLength-1, 0]);
-            }
 
-         }
-         callback.call(this, refData);
-      });
-    });
+              refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "calcRefLength": +calcRefLength, "idx": +refIndex});
+              refDensity[refName] =  {"idx": refIndex, "points": [], "intervalPoints": []};   
 
+
+            } else {
+                success = false;
+            }
+          }
+          else {
+             if (recs[i] != "") {
+                if (refDensity[refName] == null) {
+                  console.log("Invalid reference " + refName + " for point data " + recs[i]);
+                  success = false;
+                } else {
+                  var fields = recs[i].split("\t");
+                  if (fields.length >= 2) {
+                    var point = [ parseInt(fields[0]), parseInt(fields[1]) ];
+                    refDensity[refName].points.push(point);
+                    refDensity[refName].intervalPoints.push(point);
+                  } else {
+                    success = false;
+                  }
+                }
+
+             }
+          }                  
+          if (success) {
+            buffer = "";
+          } else {
+            buffer += recs[i];
+          }
+        }
+      } else  {
+        buffer += data;
+      } 
+
+
+
+    })
+
+    // All data has been streamed.
+    cmd.on('end', function() {
+      // sort refData so references or ordered numerically
+      refData = me.sortRefData(refData);
+
+
+      // Zero fill the previous reference point data and callback with the
+      // for the last reference that was loaded
+      if (refData.length > 0) {
+        var refDataPrev = refData[refData.length - 1];
+        me.zeroFillPointData(refDataPrev);
+        if (callbackData) {
+          callbackData(refData);
+        }
+      }
+      if (callbackEnd) {
+        callbackEnd(refData);
+      }
+    })
+
+    // Catch error event when fired 
+    cmd.on('error', function(error) {
+      console.log("Error occurred in loadRemoteIndex. " +  error);
+    })
+
+    // execute command
+    cmd.run();
+
+
+    
+
+  };
+
+  exports.zeroFillPointData = function(refObject) {
+
+        var refDensityObject = refDensity[refObject.name];
+
+        // If we have sparse data, keep track of these regions
+        var realPointCount = 0;
+        refDensityObject.points.forEach( function (point) {
+          if (point[1] > 0) {
+            realPointCount++;
+          }
+        });
+        if (realPointCount < 100) {
+          refObject.sparsePointData = [];
+          refDensityObject.points.forEach( function (point) {
+          if (point[1] > 0) {
+            refObject.sparsePointData.push( {pos: point[0], depth: point[1]});
+          }
+        });
+        }
+        
+       
   };
 
   exports.sortRefData = function(refData) {
@@ -465,6 +653,28 @@ vcfiobio = function module() {
       });      
   }
 
+  exports.sortRefData = function(refData) {
+    var me = this;
+    return refData.sort(function(refa,refb) {
+          var x = me.stripChr(refa.name); 
+          var y = me.stripChr(refb.name);
+          if (me.isNumeric(x) && me.isNumeric(y)) {
+            return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+          } else {
+             if (!me.isNumeric(x) && !me.isNumeric(y)) {
+                return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
+             } else if (!me.isNumeric(x)) {
+                return 1;
+             } else {
+                return -1;
+             }
+          }
+          
+      });      
+  }
+
+
+ 
   exports.isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }
@@ -500,7 +710,7 @@ vcfiobio = function module() {
 
 
   exports.getEstimatedDensity = function(ref, useLinearIndex, removeTheDataSpikes, maxPoints, rdpEpsilon) {
-    var points = useLinearIndex ? refDensity[ref].intervalPoints.concat() : refDensity[ref].points.concat();
+    var points = useLinearIndex ? refDensity[ref].intervalPoints.concat() : refDensity[ref.name].points.concat();
 
     if (removeTheDataSpikes) {
       var filteredPoints = this._applyCeiling(points);
@@ -520,6 +730,16 @@ vcfiobio = function module() {
     if (rdpEpsilon) {
       points = this._performRDP(points, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
     }
+
+
+    // We need to mark the end of the ref if the last post < ref length
+    var lastPos = points[points.length-1][0];
+    if (lastPos < ref.refLength) {        
+      points.push([lastPos+1, 0]);
+      points.push([ref.refLength-1, 0]);
+    }
+
+
 
     return points;
   }
@@ -556,12 +776,13 @@ vcfiobio = function module() {
       if (rdpEpsilon) {
         points = this._performRDP(points, rdpEpsilon, function(d) { return d[0] }, function(d) { return d[1] });
       }
-  
-      // Add one more point to the end of the ref density points, taking the depth back down to zero.
-      // This represents the boundary from one ref to another in the global density; otherwise,
-      // it looks like a big spike or dropoff between refs when the end of one ref has a density
-      // quite different than the beginning of the next ref.
-      points.push([refData[i].refLength, 0]);
+
+      // We need to mark the end of the ref if the last post < ref length
+      var lastPos = points[points.length-1][0];
+      if (lastPos < refData[i].refLength) {        
+        points.push([lastPos+1, 0]);
+        points.push([refData[i].refLength-1, 0]);
+      }
 
       var offsetPoints = [];
       for (var x = 0; x < points.length; x++) {
@@ -594,114 +815,89 @@ vcfiobio = function module() {
 
   // We we are dealing with a local VCF, we will create a mini-vcf of all of the sampled regions.
   // This mini-vcf will be streamed to vcfstatsAliveServer.  
-  exports._getLocalStats = function(refs, options, callback) {      
+  exports._getLocalStats = function(refs, options, callback ) {
+    var me = this;
     this._getRegions(refs, options);
-    
-    this._streamVcf(vcfstatsAliveServer, callback);
 
-    if (debug) {
-      this._streamVcf(catInputServer);
-    }
+    // options to write stream of vcf records from local file to cmd
+    var opts = {        
+      writeStream: function(stream) {  
      
-  };  
+        vcfReader.getHeader( function(header) {
+           stream.write(header + "\n");
+        });
 
-  exports._streamVcf = function(server, callback) {
-    var client = BinaryClient(server);
-    var url = encodeURI( server + "?protocol=websocket&cmd=" + encodeURIComponent("http://client"));
+        if (regions.length <= regionIndex) {
+          console.log("no regions to process. regionIndex=" + regionIndex + " regions.length=" + regions.length);
+        } else {
+          var regionObject = regions[regionIndex];
+          if (regionObject == null) {
+            console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
+          }
+        }
 
-    var buffer = "";
-    client.on('open', function(){
-      var stream = client.createStream({event:'run', params : {'url':url + '&debug=true'}});
-
-      // New local file streaming
-      stream.on('createClientConnection', function(connection) {
-        console.log('got create client request');
-        var ended = 0;
-        var dataClient = BinaryClient('ws://' + connection.serverAddress);
-        dataClient.on('open', function() {
-          var dataStream = dataClient.createStream({event:'clientConnected', 'connectionID' : connection.id});
-
-          var onGetRecords = function(records) {
-            var me = this;
-            if (regionIndex == regions.length) {
-              // The executing code should never get there as we should exit the recursion in onGetRecords.
-            } else {
-
-              // Stream the vcf records we just parsed for a region in the vcf, one records at a time
-              if (records) {
-                for (var r = 0; r < records.length; r++) {              
-                  dataStream.write(records[r] + "\n");
-                }
-              } else {
-                // This is an error condition.  If vcfRecords can't return any
-                // records, we will hit this point in the code.
-                // Just log it for now and move on to the next region.
-                console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
-              }
-
-              regionIndex++;
-
-              if (regionIndex > regions.length) {
-                return;
-              } else if (regionIndex == regions.length) {
-                // We have streamed all of the regions so now we will end the stream.
-                dataStream.end();
-                return;
-              } else {
-                var regionObject = regions[regionIndex];
-                if (regionObject == null) {
-                  console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
-                } 
-                // There are more regions to obtain vcf records for, so call getVcfRecords now
-                // that regionIndex has been incremented.
-                vcfReader.getRecords(regions[regionIndex].name, 
-                  regions[regionIndex].start, 
-                  regions[regionIndex].end, 
-                  onGetRecords);
-              }      
-
+        var streamNextRegion = function(records) {
+          // Stream the vcf records we just parsed for a region in the vcf, one records at a time
+          if (records) {
+            for (var r = 0; r < records.length; r++) {              
+              stream.write(records[r] + "\n");
             }
+          } else {
+            // This is an error condition.  If vcfRecords can't return any
+            // records, we will hit this point in the code.
+            // Just log it for now and move on to the next region.
+            console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
           }
 
-          //vcfReader.getHeaderRecords( function(headerRecords) {
-          //  for (h = 0; h < headerRecords.length; h++) {
-          //    stream.write(headerRecords[h] + "\n");
-          //  }
-          //});
-          vcfReader.getHeader( function(header) {
-             dataStream.write(header + "\n");
-          });
-
-          if (regions.length <= regionIndex) {
-            console.log("no regions to process. regionIndex=" + regionIndex + " regions.length=" + regions.length);
+          // Now that we have streamed the vcf records for a region, continue on
+          // to the next region to stream
+          regionIndex++;
+          if (regionIndex > regions.length) {
+            return;
+          } else if (regionIndex == regions.length) {
+            // We have streamed all of the regions so now we will end the stream.
+            stream.end();
+            return;
           } else {
             var regionObject = regions[regionIndex];
             if (regionObject == null) {
               console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
-            }
-          }
-
-
-          // Now we recursively call vcfReader.getRecords (by way of callback function onGetRecords)
-          // so that we parse vcf records one region at a time, streaming the vcf records
-          // to the server.
-          vcfReader.getRecords(
-              regions[regionIndex].name, 
+            } 
+            // There are more regions to obtain vcf records for, so call getVcfRecords now
+            // that regionIndex has been incremented.
+            vcfReader.getRecords(regions[regionIndex].name, 
               regions[regionIndex].start, 
               regions[regionIndex].end, 
-              onGetRecords);
-
-        });
-      });
-
+              streamNextRegion);
+          } 
+        }
 
 
-      
-      //
-      // listen for stream data (the output) event. 
-      //
-      stream.on('data', function(datas, options) {
-        datas.split(';').forEach(function(data) {
+        // Stream vcf records for each region in a serial fashion.  (Once vcf records for a region 
+        // have been streamed, continue on to the next region to stream its vcf records).
+        vcfReader.getRecords(
+            regions[regionIndex].name, 
+            regions[regionIndex].start, 
+            regions[regionIndex].end, 
+            streamNextRegion);        
+      }  
+    };
+
+
+    var cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);       
+    
+    if (samples && samples.length > 0) {
+      cmd = new iobio.cmd(vt, ["subset", "-s", samples.join(","), vcfFile], opts)
+                     .pipe(vcfstatsAlive, ['-u', '1000']);
+    } else {
+      cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);        
+    }
+    
+    
+    var buffer = "";
+    // parse stats
+    cmd.on('data', function(results) {
+         results.split(';').forEach(function(data) {
            if (data == undefined) {
               return;
            } 
@@ -714,18 +910,22 @@ vcfiobio = function module() {
            }
            if(success) {
              buffer = "";
-             if (callback) {
-               callback(obj); 
-             }
+             callback(obj); 
            }
-        })               
-      });
-      
+        });        
     });
-    client.on("error", function(error) {
-      alert("Unable to get vcf stats due to the following error: " + error);
-      console.log("error while annotating vcf records " + error);
+
+    cmd.on('end', function() {
+         
     });
+
+    cmd.on('error', function(error) {
+      console.log("error while annotating vcf records " + error);        
+    });
+
+
+    cmd.run();
+    
   }
 
   exports._getRemoteStats = function(refs, options, callback) {      
@@ -740,64 +940,130 @@ vcfiobio = function module() {
     regions.forEach(function(region) { 
       regionStr += " " + region.name + ":" + region.start + "-" + region.end 
     });
-    var tabixUrl = tabixServer + "?cmd=-h " + vcfURL + regionStr + "&encoding=binary";
 
-    // This is the full url for vcfstatsalive server which is piped its input from tabixserver
-    var url = encodeURI( vcfstatsAliveServer + '?cmd=-u 1000 ' + encodeURIComponent(tabixUrl));
-
-    try {
-      // Connect to the vcfstatsaliveserver    
-      var client = BinaryClient(vcfstatsAliveServer);
-
-      var buffer = "";
-      client.on('open', function(stream){
-
-      
-
-          // Run the command
-          var stream = client.createStream({event:'run', params : {'url':url}});
-
-         // Listen for data to be streamed back to the client
-          stream.on('data', function(datas, options) {
-            datas.split(';').forEach(function(data) {
-               if (data == undefined) {
-                  return;
-               } 
-               var success = true;
-               try {
-                 var obj = JSON.parse(buffer + data);
-               } catch(e) {
-                 success = false;
-                 buffer += data;
-               }
-               if(success) {
-                 buffer = "";
-                 callback(obj); 
-               }
-            });               
-          });
-          stream.on('end', function() {
-             if (options.onEnd != undefined)
-                options.onEnd();
-          });
-         
-        
-       });
-
-
-      client.on("error", function(error) {
-          alert("Unable to get vcf stats due to the following error: " + error);
-          console.log("error while annotating vcf records " + error);
-      });
-    } catch (e) {
-          alert("Unable to get vcf stats due to the following exception: " + e);
-          console.log("error while annotating vcf records " + e);
-
+    var cmd = null;
+    if (samples && samples.length > 0) {
+      cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+                        .pipe(vt, ["subset", "-s", samples.join(",")])
+                        .pipe( vcfstatsAlive, ['-u', '1000'] );
+    } else {
+      cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+                        .pipe( vcfstatsAlive, ['-u', '1000'] );
     }
-     
+    
+
+    // Run like normal
+    cmd.run(); 
+
+    var buffer = "";
+    // Use Results
+    cmd.on('data', function(results) {
+         results.split(';').forEach(function(data) {
+           if (data == undefined) {
+              return;
+           } 
+           var success = true;
+           try {
+             var obj = JSON.parse(buffer + data);
+           } catch(e) {
+             success = false;
+             buffer += data;
+           }
+           if(success) {
+             buffer = "";
+             callback(obj); 
+           }
+        });        
+    });
+
+    cmd.on('end', function() {
+         
+    });
+
+    cmd.on('error', function(error) {
+      console.log("error while annotating vcf records " + error);        
+    });
+
+   
   }; 
 
 
+    // NEW
+  exports.getSampleNames = function(callback) {
+    if (sourceType == SOURCE_TYPE_URL) {
+      this._getRemoteSampleNames(callback);
+    } else {
+      this._getLocalSampleNames(callback);
+    }
+  }
+ 
+  // NEW
+  exports._getLocalSampleNames = function(callback) {
+    var me = this;
+
+    var vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
+      var sampleNames = [];
+      sampleNames.length = 0;
+
+      var headerRecords = [];
+      vcfReader.getHeader( function(header) {
+         headerRecords = header.split("\n");
+         headerRecords.forEach(function(headerRec) {
+            if (headerRec.indexOf("#CHROM") == 0) {
+              var headerFields = headerRec.split("\t");
+              sampleNames = headerFields.slice(9);
+              callback(sampleNames);
+            }
+         });
+
+      });
+   });
+    
+    
+
+  }
+
+  // NEW
+  exports._getRemoteSampleNames = function(callback) {
+    var me = this;
+    
+    var cmd = new iobio.cmd(
+        tabix,
+        ['-h', vcfURL, '1:1-1']);
+
+
+
+    cmd.http();
+
+
+    var headerData = "";
+    // Use Results
+    cmd.on('data', function(data) {
+         if (data == undefined) {
+            return;
+         } 
+         headerData += data;
+    });
+
+    cmd.on('end', function(data) {
+        var headerRecords = headerData.split("\n");
+         headerRecords.forEach(function(headerRec) {
+              if (headerRec.indexOf("#CHROM") == 0) {
+                var headerFields = headerRec.split("\t");
+                var sampleNames = headerFields.slice(9);
+                callback(sampleNames);
+              }
+         });
+
+    });
+
+    cmd.on('error', function(error) {
+      console.log(error);
+    });
+    
+    cmd.run(); 
+
+  }
 
  
 
@@ -885,7 +1151,7 @@ vcfiobio = function module() {
       var stream = client.createStream(
       {
         'from':     email, 
-        'to':       'vcfiobio@googlegroups.com',
+        'to':       'iobio.arup@gmail.com',
         'subject':  'vcf.iobio.io Issue',
         'filename': 'vcfiobio_snapshot.html',
         'body':     htmlBody
