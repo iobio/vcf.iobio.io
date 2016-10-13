@@ -103,6 +103,7 @@ vcfiobio = function module() {
   var tabix                  = "nv-green.iobio.io/tabix/";
   var vcfReadDepther         = "nv-green.iobio.io/vcfdepther/"
   var vt                     = "nv-green.iobio.io/vt/";
+  var bcftools               = "nv-green.iobio.io/bcftools/";
 
   var vcfURL;
   var vcfReader;
@@ -946,14 +947,23 @@ vcfiobio = function module() {
       regionStr += " " + region.name + ":" + region.start + "-" + region.end 
     });
 
+    var contigStr = "";
+    for (var j=0; j < refs.length; j++) {
+      var ref      = refData[refs[j]];
+      contigStr += "##contig=<ID=" + ref.name + ">\n";
+    }
+    var contigNameFile = new Blob([contigStr])
+
     var cmd = null;
     if (samples && samples.length > 0) {
       var sampleNameFile = new Blob([samples.join("\n")])
       cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+                        .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'])
                         .pipe(vt, ["subset", "-s", sampleNameFile, '-'])
                         .pipe( vcfstatsAlive, ['-u', '1000'] );
     } else {
       cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+                        .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'])
                         .pipe( vcfstatsAlive, ['-u', '1000'] );
     }
     
