@@ -159,6 +159,11 @@ vcfiobio = function module() {
   }
 
 
+  exports.getVcfUrl = function() {
+    return vcfURL;
+  }
+
+
   exports.checkVcfUrl = function(url, callback) {
     var me = this;
     var success = null;
@@ -943,8 +948,9 @@ vcfiobio = function module() {
 
     var cmd = null;
     if (samples && samples.length > 0) {
+      var sampleNameFile = new Blob([samples.join("\n")])
       cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
-                        .pipe(vt, ["subset", "-s", samples.join(",")])
+                        .pipe(vt, ["subset", "-s", sampleNameFile, '-'])
                         .pipe( vcfstatsAlive, ['-u', '1000'] );
     } else {
       cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])

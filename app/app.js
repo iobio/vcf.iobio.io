@@ -17,6 +17,8 @@ var indelLengthChart;
 
 var chromosomePieLayout;
 
+var sampleNamesFromUrl = null;
+
 
 var densityPanelDimensions = {
 	width: 0,
@@ -106,6 +108,7 @@ function init() {
 	d3.selectAll(".samplingLoader").classed("hide", false);
 
 	vcfiobio = new vcfiobio();
+	vcfiobio.setSamples([]);
 
 
 	// Setup event handlers for File input
@@ -347,10 +350,22 @@ function init() {
     		statsOptions.binSize = 40000;
     		statsOptions.binNumber = 20;
     	}
+        sampleNamesFromUrl = getParameterByName('samples');
+		if (sampleNamesFromUrl && sampleNamesFromUrl.length > 0) {
+    	    $('#samples-filter-header #sample-names').removeClass("hide");
+    	    var sampleNames = sampleNamesFromUrl.split(",");
+    	    if (sampleNames.length > 6) {
+				$('#samples-filter-header #sample-names').text(sampleNames.length + " samples filtered");
+    	    } else {
+				$('#samples-filter-header #sample-names').text(sampleNames.join(" "));
+    	    }
+		} else {
+    	    $('#samples-filter-header #sample-names').addClass("hide");
+		}
 
-        var vcfUrl = decodeUrl(getParameterByName('vcf'))
+        var vcfUrl = decodeUrl(getParameterByName('vcf'));
         if (vcfUrl)
-         	_loadVcfFromUrl(vcfUrl);
+         	_loadVcfFromUrl(vcfUrl, sampleNamesFromUrl.split(","));
     }
 
     $('#report-problem').on('click', displayReportProblem);
@@ -451,8 +466,11 @@ function onUrlEntered() {
     _loadVcfFromUrl(url);
 }
 
-function _loadVcfFromUrl(url) {
+function _loadVcfFromUrl(url, sampleNames) {
 	$("#file-alert").css("visibility", "hidden");
+	if (sampleNames != null) {
+		vcfiobio.setSamples(sampleNames);
+	}
     vcfiobio.openVcfUrl( url, function( success, message) {
 	    if (success) {
 	    	d3.select("#selectData")
@@ -534,10 +552,9 @@ function onReferencesLoaded(refData) {
 	chromosomeChart.clickAllSlices(pieChartRefData);
 	onAllReferencesSelected();
 
-	vcfiobio.setSamples([]);
+	
     vcfiobio.getSampleNames(function(sampleNames) {
     	$('.vcf-sample.loader').addClass("hide");
-    	$('#samples-filter-header #sample-names').addClass("hide");
     	if (sampleNames.length > 1) {
     		$('#show-sample-dialog').removeClass("hide");
     		vcfiobio.setSamples(sampleNames);
@@ -546,6 +563,10 @@ function onReferencesLoaded(refData) {
 			sampleNames.forEach( function(sampleName) {
 				$('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
 			});
+			if (sampleNamesFromUrl) {
+				$('#vcf-sample-select')[0].selectize.setValue(sampleNamesFromUrl.split(","));
+				sampleNamesFromUrl = "";
+			}
 
 			$('#vcf-sample-box').removeClass("hide");
 
@@ -562,7 +583,8 @@ function onReferencesLoaded(refData) {
 				} else {
 		    	    $('#samples-filter-header #sample-names').addClass("hide");
 				}
-
+				window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&samples=" + samples.join(","));
+				vcfiobio.setSamples(samples);
 				loadStats(chromosomeIndex);
 			});
 
@@ -690,7 +712,7 @@ function loadVariantDensityData(ref, i) {
 		   .text(d3.format(",")(regionStart) + ' - ' + d3.format(",")(regionEnd));
 
 		// Get the estimated density for the reference (already in memory)
-		var data = vcfiobio.getEstimatedDensity(ref.name,
+		var data = vcfiobio.getEstimatedDensity(ref,
 			false, densityRegionOptions.removeSpikes, null, densityRegionOptions.epsilonRDP);
 
 		// Now filter the estimated density data to only include the points that fall within the selected
