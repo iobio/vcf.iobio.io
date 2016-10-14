@@ -825,9 +825,15 @@ vcfiobio = function module() {
     var me = this;
     this._getRegions(refs, options);
 
+    var contigStr = "";
+    for (var j=0; j < refs.length; j++) {
+      var ref      = refData[refs[j]];
+      contigStr += "##contig=<ID=" + ref.name + ">\n";
+    }
+    var contigNameFile = new Blob([contigStr])
+
     // options to write stream of vcf records from local file to cmd
-    var opts = {        
-      writeStream: function(stream) {  
+    var writeStream = function(stream) {  
      
         vcfReader.getHeader( function(header) {
            stream.write(header + "\n");
@@ -886,18 +892,16 @@ vcfiobio = function module() {
             regions[regionIndex].start, 
             regions[regionIndex].end, 
             streamNextRegion);        
-      }  
-    };
+      };
 
 
-    var cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);       
-    
+    var cmd = new iobio.cmd(bcftools, ['annotate', '-h', contigNameFile, writeStream, '-']);     
+
     if (samples && samples.length > 0) {
-      cmd = new iobio.cmd(vt, ["subset", "-s", samples.join(","), vcfFile], opts)
-                     .pipe(vcfstatsAlive, ['-u', '1000']);
-    } else {
-      cmd = new iobio.cmd(vcfstatsAlive, ['-u', '1000', vcfFile], opts);        
-    }
+      var sampleNameFile = new Blob([samples.join("\n")])
+      cmd = cmd.pipe(vt, ["subset", "-s", sampleNameFile, '-']);
+    } 
+    cmd = cmd.pipe(vcfstatsAlive, ['-u', '1000']);
     
     
     var buffer = "";
