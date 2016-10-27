@@ -100,7 +100,7 @@ vcfiobio = function module() {
   var emailServer            = "ws://nv-dev.iobio.io/email/";
 
   var vcfstatsAlive          = "nv-green.iobio.io/vcfstatsalive/";
-  var tabix                  = "nv-green.iobio.io/tabix/";
+  var tabix                  = "nv-green.iobio.io/od_tabix/";
   var vcfReadDepther         = "nv-green.iobio.io/vcfdepther/"
   var vt                     = "nv-green.iobio.io/vt/";
   var bcftools               = "nv-green.iobio.io/bcftools/";
