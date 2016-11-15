@@ -483,6 +483,9 @@ function displayVcfUrlBox() {
     $("#url-go-button").removeClass("hide");
     $("#file-go-button").addClass("hide");
 
+    vcfiobio.vcfURL = $('#url-input').val();
+    dataSelect.setDefaultBuildFromData();
+
 
 }
 function onFileButtonClicked() {
@@ -491,6 +494,7 @@ function onFileButtonClicked() {
 	$("#go-panel").removeClass("hide");
     $("#url-go-button").addClass("hide");
     $("#file-go-button").removeClass("hide");
+    dataSelect.setDefaultBuildFromData();
 
 }
 
