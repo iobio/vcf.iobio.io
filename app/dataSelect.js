@@ -23,6 +23,7 @@ DataSelect.prototype.init = function() {
 			valueField: 'name',
 	    	labelField: 'name',
 	    	searchField: ['name'],
+	    	allowEmptyOption: true,
 	    	onOptionAdd: function(value) {
 	    		/*
 	    		if (!me.buildDefaulted) {
@@ -97,7 +98,7 @@ DataSelect.prototype.addBuildListener = function() {
 			}
 			genomeBuildHelper.setCurrentBuild(value);
 			updateUrl("build", value);
-			$('#build-label').text(value);
+			$('#current-build').text(value);
 			me.validateBuildFromData(function(success, message) {
 				if (success) {
 					$('#species-build-warning').addClass("hide");
@@ -121,7 +122,8 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 		me.getBuildsFromData(function(buildsInData) {
 			if (buildsInData.length == 0) {
 				$('#species-build-warning').addClass("hide");
-				me.enableLoadButton();
+				me.disableLoadButton();
+				$('#select-build')[0].selectize.clear();
 
 			} else if (buildsInData.length == 1) {			
 				var buildInfo = buildsInData[0];
@@ -131,6 +133,8 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 				genomeBuildHelper.setCurrentBuild(buildInfo.build.name);
 				$('#select-species')[0].selectize.setValue(buildInfo.species.name);
 				$('#select-build')[0].selectize.setValue(buildInfo.build.name);	
+				$('#current-build').text(buildInfo.build.name);
+				updateUrl("build", buildInfo.build.name);
 				me.addBuildListener();
 
 				$('#species-build-warning').addClass("hide");				
@@ -139,6 +143,7 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 				var message = genomeBuildHelper.formatIncompatibleBuildsMessage(buildsInData);
 				$('#species-build-warning').html(message);
 				$('#species-build-warning').removeClass("hide");
+				$('#select-build')[0].selectize.clear();
 				me.disableLoadButton();
 			}
 		});		

@@ -95,6 +95,10 @@ GenomeBuildHelper.prototype.setCurrentBuild = function(buildName) {
 }
 
 
+GenomeBuildHelper.prototype.getCurrentSpecies = function() {
+	return this.currentSpecies ? this.currentSpecies : null;
+}
+
 GenomeBuildHelper.prototype.getCurrentSpeciesName = function() {
 	return this.currentSpecies ? this.currentSpecies.name : null;
 }
@@ -103,6 +107,9 @@ GenomeBuildHelper.prototype.getCurrentSpeciesLatinName = function() {
 	return this.currentSpecies ? this.currentSpecies.latin_name : null;
 }
 
+GenomeBuildHelper.prototype.getCurrentBuild = function() {
+	return this.currentBuild ? this.currentBuild : null;
+}
 GenomeBuildHelper.prototype.getCurrentBuildName = function() {
 	return this.currentBuild ? this.currentBuild.name : null;
 }

@@ -377,13 +377,17 @@ function init() {
 		}
 		var build   = getParameterByName('build');
 		if (build && build.length > 0) {
-			$('#build-label').text(build)
+			$('#current-build').text(build)
 			genomeBuildHelper.setCurrentBuild(build);
 		}
 
         var vcfUrl = decodeUrl(getParameterByName('vcf'));
-        if (vcfUrl)
-         	_loadVcfFromUrl(vcfUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);
+        if (vcfUrl && genomeBuildHelper.getCurrentBuild() && genomeBuildHelper.getCurrentSpecies()) {
+         	_loadVcfFromUrl(vcfUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);        	
+        } else if (vcfUrl) {
+        	$('#url-input').val(vcfUrl);
+        	displayVcfUrlBox();
+        }
     }
 
     $('#report-problem').on('click', displayReportProblem);

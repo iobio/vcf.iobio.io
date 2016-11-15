@@ -33,7 +33,7 @@ label {
     font-size:16px;
 }
 
-#build-label {
+#current-build {
     font-size: 26px;
     color: #2687BE;    
     margin-right: 20px;
