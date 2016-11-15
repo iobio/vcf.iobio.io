@@ -1,9 +1,40 @@
 label {
     font-weight: 300;
 }
-#vcf-url-go-button  { 
+.go-button  { 
   font:300 28px quicksand;
   vertical-align:middle;
+  margin-top: 20px;
+  float: right;
+}
+
+#go-panel {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    margin-left: auto;
+    width: 670px;
+    margin-right: auto;
+    overflow: visible;
+    clear: both;
+}
+
+#file-alert {
+    visibility:hidden;
+    min-height:50px;
+    text-align:center;
+    margin-top:10px;
+    margin-left:auto; 
+    margin-right:auto;
+    width:700px;
+    font-weight: 400;
+    font-size:16px;
+}
+
+#build-label {
+    font-size: 26px;
+    color: #2687BE;    
+    margin-right: 20px;
 }
 
 

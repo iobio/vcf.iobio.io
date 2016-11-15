@@ -84,6 +84,12 @@ var lookupNucleotide = {
 
 var colorListVarType = ["#2171b5", "#eff3ff", "#bdd7e7", "#6baed6", ];
 
+//var iobioServer           = "nv-green.iobio.io";
+var iobioServer           = "nv-dev.iobio.io/";
+var dataSelect            = null;
+var genomeBuildHelper     = null;
+var genomeBuildServer     = "http://" + iobioServer + "genomebuild/"; // !pointed to nv-dev
+
 
 /*
 *  Document initialization
@@ -91,8 +97,11 @@ var colorListVarType = ["#2171b5", "#eff3ff", "#bdd7e7", "#6baed6", ];
 $(document).ready( function(){
 	//d3BrowserAdjustments();
 
-	init();
-
+	genomeBuildHelper = new GenomeBuildHelper();
+	genomeBuildHelper.promiseInit().then(function() {
+		$('#build-label').text(genomeBuildHelper.getCurrentBuildName());
+		init();
+	});
 });
 
 /*
@@ -110,19 +119,19 @@ function init() {
 	vcfiobio = new vcfiobio();
 	vcfiobio.setSamples([]);
 
+	$('#url-input').focusout(function() {
+		vcfiobio.vcfURL = $('#url-input').val();
+	    dataSelect.setDefaultBuildFromData();
+  	});
+
 
 	// Setup event handlers for File input
 	document.getElementById('file').addEventListener('change', onFilesSelected, false);
 
-	$('#vcf-sample-select').selectize(
-		{
-			create: true,
-			maxItems: null,
-			valueField: 'value',
-	    	labelField: 'value',
-	    	searchField: ['value']
-		}
-	);
+	// Initialize the data selection widget
+	dataSelect = new DataSelect();
+	dataSelect.init();
+
 
 	// Get the container dimensions to determine the chart dimensions
 	getChartDimensions();
@@ -461,21 +470,62 @@ function displayVcfUrlBox() {
     $('#vcf-url').css('visibility','visible');
     $('#vcf-url-button-panel').css('visibility','visible');
     $("#vcf-url").children("input").focus();
+    $("#go-panel").removeClass("hide");
+    $("#url-go-button").removeClass("hide");
+    $("#file-go-button").addClass("hide");
+
 
 }
 function onFileButtonClicked() {
 	$('#vcf-url').css('visibility', 'hidden');
 	$('#vcf-url-button-panel').css('visibility', 'hidden');
+	$("#go-panel").removeClass("hide");
+    $("#url-go-button").addClass("hide");
+    $("#file-go-button").removeClass("hide");
+
 }
 
-function onUrlEntered() {
+function loadFromUrl() {
     var url = $("#url-input").val();
-    window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(url));
+    updateUrl("vcf",  encodeURIComponent(url));
     _loadVcfFromUrl(url);
 }
 
+function loadFromFile() {
+	$('.vcf-sample.loader').removeClass("hide");
+
+	d3.select("#selectData")
+	  .style("visibility", "hidden")
+	  .style("display", "none");
+
+	d3.select("#showData")
+	  .style("visibility", "visible");
+
+	vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+
+}
+function updateUrl(paramName, value) {
+	var params = {};
+	// turn params into hash
+	window.location.search.split('&').forEach(function(param){
+		if (param != '') {
+			param = param.split('?').length == 1 ? param : param.split('?')[1];
+			var fields = param.split('=');
+			params[fields[0]] = fields[1];
+		}
+	});
+	params[paramName] = value;
+	var search = [];
+	Object.keys(params).forEach(function(key) {
+		search.push(key + '=' + params[key]);
+	})
+    window.history.replaceState(null,null,'?'+search.join('&'));	
+}
+
 function _loadVcfFromUrl(url, sampleNames) {
-	$("#file-alert").css("visibility", "hidden");
+	$("#file-alert").addClass("hide");
+	dataSelect.setDefaultBuildFromData();
+
 	if (sampleNames != null) {
 		vcfiobio.setSamples(sampleNames);
 	}
@@ -504,6 +554,10 @@ function _loadVcfFromUrl(url, sampleNames) {
 			displayFileError(message);
 
 			$('#vcf-url').css("visibility", "visible");
+			$("#go-panel").removeClass("hide");
+			$("url-go-button").removeClass("hide");
+			$("file-go-button").addClass("hide");
+
 			$("#url-input").focus();
 			$("#url-input").val(url);
 
@@ -514,22 +568,14 @@ function _loadVcfFromUrl(url, sampleNames) {
 
 }
 
+
+
 function onFilesSelected(event) {
-	$("#file-alert").css("visibility", "hidden");
+	$("#file-alert").addClass("hide");
 	vcfiobio.openVcfFile( event,
 		function(vcfFile) {
-			$('.vcf-sample.loader').removeClass("hide");
-
 			d3.select("#vcf_file").text(vcfFile.name);
-
-			d3.select("#selectData")
-			  .style("visibility", "hidden")
-			  .style("display", "none");
-
-			d3.select("#showData")
-			  .style("visibility", "visible");
-
-			vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+			dataSelect.setDefaultBuildFromData();
 		},
 		function(errorMessage) {
 			displayFileError(errorMessage)
@@ -545,7 +591,7 @@ function displayFileError(errorMessage) {
 	  .style("visibility", "hidden");
 
 	$("#file-alert").text(errorMessage);
-	$("#file-alert").css("visibility", "visible");
+	$("#file-alert").removeClass("hide");
 }
 
 function showSamplesDialog() {

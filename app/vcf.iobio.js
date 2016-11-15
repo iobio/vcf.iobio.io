@@ -67,35 +67,6 @@ vcfiobio = function module() {
 
   var samples = [];
 
-  var refLengths_GRCh37 = 
-  {
-        "1":   +249250621,
-        "2":   +243199373,
-        "3":   +198022430,
-        "4":   +191154276,
-        "5":   +180915260,
-        "6":   +171115067,
-        "7":   +159138663,
-        "8":   +146364022,
-        "9":   +141213431,
-        "10":  +135534747,
-        "11":  +135006516,
-        "12":  +133851895,
-        "13":  +115169878,
-        "14":  +107349540,
-        "15":  +102531392,
-        "16":  +90354753,
-        "17":  +81195210,
-        "18":  +78077248,
-        "19":  +59128983,
-        "20":  +63025520,
-        "21":  +48129895,
-        "22":  +51304566,
-        "X":   +155270560,
-        "Y":   +59373566
-      };
-
-
 
   var emailServer            = "ws://nv-dev.iobio.io/email/";
 
@@ -339,7 +310,7 @@ vcfiobio = function module() {
         var indexseq = tbiIdx.idxContent.indexseq[i];
         var calcRefLength = indexseq.n_intv * size16kb;
 
-        var refLength = refLengths_GRCh37[me.stripChr(ref)];
+        var refLength = genomeBuildHelper.getReferenceLength(ref);
 
         // Use the linear index to load the estimated density data
         var intervalPoints = [];
@@ -393,7 +364,7 @@ vcfiobio = function module() {
 
           // Make sure to zero fill to the end of the reference
           var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
-          var refLength = refLengths_GRCh37[me.stripChr(refName)];
+          var refLength = genomeBuildHelper.getReferenceLength(refName);
           if (refLength == null) {
             refLength = calcRefLength;
           }
@@ -528,7 +499,7 @@ vcfiobio = function module() {
               refName = tokens[1];     
 
               var calcRefLength = tokens[2];
-              var refLength = refLengths_GRCh37[me.stripChr(refName)];
+              var refLength = genomeBuildHelper.getReferenceLength(refName);
               if (refLength == null) {
                  refLength = calcRefLength;
               }
@@ -809,6 +780,48 @@ vcfiobio = function module() {
     return allPoints;
   }
 
+  exports.getHeader = function(callback) {
+    var me = this;
+    var headerStr = "";
+    if (sourceType.toLowerCase() == SOURCE_TYPE_URL.toLowerCase() && me.vcfURL != null) {
+
+        var buffer = "";
+        var cmd = new iobio.cmd(
+            tabix,
+            ['-H', me.vcfURL]
+        );
+
+        cmd.on('data', function(data) {
+          if (data != undefined) {
+            success = true;
+            buffer += data;
+          }
+        });
+
+        cmd.on('end', function() {
+          if (success == null) {
+            success = true;
+          }
+          if (success && buffer.length > 0) {
+            headerStr = buffer;
+            callback(headerStr);
+          }
+        });
+        cmd.run();
+        
+      } else if (vcfFile) {
+          var vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
+            vcfReader.getHeader( function(theHeader) {              
+              callback(theHeader);
+            });
+          });
+      } else {
+        callback(null);
+      }
+
+  }
+
+
 
   exports.getStats = function(refs, options, callback) {    
     if (sourceType == SOURCE_TYPE_URL) {
@@ -1026,8 +1039,8 @@ vcfiobio = function module() {
       sampleNames.length = 0;
 
       var headerRecords = [];
-      vcfReader.getHeader( function(header) {
-         headerRecords = header.split("\n");
+      vcfReader.getHeader( function(headerStr) {
+         headerRecords = headerStr.split("\n");
          headerRecords.forEach(function(headerRec) {
             if (headerRec.indexOf("#CHROM") == 0) {
               var headerFields = headerRec.split("\t");

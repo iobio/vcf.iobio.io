@@ -87,11 +87,29 @@
                 <div class="arrow_box" style="display:inline-block;width:670px;">
                     <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input>
                 </div>
-                <button id="vcf-url-go-button" onclick="onUrlEntered()">Go</button>
             </div>
-            <div id="file-alert"  style="visibility:hidden;min-height:50px;text-align:center;margin-top:10px;margin-left:auto; margin-right:auto;width:700px;font-weight: 400;font-size:16px" class=" alert alert-danger" role="alert">
+            <div id="file-alert" class="alert alert-danger hide" role="alert">
             </div>
 
+
+            <div id="go-panel" class="hide">
+              <div id="select-species-box" style="width:170px;float:left;">
+                <span id="sample-data-label">Species</span>
+                <select id="select-species" class="selectized" placeholder="select species...">
+                </select>
+              </div>
+              <div id="select-build-box" style="width:170px;float:left;margin-left:20px;">
+                <span id="sample-data-label">Genome Build</span>
+                <select id="select-build" class="selectized" placeholder="select genome build...">
+                </select>
+              </div>
+            
+              <button id="url-go-button" class="go-button" onclick="loadFromUrl()">Go</button>
+              <button id="file-go-button" class="go-button" onclick="loadFromFile()">Go </button>
+
+              <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">                
+              </div>              
+            </div>
 
             <div style="clear:both"></div>
             <div id="info">                                
@@ -196,9 +214,12 @@
                          <span id="vcf_file"></span>
                     </div>
 
+
                     <div id="banner-middle">
                        
                         <div id="vcf_selection">
+                            <div id="build-label"></div>
+
                             <div style="text-align:center">
                                 <div id="reference_selected"></div>
                                 <div id="region_selected"></div>
@@ -418,6 +439,8 @@
         <script type="text/javascript" src="app/barChartAlt.d3.js"></script>
         <script type="text/javascript" src="app/histogram.d3.js"></script>
         <script type="text/javascript" src="app/groupedBar.d3.js"></script>
+        <script type="text/javascript" src="app/genomeBuildHelper.js"></script>
+        <script type="text/javascript" src="app/dataSelect.js"></script>
         <script type="text/javascript" src="app/app.js"></script>
 
 	</body>
