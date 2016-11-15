@@ -18,8 +18,14 @@ function GenomeBuildHelper() {
 
 }
 
-GenomeBuildHelper.prototype.promiseInit = function() {
+GenomeBuildHelper.prototype.promiseInit = function(options) {
 	var me = this;
+	if (options && options.hasOwnProperty('DEFAULT_SPECIES')) {
+		me.DEFAULT_SPECIES = options.DEFAULT_SPECIES;
+	}
+	if (options && options.hasOwnProperty('DEFAULT_BUILD')) {
+		me.DEFAULT_BUILD = options.DEFAULT_BUILD;
+	}
 	return new Promise(function(resolve, reject) {
 
 		$.ajax({

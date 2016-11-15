@@ -98,8 +98,7 @@ $(document).ready( function(){
 	//d3BrowserAdjustments();
 
 	genomeBuildHelper = new GenomeBuildHelper();
-	genomeBuildHelper.promiseInit().then(function() {
-		$('#build-label').text(genomeBuildHelper.getCurrentBuildName());
+	genomeBuildHelper.promiseInit({DEFAULT_BUILD: null}).then(function() {
 		init();
 	});
 });
@@ -370,6 +369,16 @@ function init() {
     	    }
 		} else {
     	    $('#samples-filter-header #sample-names').addClass("hide");
+		}
+
+		var species = getParameterByName('species');
+		if (species && species.length > 0) {
+			genomeBuildHelper.setCurrentSpecies(species);
+		}
+		var build   = getParameterByName('build');
+		if (build && build.length > 0) {
+			$('#build-label').text(build)
+			genomeBuildHelper.setCurrentBuild(build);
 		}
 
         var vcfUrl = decodeUrl(getParameterByName('vcf'));

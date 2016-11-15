@@ -24,11 +24,13 @@ DataSelect.prototype.init = function() {
 	    	labelField: 'name',
 	    	searchField: ['name'],
 	    	onOptionAdd: function(value) {
+	    		/*
 	    		if (!me.buildDefaulted) {
 	    			$('#select-build')[0].selectize.addItem(genomeBuildHelper.currentBuild.name, false);
 	    			me.buildDefaulted = true; 
 	    			updateUrl("build", genomeBuildHelper.currentBuild.name);
 	    		}
+	    		*/
 	    	}
     	}
 	);
@@ -75,6 +77,17 @@ DataSelect.prototype.removeBuildListener = function() {
 
 }
 
+DataSelect.prototype.enableLoadButton = function() {
+	if (genomeBuildHelper.getCurrentBuildName()) {
+		$('.go-button').removeClass("disabled");
+	} else {
+		$('.go-button').addClass("disabled");
+	}
+}
+DataSelect.prototype.disableLoadButton = function() {
+	$('.go-button').addClass("disabled");
+}
+
 DataSelect.prototype.addBuildListener = function() {
 	var me = this;
 	if ($('#select-build')[0].selectize) {
@@ -84,15 +97,15 @@ DataSelect.prototype.addBuildListener = function() {
 			}
 			genomeBuildHelper.setCurrentBuild(value);
 			updateUrl("build", value);
-			$('#build-link').text(value);
+			$('#build-label').text(value);
 			me.validateBuildFromData(function(success, message) {
 				if (success) {
 					$('#species-build-warning').addClass("hide");
-					//window.enableLoadButton();
+					me.enableLoadButton();
 				} else {
 					$('#species-build-warning').html(message);
 					$('#species-build-warning').removeClass("hide");
-					//window.disableLoadButton();
+					me.disableLoadButton();
 				}
 			});
 			
@@ -108,7 +121,7 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 		me.getBuildsFromData(function(buildsInData) {
 			if (buildsInData.length == 0) {
 				$('#species-build-warning').addClass("hide");
-				//window.enableLoadButton();
+				me.enableLoadButton();
 
 			} else if (buildsInData.length == 1) {			
 				var buildInfo = buildsInData[0];
@@ -121,12 +134,12 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 				me.addBuildListener();
 
 				$('#species-build-warning').addClass("hide");				
-				//window.enableLoadButton();		
+				me.enableLoadButton();		
 			} else {
 				var message = genomeBuildHelper.formatIncompatibleBuildsMessage(buildsInData);
 				$('#species-build-warning').html(message);
 				$('#species-build-warning').removeClass("hide");
-				//window.disableLoadButton();
+				me.disableLoadButton();
 			}
 		});		
 	}

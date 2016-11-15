@@ -6,6 +6,8 @@ label {
   vertical-align:middle;
   margin-top: 20px;
   float: right;
+  font-size: 28px !important;
+  background-color: #2d8fc1 !important; 
 }
 
 #go-panel {
@@ -37,6 +39,21 @@ label {
     margin-right: 20px;
 }
 
+#species-label {
+    font-size: 18px;
+    color: #2d8fc1 ;
+}
+
+#build-label {
+    font-size: 18px;
+    color: #2d8fc1 ;
+}
+
+#go-panel .selectize-dropdown, 
+#go-panel .selectize-input, 
+#go-panel .selectize-input input {
+    font-size: 18px !important;
+}
 
 /* Work around problem with flatui incompatibility with bootstrap checkboxes */
 .checkbox input, .radio input {    
