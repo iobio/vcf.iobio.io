@@ -25,13 +25,10 @@ DataSelect.prototype.init = function() {
 	    	searchField: ['name'],
 	    	allowEmptyOption: true,
 	    	onOptionAdd: function(value) {
-	    		/*
 	    		if (!me.buildDefaulted) {
-	    			$('#select-build')[0].selectize.addItem(genomeBuildHelper.currentBuild.name, false);
+	    			// You can select the default build here
 	    			me.buildDefaulted = true; 
-	    			updateUrl("build", genomeBuildHelper.currentBuild.name);
 	    		}
-	    		*/
 	    	}
     	}
 	);
