@@ -9,7 +9,8 @@ function GenomeBuildHelper() {
 	this.DEFAULT_SPECIES = "Human";
 	this.DEFAULT_BUILD   = "GRCh37";
 
-	this.ALIAS_UCSC                   = "UCSC";
+	this.ALIAS_UCSC                            = "UCSC";
+	this.ALIAS_REFSEQ_ASSEMBLY_ACCESSION_RANGE = "REFSEQ ASSEMBLY ACCESSION RANGE";
 
 	this.RESOURCE_CLINVAR_VCF_S3      = "CLINVAR VCF S3";
 	this.RESOURCE_CLINVAR_VCF_OFFLINE = "CLINVAR VCF OFFLINE";
@@ -367,6 +368,26 @@ GenomeBuildHelper.prototype.getProperSpeciesAndBuild = function(buildInfo) {
 							build.aliases.forEach(function(gbAlias) {
 								if (gbAlias.alias == buildInfo.build) {
 									matchedBuild = build;
+								} else if (gbAlias.type == me.ALIAS_REFSEQ_ASSEMBLY_ACCESSION_RANGE && buildInfo.build.indexOf(".") > 0) {
+									// See if we have an assembly in the range.
+									// example of alias is GCF_000001405.[13-25]
+									var assemblyRoot    =  buildInfo.build.split(".")[0];
+									var assemblyVersion = +buildInfo.build.split(".")[1];
+
+									var aliasRoot       = gbAlias.alias.split(".")[0];
+									if (assemblyRoot == aliasRoot) {
+										var aliasRange  = gbAlias.alias.split(".")[1];
+										// Get rid of []
+										aliasRange = aliasRange.substring(1, aliasRange.length - 1);
+										// Get the numbers between the -
+										var rangeLow  = +aliasRange.split("-")[0];
+										var rangeHigh = +aliasRange.split("-")[1];
+
+										if (assemblyVersion >= rangeLow && assemblyVersion <= rangeHigh) {
+											matchedBuild = build;
+										}
+
+									}
 								}
 							})
 						}																

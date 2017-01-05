@@ -68,13 +68,13 @@ vcfiobio = function module() {
   var samples = [];
 
 
-  var emailServer            = "ws://nv-dev.iobio.io/email/";
+  var emailServer            = "ws://" + iobioServer + "email/";
 
-  var vcfstatsAlive          = "nv-green.iobio.io/vcfstatsalive/";
-  var tabix                  = "nv-green.iobio.io/od_tabix/";
-  var vcfReadDepther         = "nv-green.iobio.io/vcfdepther/"
-  var vt                     = "nv-green.iobio.io/vt/";
-  var bcftools               = "nv-green.iobio.io/bcftools/";
+  var vcfstatsAlive          = iobioServer + "vcfstatsalive/";
+  var tabix                  = iobioServer + "od_tabix/";
+  var vcfReadDepther         = iobioServer + "vcfdepther/"
+  var vt                     = iobioServer + "vt/";
+  var bcftools               = iobioServer + "bcftools/";
 
   var vcfURL;
   var vcfReader;
