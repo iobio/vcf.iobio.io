@@ -85,7 +85,8 @@
             </div>
             <div id="vcf-url" style="visibility:hidden;">
                 <div class="arrow_box" style="display:inline-block;width:670px;">
-                    <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" ></input>
+                    <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" placeholder="vcf.gz URL" ></input>
+                    <input id="url-tbi-input" value="" placeholder="tbi URL (optional)"></input>
                 </div>
             </div>
             <div id="file-alert" class="alert alert-danger hide" role="alert">
@@ -105,7 +106,7 @@
               </div>
             
               <button id="url-go-button" class="go-button btn disabled" onclick="loadFromUrl()">Go</button>
-              <button id="file-go-button" class="go-button btn disabled" onclick="loadFromFile()">Go </button>
+              <button id="file-go-button" class="hide go-button btn disabled" onclick="loadFromFile()">Go </button>
 
               <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">                
               </div>              

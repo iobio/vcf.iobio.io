@@ -22,7 +22,6 @@ label {
 }
 
 #file-alert {
-    visibility:hidden;
     min-height:50px;
     text-align:center;
     margin-top:10px;

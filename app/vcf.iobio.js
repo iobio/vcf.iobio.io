@@ -71,12 +71,13 @@ vcfiobio = function module() {
   var emailServer            = "ws://" + iobioServer + "email/";
 
   var vcfstatsAlive          = iobioServer + "vcfstatsalive/";
-  var tabix                  = iobioServer + "od_tabix/";
+  var tabix                  = "nv-dev-new.iobio.io/" + "od_tabix/";
   var vcfReadDepther         = iobioServer + "vcfdepther/"
   var vt                     = iobioServer + "vt/";
   var bcftools               = iobioServer + "bcftools/";
 
   var vcfURL;
+  var tbiURL;
   var vcfReader;
   var vcfFile;
   var tabixFile;
@@ -113,17 +114,19 @@ vcfiobio = function module() {
 
 
 
-  exports.openVcfUrl = function(url, callback) {
+  exports.openVcfUrl = function(url, theTbiUrl, callback) {
     var me = this;
     sourceType = SOURCE_TYPE_URL;
-    vcfURL = url;
+    me.vcfURL = url;
+    me.tbiURL = theTbiUrl;
+
 
     var fileType0 = /([^.]*)\.(vcf\.gz)$/.exec(url);
     var fileExt0 = fileType0 && fileType0.length > 1 ? fileType0[2] : null;
     if (fileExt0 == null) {
       callback(false, "Please specify a URL to a compressed, indexed vcf file with the file extension vcf.gz");
     } else {
-      this.checkVcfUrl(url,function(success, message) {
+      this.checkVcfUrl(me.vcfURL, me.tbiURL, function(success, message) {
           callback(success, message);
       });      
     }
@@ -135,15 +138,23 @@ vcfiobio = function module() {
     return vcfURL;
   }
 
+  exports.getTbiURL = function() {
+    return me.tbiURL ? me.tbiURL : "";
+  }
 
-  exports.checkVcfUrl = function(url, callback) {
+  exports.checkVcfUrl = function(url, theTbiUrl, callback) {
     var me = this;
     var success = null;
     var buffer = "";
     var recordCount = 0;
+
+    var args = ['-H', url];
+    if (theTbiUrl) {
+      args.push(theTbiUrl);
+    }
     var cmd = new iobio.cmd(
         tabix,
-        ['-H', url]
+        args
     );
 
     cmd.on('data', function(data) {      
@@ -462,17 +473,24 @@ vcfiobio = function module() {
   }
   
 
-  exports.loadRemoteIndex = function(theVcfUrl, callbackData, callbackEnd) {
+  exports.loadRemoteIndex = function(theVcfUrl, theTbiUrl, callbackData, callbackEnd) {
     var me = this;
-    vcfURL = theVcfUrl;
+    me.vcfURL = theVcfUrl;
+    me.tbiURL = theTbiUrl;
     sourceType = SOURCE_TYPE_URL;
     var me = this;
     var buffer = "";
     var refName;
     
+    var args =  ['-i'];
+    if (me.tbiURL) {
+      args.push(me.tbiURL);
+    } else {
+      args.push(me.vcfURL + '.tbi');
+    }
     var cmd = new iobio.cmd(
         vcfReadDepther,
-        ['-i', vcfURL + '.tbi']
+        args
     );
 
     cmd.on('data', function(data) {
@@ -785,10 +803,16 @@ vcfiobio = function module() {
     var headerStr = "";
     if (sourceType.toLowerCase() == SOURCE_TYPE_URL.toLowerCase() && me.vcfURL != null) {
 
+
         var buffer = "";
+        
+        var args = ['-H', me.vcfURL];
+        if (me.tbiURL) {
+          args.push(me.tbiURL);
+        }
         var cmd = new iobio.cmd(
             tabix,
-            ['-H', me.vcfURL]
+            args
         );
 
         cmd.on('data', function(data) {
@@ -972,14 +996,22 @@ vcfiobio = function module() {
     var contigNameFile = new Blob([contigStr])
 
     var cmd = null;
+
+    var tabixArgs = ['-h', me.vcfURL, regionStr];
+    if (me.tbiURL) {
+       tabixArgs.push(me.tbiURL);
+    }
+
     if (samples && samples.length > 0) {
-      var sampleNameFile = new Blob([samples.join("\n")])
-      cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+      var sampleNameFile = new Blob([samples.join("\n")]);
+      
+
+      cmd = new iobio.cmd(tabix, tabixArgs)
                         .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'])
                         .pipe(vt, ["subset", "-s", sampleNameFile, '-'])
                         .pipe( vcfstatsAlive, ['-u', '1000'] );
     } else {
-      cmd = new iobio.cmd(tabix, ['-h', vcfURL, regionStr])
+      cmd = new iobio.cmd(tabix, tabixArgs)
                         .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'])
                         .pipe( vcfstatsAlive, ['-u', '1000'] );
     }
@@ -1060,9 +1092,14 @@ vcfiobio = function module() {
   exports._getRemoteSampleNames = function(callback) {
     var me = this;
     
+
+    var args = ['-h', me.vcfURL, '1:1-1'];
+    if (me.tbiURL) {
+      args.push(me.tbiURL);
+    }
     var cmd = new iobio.cmd(
         tabix,
-        ['-h', vcfURL, '1:1-1']);
+        args);
 
 
 

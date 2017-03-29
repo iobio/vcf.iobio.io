@@ -138,6 +138,7 @@ section#top {
     background: #ffffff;
     border: 2px solid #2d8fc1;
     border-radius: 4px;
+    padding-top: 8px;
 }
 .arrow_box:after, .arrow_box:before {
     bottom: 100%;
@@ -165,10 +166,14 @@ section#top {
 .arrow_box input {
     border: none;
     outline: none;
-    width:  87%;
-    margin: 8px;
+    width:  90%;
+    margin: 0px 0px 8px 0px;
     color: #2d8fc1;
     font: 400 18px quicksand;
+    border: thin solid lightgray;
+    line-height: 30px;
+    padding-left: 4px;
+    padding-right: 4px;
 }
 .arrow_box button { 
   font:300 28px quicksand;
