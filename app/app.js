@@ -124,6 +124,15 @@ function init() {
 	    dataSelect.setDefaultBuildFromData();
   	});
 
+	$('#vcf-sample-select').selectize(
+		{
+			create: true,
+			maxItems: null,
+			valueField: 'value',
+	    	labelField: 'value',
+	    	searchField: ['value']
+		}
+	);
 
 	// Setup event handlers for File input
 	document.getElementById('file').addEventListener('change', onFilesSelected, false);
