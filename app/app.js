@@ -88,7 +88,8 @@ var colorListVarType = ["#2171b5", "#eff3ff", "#bdd7e7", "#6baed6", ];
 var iobioServer           = "nv-prod.iobio.io/";
 var dataSelect            = null;
 var genomeBuildHelper     = null;
-var genomeBuildServer     = "http://" + iobioServer + "genomebuild/"; // !pointed to nv-dev
+//var genomeBuildServer     = "http://" + iobioServer + "genomebuild/"; // !pointed to nv-dev
+var genomeBuildServer     = "http://" + "nv-dev.iobio.io/" + "genomebuild/"; // !pointed to nv-dev
 
 
 /*
@@ -123,7 +124,6 @@ function init() {
 		vcfiobio.tbiURL = $('#url-tbi-input').val();
 	    dataSelect.setDefaultBuildFromData();
   	});
-
 	$('#vcf-sample-select').selectize(
 		{
 			create: true,
