@@ -361,20 +361,29 @@ readBinaryVCF.prototype.getHeader =
         var offset = 0;
 
         var hdstgs = [];
+        var buffer = "";
         var cb = function (nxtStg) {
-            var stgs = nxtStg.split("\n");
-            gdstgs = stgs.filter(
-                function (s) {return (s[0] == "#");});
-            hdstgs = hdstgs.concat(gdstgs);
-            if (stgs[stgs.length-1][0] == "#") {
+            buffer += nxtStg;
+            var recsFromChunk = nxtStg.split("\n");       
+            if (recsFromChunk[recsFromChunk.length-1][0] == "#") {
+                // If last record is a header record, continue reading,
+                // the file, concatenating the header into string buffer
                 nextBlockOffset(f, offset, function(o) {
                     offset = o;
                     inflateBlock2stg(f, offset, cb);
                 });
             } else {
+                // If the last record is not a header record, we are
+                // done reading the vcf file.  Now parse the string
+                // buffer to filter out any non-header rows
+                // and perform callback.
+                var stgs = buffer.split("\n");
+                var gdstgs = stgs.filter(
+                    function (s) {return (s[0] == "#");});
+                hdstgs = hdstgs.concat(gdstgs);                
                 vcfRthis.head = hdstgs.join("\n");
                 cbfn.call(vcfRthis, vcfRthis.head);
-            };
+            }
         };
 
         if (vcfRthis.head) {
