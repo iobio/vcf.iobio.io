@@ -71,7 +71,7 @@ vcfiobio = function module() {
   var emailServer            = "ws://" + iobioServer + "email/";
 
   var vcfstatsAlive          = iobioServer + "vcfstatsalive/";
-  var tabix                  = "nv-dev-new.iobio.io/" + "od_tabix/";
+  var tabix                  = iobioServer + "od_tabix/";
   var vcfReadDepther         = iobioServer + "vcfdepther/"
   var vt                     = iobioServer + "vt/";
   var bcftools               = iobioServer + "bcftools/";
@@ -139,6 +139,7 @@ vcfiobio = function module() {
   }
 
   exports.getTbiURL = function() {
+    var me = this;
     return me.tbiURL ? me.tbiURL : "";
   }
 
