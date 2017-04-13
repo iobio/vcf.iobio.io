@@ -1010,11 +1010,11 @@ vcfiobio = function module() {
       cmd = new iobio.cmd(tabix, tabixArgs)
                         .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'])
                         .pipe(vt, ["subset", "-s", sampleNameFile, '-'])
-                        .pipe( vcfstatsAlive, ['-u', '1000'] );
+                        .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'] );
     } else {
       cmd = new iobio.cmd(tabix, tabixArgs)
                         .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'])
-                        .pipe( vcfstatsAlive, ['-u', '1000'] );
+                        .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'] );
     }
     
 
