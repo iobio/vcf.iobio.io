@@ -941,9 +941,9 @@ vcfiobio = function module() {
 
     if (samples && samples.length > 0) {
       var sampleNameFile = new Blob([samples.join("\n")])
-      cmd = cmd.pipe(vt, ["subset", "-s", sampleNameFile, '-']);
+      cmd = cmd.pipe(vt, ["subset", "-s", sampleNameFile, '-'],  {ssl: ssl});
     }
-    cmd = cmd.pipe(vcfstatsAlive, ['-u', '1000']);
+    cmd = cmd.pipe(vcfstatsAlive, ['-u', '1000'],  {ssl: ssl});
 
 
     var buffer = "";
@@ -1016,7 +1016,7 @@ vcfiobio = function module() {
                         .pipe(vt, ["subset", "-s", sampleNameFile, '-'], {ssl: ssl})
                         .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'], {ssl: ssl} );
     } else {
-      cmd = new iobio.cmd(tabix, tabixArgs)
+      cmd = new iobio.cmd(tabix, tabixArgs,  {ssl: ssl})
                         .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'], {ssl: ssl})
                         .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'], {ssl: ssl} );
     }
