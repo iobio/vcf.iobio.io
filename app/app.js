@@ -640,12 +640,14 @@ function onReferencesLoaded(refData) {
 
     // Select 'all' chromosomes (for genome level view)
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
+
+	// Select the 'All' references in the chromosome chart.  This
+	// will fire the 'click all' event, causing the stats to load
 	chromosomeChart.clickAllSlices(pieChartRefData);
 	onAllReferencesSelected();
 
 	
     vcfiobio.getSampleNames(function(sampleNames) {
-		loadStats(chromosomeIndex);
     	$('.vcf-sample.loader').addClass("hide");
     	if (sampleNames.length > 1) {
     		$('#show-sample-dialog').removeClass("hide");
