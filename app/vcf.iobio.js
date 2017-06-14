@@ -459,7 +459,7 @@ vcfiobio = function module() {
       refData = me.sortRefData(refData);
 
       if (callbackEnd) {
-        callbackEnd(refData);
+        callbackEnd(refData, vcfFile.size);
       }
 
     });
@@ -1158,7 +1158,7 @@ vcfiobio = function module() {
       var length   = end - start;
       var sparsePointData = ref.sparsePointData;
 
-      if ( length < options.binSize * options.binNumber) {
+      if ( options.fullAnalysis || length < options.binSize * options.binNumber) {
         regions.push({
           'name' : ref.name,
           'start': start,
