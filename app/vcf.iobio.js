@@ -136,7 +136,11 @@ vcfiobio = function module() {
 
 
   exports.getVcfUrl = function() {
-    return vcfURL;
+    return this.vcfURL;
+  }
+
+  exports.getVcfFileSize = function() {
+    return this.vcfFileSize;
   }
 
   exports.getTbiURL = function() {
@@ -457,6 +461,7 @@ vcfiobio = function module() {
 
       // Sort ref data so that refs are ordered numerically
       refData = me.sortRefData(refData);
+      me.vcfFileSize = vcfFile.size;
 
       if (callbackEnd) {
         callbackEnd(refData, vcfFile.size);
