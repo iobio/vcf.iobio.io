@@ -136,7 +136,7 @@ vcfiobio = function module() {
 
 
   exports.getVcfUrl = function() {
-    return vcfURL;
+    return this.vcfURL;
   }
 
   exports.getTbiURL = function() {

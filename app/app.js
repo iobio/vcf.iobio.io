@@ -167,6 +167,7 @@ function init() {
 			regionStart = null;
 			regionEnd = null;
 			onAllReferencesSelected();
+			loadStats(chromosomeIndex);
         })
         .tooltip( function(d) {
           return d.data.name;
@@ -645,6 +646,7 @@ function onReferencesLoaded(refData) {
 
 	
     vcfiobio.getSampleNames(function(sampleNames) {
+		loadStats(chromosomeIndex);
     	$('.vcf-sample.loader').addClass("hide");
     	if (sampleNames.length > 1) {
     		$('#show-sample-dialog').removeClass("hide");
@@ -673,14 +675,14 @@ function onReferencesLoaded(refData) {
 				} else {
 		    	    $('#samples-filter-header #sample-names').addClass("hide");
 				}
-				window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(","));
+				window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
 				vcfiobio.setSamples(samples);
 				loadStats(chromosomeIndex);
+
 			});
 
     	} else {
     		$('#show-sample-dialog').addClass("hide");
-    		loadStats(chromosomeIndex);
     	}
     });
 }
@@ -751,7 +753,7 @@ function onAllReferencesSelected() {
 	 d3.select("#variant-density-panel").select(".hint").text("(click bottom chart to select a reference)");
 
 	 loadGenomeVariantDensityData();
-	 loadStats(chromosomeIndex);
+
 }
 
 function onVariantDensityChartRendered() {
