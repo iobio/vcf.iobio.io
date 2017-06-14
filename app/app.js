@@ -642,7 +642,6 @@ function onReferencesLoaded(refData) {
     // Select 'all' chromosomes (for genome level view)
 	pieChartRefData = vcfiobio.getReferences(.005, 1);
 	chromosomeChart.clickAllSlices(pieChartRefData);
-	chromosomeIndex = -1;
 	onAllReferencesSelected();
 
     vcfiobio.getSampleNames(function(sampleNames) {
