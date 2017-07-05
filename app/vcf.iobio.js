@@ -1153,6 +1153,8 @@ vcfiobio = function module() {
 
     regionIndex = 0;
     regions.length = 0;
+    var me = this;
+    var allRegions = [];
 
 
     var bedRegions;
@@ -1191,24 +1193,165 @@ vcfiobio = function module() {
          }
          // sort by start value
          regions = regions.sort(function(a,b) {
-            var x = a.start; var y = b.start;
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            if (a.name == b.name)
+              return ((a.start < b.start) ? -1 : ((a.start > b.start) ? 1 : 0));
+            else
+              return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
          });
-
-         // intelligently determine exome bed coordinates
-         /*
-         if (options.exomeSampling)
-            options.bed = me._generateExomeBed(options.sequenceNames[0]);
-
-         // map random region coordinates to bed coordinates
-         if (options.bed != undefined)
-            bedRegions = me._mapToBedCoordinates(SQs[0].name, regions, options.bed)
-          */
       }
     }
+    // map random region coordinates to bed coordinates
+    if (window.bed != undefined) {
+      if (refs.length == 1)
+        var bedArray = this._bedToArray(bed, {name:ref.name, 'start':start, 'end':end});
+      else
+        var bedArray = this._bedToArray(bed);
+      regions = me._bedGetRegions(bedArray, options.binNumber * refs.length, options);
+    }
+      // regions = me._mapToBedCoordinates(regions, window.bed)
+
+    // sort by start value
+    regions = regions.sort(function(a,b) {
+      if (a.name == b.name)
+        return ((a.start < b.start) ? -1 : ((a.start > b.start) ? 1 : 0));
+      else
+        return ((a.name < b.name) ? -1 : ((a.name > b.name) ? 1 : 0));
+    });
     return regions;
 
   }
+
+  exports._bedGetRegions = function(bedArray, binNumber, options) {
+    var totalLength = 0;
+    var regions = [];
+
+    // bedArray.forEach(function(bedRegion) {
+    //   bedRegion.globalStart = totalLength;
+    //   bedRegion.globalEnd = totalLength + (bedRegion.end - bedRegion.start);
+    //   totalLength += (bedRegion.end - bedRegion.start);
+    // })
+
+    // if bedArray is empty then just grab non-existent reference
+    if (bedArray.length == 0) {
+      return [{name:'somethingnotthere', start:1, end:10}]
+    }
+
+
+    for (var i=0; i < binNumber; i++) {
+        var s = parseInt(Math.random()*(bedArray.length-1));
+        var region = bedArray[s];
+        var ref = region.name;
+        var spaceLeft = options.binSize;
+        var newRegion = { 'name':region.name, 'start':region.start}
+
+        while(spaceLeft > 0) {
+          if(region && region.name == ref) {
+            var end = Math.min(region.start + options.binSize, region.end)
+            newRegion.end = end;
+            spaceLeft -= (end - region.start);
+            s+= 1;
+            region = bedArray[s];
+          } else {
+            break;
+          }
+        }
+        regions.push(newRegion);
+     }
+
+    return regions
+  }
+
+  /*
+   * Map random regions to bed coordinate space
+   */
+  exports._mapToBedCoordinates = function(regions, bed) {
+
+      var bedRegions = [];
+      var currRef;
+
+      var me = this;
+
+      var a,
+          a_i;
+
+      regions.forEach(function(reg){
+        if (currRef != reg.name) {
+          currRef = reg.name;
+          a = me._bedToCoordinateArray(reg.name, bed);
+          a_i = 0;
+          if (a.length == 0) {
+           // alert("Bed file doesn't have coordinates for reference: " + reg.name + ". Ignoring it");
+            return null;
+          }
+        }
+
+         for (a_i; a_i < a.length; a_i++) {
+            if (a[a_i].end > reg.end)
+               break;
+
+            if (a[a_i].start >= reg.start)
+               bedRegions.push( {name:reg.name, start:a[a_i].start, end:a[a_i].end})
+         }
+
+         var h = 5;
+      })
+      return bedRegions
+   }
+
+   /*
+   * Convert bed file to coordinate array
+   */
+   exports._bedToCoordinateArray = function(ref, bed) {
+      var me = this;
+      var a = [];
+      bed.split("\n").forEach(function(line){
+        if (line[0] == '#' || line == "") return;
+
+        var fields = line.split("\t");
+        if (me._referenceMatchesBed(ref, fields[0])) {
+           a.push({ chr:ref, start:parseInt(fields[1]), end:parseInt(fields[2]) });
+        }
+      });
+      return a;
+   }
+
+   exports._bedToArray = function(bed, region) {
+      var me = this;
+      var a = [];
+      bed.split("\n").forEach(function(line){
+        if (line[0] == '#' || line == "") return;
+
+        var fields = line.split("\t");
+        var start = parseInt(fields[1]);
+        var end = parseInt(fields[2]);
+        if(!region)
+          a.push({ name:fields[0], 'start':start, 'end':end });
+        else if( region.name == fields[0] &&
+                ((start >= region.start && start < region.end) ||
+                (end > region.start && end <= region.end))) {
+          a.push({
+                  name:fields[0],
+                  'start':Math.max(region.start,start),
+                  'end':Math.min(region.end,end)
+          });
+        }
+      });
+      return a;
+   }
+
+   /*
+   * Compare bed reference to user selected reference both with and w/o chr prefix
+   */
+   exports._referenceMatchesBed = function(ref, bedRef) {
+      if (ref == bedRef) {
+        return true;
+      }
+      // Try stripping chr from reference names and then comparing
+      ref1 = ref.replace(/^chr?/,'');
+      bedRef1 = bedRef.replace(/^chr?/,'');
+
+      return (ref1 == bedRef1);
+   }
 
   /*
   *

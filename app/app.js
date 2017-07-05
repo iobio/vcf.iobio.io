@@ -138,6 +138,10 @@ function init() {
 	// Setup event handlers for File input
 	document.getElementById('file').addEventListener('change', onFilesSelected, false);
 
+	// Setup event handlers for bed files
+	document.getElementById('default-bedfile-button').addEventListener('click', onDefaultBed, false);
+	document.getElementById('remove-bedfile-button').addEventListener('click', onRemoveBed, false);
+
 	// Initialize the data selection widget
 	dataSelect = new DataSelect();
 	dataSelect.init();
@@ -618,6 +622,45 @@ function onFilesSelected(event) {
 		function(errorMessage) {
 			displayFileError(errorMessage)
 		});
+}
+
+function onDefaultBed() {
+	var bedurl = '/20130108.exome.targets.bed';
+
+    // clear brush on read coverage chart
+    //resetBrush();
+
+    // hide add bed / show remove bed buttons
+    $("#add-bedfile-button").css('visibility', 'hidden');
+    $("#default-bedfile-button").css('visibility', 'hidden');
+    $("#remove-bedfile-button").css('visibility', 'visible');
+
+    // turn on sampling message and off svg
+    // turn it on here b\c the bed file is so big it takes a while to download
+    // $("section#middle svg").css("display", "none");
+    // $(".samplingLoader").css("display", "block");
+
+    // grab bed from url
+    $.ajax({
+        url: bedurl,
+        dataType: 'text'
+    }).done(function (data) {
+        data = data.replace(/chr/g, '');
+        window.bed = data;
+        //goSampling({sequenceNames : getSelectedSeqIds() });
+        loadStats(chromosomeIndex);
+    });
+
+}
+
+function onRemoveBed() {
+	// hide add bed / show remove bed buttons
+    $("#add-bedfile-button").css('visibility', 'visible');
+    $("#default-bedfile-button").css('visibility', 'visible');
+    $("#remove-bedfile-button").css('visibility', 'hidden');
+
+	window.bed = undefined;
+	loadStats(chromosomeIndex);
 }
 
 function displayFileError(errorMessage) {

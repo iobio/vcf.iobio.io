@@ -19,7 +19,7 @@
         <link href='http://fonts.googleapis.com/css?family=Overlock+SC' rel='stylesheet' type='text/css'>
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
         <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
-        
+
         <link href="assets/css/selectize.css" rel="stylesheet" type='text/css'>
         <link href="assets/css/bootstrap.css" rel="stylesheet" type='text/css'>
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
@@ -36,8 +36,9 @@
         <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="assets/js/class.js"></script>
         <script type="text/javascript" src="assets/js/rdp.js"></script>
-        <script type="text/javascript" src="assets/js/selectize.js"></script> 
+        <script type="text/javascript" src="assets/js/selectize.js"></script>
         <script type="text/javascript" src="assets/js/iobio.viz.min.js"></script>
+        <script type="text/javascript" src="assets/js/interval-tree.js"></script>
 
         <script src="assets/js/binary.js"></script>
 
@@ -47,33 +48,33 @@
         <script src="assets/js/pako_deflate.min.js"></script>
         <script src="assets/js/jsbgzf.js"></script>
         <script src="assets/js/js-bv-sampling.js"></script>
-        <script src="assets/js/js-local-vcf.js"></script> 
+        <script src="assets/js/js-local-vcf.js"></script>
 
            <!--  <script type="text/javascript" src="assets/js/binary-vcf.js"></script> -->
         <script type="text/javascript" src="assets/js/iobio.min.js"></script>
-        
+
 	</head>
 	<body>
         <header>
-          
+
         </header>
 
-        
+
         <div id="selectData">
             <header>
                 <a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
             <div style="float:right" class="iobio-project" style="padding-top:20px">
-                <a href="http://iobio.io" style="margin: 0px 5px 0px 5px;">an iobio project</a>                     
+                <a href="http://iobio.io" style="margin: 0px 5px 0px 5px;">an iobio project</a>
             </div>
-            
-            </header>    
-               
+
+            </header>
+
             <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 70px">
 
-                <div style="margin-left:auto;margin-right:auto;font-size: 28px; color: rgb(110,110,110); margin-bottom:40px">                
+                <div style="margin-left:auto;margin-right:auto;font-size: 28px; color: rgb(110,110,110); margin-bottom:40px">
                     <center>examine your variant file in seconds</center>
                 </div>
-                
+
                 <div class="file" onClick="onFileButtonClicked()">
                     <input type="file" name="files[]" id="file"  multiple />
                     <label class="file-button" for="file" >choose vcf file</label>
@@ -104,24 +105,24 @@
                 <select id="select-build" class="selectized" placeholder="select genome build...">
                 </select>
               </div>
-            
+
               <button id="url-go-button" class="go-button btn disabled" onclick="loadFromUrl()">Go</button>
               <button id="file-go-button" class="hide go-button btn disabled" onclick="loadFromFile()">Go </button>
 
-              <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">                
-              </div>              
+              <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">
+              </div>
             </div>
 
             <div style="clear:both"></div>
-            <div id="info">                                
+            <div id="info">
                 <ul>
                         <li><a href="help.html">File Requirements</a></li>
                         <li><a href="http://bam.iobio.io/license.html">License</a></li>
-                        
-                </ul>           
+
+                </ul>
             </div>
 
-            
+
             <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 10px">
 
                 <strong>Variant files to try</strong>
@@ -151,7 +152,7 @@
 
                 <tr >
                     <td>
-                        1000 Genomes Project 
+                        1000 Genomes Project
                     </td>
 
                     <td>
@@ -189,15 +190,15 @@
 
                 </table>
 
-                <div style="margin-top: 40px"><strong>For sequence alignment files check out </strong><a style="margin-left: 37px" href="http://bam.iobio.io">bam.iobio</a></div>    
+                <div style="margin-top: 40px"><strong>For sequence alignment files check out </strong><a style="margin-left: 37px" href="http://bam.iobio.io">bam.iobio</a></div>
             </div>
 
-            <div id="footer">                        
-                <div class="logos">     
-                    <div style="display:inline;font-size:50px;font-family:'Overlock SC', cursive;">Marthlab</div>     
-                    <img src="assets/images/ustar-ucgd-logo.jpg" style="height:60px;"/>            
-                    <a href="http://www.genetics.utah.edu/"><img src="assets/images/genetics_mainlogo3_lrg.png" style="height:50px"/></a>          
-                </div>                      
+            <div id="footer">
+                <div class="logos">
+                    <div style="display:inline;font-size:50px;font-family:'Overlock SC', cursive;">Marthlab</div>
+                    <img src="assets/images/ustar-ucgd-logo.jpg" style="height:60px;"/>
+                    <a href="http://www.genetics.utah.edu/"><img src="assets/images/genetics_mainlogo3_lrg.png" style="height:50px"/></a>
+                </div>
             </div>
 
         </div>
@@ -209,7 +210,7 @@
                     <a href="javascript:void(0)" class="hide" id="report-problem" data-toggle="modal" data-target="#modal-report-problem">Report Problem</a>
                 </div>
                 <section id="banner" style="clear: both;">
-    				
+
                     <div id="banner-title" >
                         <header><a href="/">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
                          <span id="vcf_file"></span>
@@ -217,7 +218,7 @@
 
 
                     <div id="banner-middle">
-                       
+
                         <div id="vcf_selection">
                             <div id="current-build"></div>
 
@@ -230,7 +231,7 @@
                                        href="javascript:void(0)"
                                        class="btn hide"
                                        onclick="showSamplesDialog()"
-                                       data-toggle="modal" 
+                                       data-toggle="modal"
                                        data-target="#sample-picker-modal">
                                        Filter samples
                                     </a>
@@ -253,8 +254,8 @@
                             <div id="label">variants sampled</div>
                         </div>
                         <div style="padding-top: 10px; ">
-                            <img id="sample-more-button"   
-                                 title="Sample More" 
+                            <img id="sample-more-button"
+                                 title="Sample More"
                                  onClick="increaseSampling()"
                                  src="assets/images/more_sampling.png"
                                  style="width: 20px">
@@ -262,31 +263,33 @@
                         </div>
 
                     </div>
-    				
+
     			</section>
 
                 <section id="top" >
 
-                   
+
                     <div id="chromosome-picker" class="panel">
                         <div class="title">References</div>
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="primary-references">
-                        </div>    
+                        </div>
                         <div id="other-references">
                              <label>Other references</label>
                              <select id="other-references-dropdown">
                                <option value=""></option>
                              </select>
-                        </div>                    
+                        </div>
                     </div>
 
                     <div id="variant-density-panel" class="panel">
                         <div class="title">Variant Density</div>
                         <span class="svg-alt hint">(drag bottom chart to select region)</span>
+                        <div id="remove-bedfile-button" class="bedfile-button" style="visibility:hidden">Remove Bed</div>
+                        <div id="default-bedfile-button" class="bedfile-button" title="1000G human exome targets file">Default Bed</div>
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="variant-density">
-                        </div>    
+                        </div>
                         <div id="variant-density-vf" >
 
                         </div>
@@ -299,14 +302,14 @@
 
 
                 </section>
-              
+
     			<section id="middle"  >
 
                         <div id="tstv-ratio" class="panel">
                             <div class="title">TSTV Ratio</div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div id="ratio-panel" class="svg-alt">
-                            </div>  
+                            </div>
                             <div id="ratio-value" class="svg-alt" ></div>
                             <div class='no-values hide'>No values present</div>
                         </div>
@@ -343,7 +346,7 @@
                                 </span>
                             </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-   
+
                             <div id="indel-length-histogram"></div>
 
                             <div class="svg-alt">
@@ -352,7 +355,7 @@
                                 <span  style="font-weight:bold;font-size:13px;">Insertions</span>
                                 <div id="legend-ins"></div>
                             </div>
-                            
+
                             <div class='no-values hide'>No values present</div>
                         </div>
 
@@ -364,7 +367,7 @@
                         </div>
                 </section>
 
-           
+
     		</div>
         </div>
 
@@ -386,7 +389,7 @@
           </div>
           <span class="label"</label>Screen Capture</span>
           <div id="report-problem-screen-capture">
-        </div>    
+        </div>
         <div class="modal-footer">
           <a  id="report-problem-button" href="#email-report-problem"  class="btn">Report</a>  <!--CHANGED TO "#close"-->
           <a  class="btn" data-dismiss="modal">Cancel</a>
@@ -401,7 +404,7 @@
     <div class="modal-content">
       <div class="modal-header" style="padding-top:10px;">
          <h4>Filter samples</h4>
-          <a href="#close" class="btn-close" aria-hidden="true">×</a>         
+          <a href="#close" class="btn-close" aria-hidden="true">×</a>
       </div>
       <div class="modal-body">
 
@@ -410,14 +413,14 @@
               <span class="loader-label" >Initializing</span>
               <img src="assets/images/loading_dots.gif" >
             </div>
-              
+
             <div id="vcf-sample-box" class="hide" style="text-align:center">
               <div id="vcf-sample-select-box"  style="display:inline-block;">
                 <select id="vcf-sample-select"  data-placeholder="choose sample(s)...">
                 </select>
               </div>
-                
-            </div>                            
+
+            </div>
         </div>
 
       </div>
@@ -428,12 +431,12 @@
   </div>
 </div>
 <!-- /Modal -->
-        
+
         <script>
-            var div = d3.select("body").append("div")   
-                .attr("class", "tooltip")               
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
                 .style("opacity", 0);
-        </script>             
+        </script>
 
         <script type="text/javascript" src="app/vcf.iobio.js"></script>
         <script type="text/javascript" src="app/line.d3.js"></script>
