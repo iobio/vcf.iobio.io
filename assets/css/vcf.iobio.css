@@ -31,6 +31,13 @@ label {
     border-bottom: 1px solid rgb(180,180,180);
 }
 
+.bedfile-checkbox{
+    position: absolute;
+    right: 15px;
+    top: 20px;
+    font-size: 13px;
+}
+
 #file-alert {
     min-height:50px;
     text-align:center;

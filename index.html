@@ -285,8 +285,14 @@
                     <div id="variant-density-panel" class="panel">
                         <div class="title">Variant Density</div>
                         <span class="svg-alt hint">(drag bottom chart to select region)</span>
-                        <div id="remove-bedfile-button" class="bedfile-button" style="visibility:hidden">Remove Bed</div>
-                        <div id="default-bedfile-button" class="bedfile-button" title="1000G human exome targets file">Default Bed</div>
+                     
+                            <div class="checkbox bedfile-checkbox" id="use-bed-cb" >
+                                <label>
+                                    <input type="checkbox"  value="">Exome targets only
+                                </label>
+                            </div>
+               
+
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="variant-density">
                         </div>
