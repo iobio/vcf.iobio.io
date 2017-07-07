@@ -25,8 +25,28 @@ label {
 .bedfile-checkbox {
     position: absolute;
     right: 15px;
-    top: 20px;
+    top: 30px;
     font-size: 13px;
+}
+
+.bedfile-button{
+    position:absolute;
+    right:97px;
+    top:20px;
+    font-size:13px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+#remove-bedfile-button { visibility: hidden}
+
+.bedfile-button:hover {
+     border-bottom: 1px solid rgb(180,180,180);
+}
+
+#bedfile-input {
+  visibility:hidden;
+  display:none;
 }
 
 #file-alert {

@@ -1203,9 +1203,9 @@ vcfiobio = function module() {
     // map random region coordinates to bed coordinates
     if (window.bed != undefined) {
       if (refs.length == 1)
-        var bedArray = this._bedToArray(bed, {name:ref.name, 'start':start, 'end':end});
+        var bedArray = this._bedToArray(bed, refData[refs[0]].name, {name:ref.name, 'start':start, 'end':end});
       else
-        var bedArray = this._bedToArray(bed);
+        var bedArray = this._bedToArray(bed, refData[refs[0]].name);
       regions = me._bedGetRegions(bedArray, options.binNumber * refs.length, options);
     }
       // regions = me._mapToBedCoordinates(regions, window.bed)
@@ -1221,17 +1221,14 @@ vcfiobio = function module() {
 
   }
 
+
+  /*
+   * Grab random regions but only from bed coordinates
+   */
   exports._bedGetRegions = function(bedArray, binNumber, options) {
     var totalLength = 0;
     var regions = [];
 
-    // bedArray.forEach(function(bedRegion) {
-    //   bedRegion.globalStart = totalLength;
-    //   bedRegion.globalEnd = totalLength + (bedRegion.end - bedRegion.start);
-    //   totalLength += (bedRegion.end - bedRegion.start);
-    // })
-
-    // if bedArray is empty then just grab non-existent reference
     if (bedArray.length == 0) {
       return [{name:'somethingnotthere', start:1, end:10}]
     }
@@ -1261,61 +1258,10 @@ vcfiobio = function module() {
     return regions
   }
 
-  /*
-   * Map random regions to bed coordinate space
-   */
-  exports._mapToBedCoordinates = function(regions, bed) {
-
-      var bedRegions = [];
-      var currRef;
-
-      var me = this;
-
-      var a,
-          a_i;
-
-      regions.forEach(function(reg){
-        if (currRef != reg.name) {
-          currRef = reg.name;
-          a = me._bedToCoordinateArray(reg.name, bed);
-          a_i = 0;
-          if (a.length == 0) {
-           // alert("Bed file doesn't have coordinates for reference: " + reg.name + ". Ignoring it");
-            return null;
-          }
-        }
-
-         for (a_i; a_i < a.length; a_i++) {
-            if (a[a_i].end > reg.end)
-               break;
-
-            if (a[a_i].start >= reg.start)
-               bedRegions.push( {name:reg.name, start:a[a_i].start, end:a[a_i].end})
-         }
-
-         var h = 5;
-      })
-      return bedRegions
-   }
-
    /*
    * Convert bed file to coordinate array
    */
-   exports._bedToCoordinateArray = function(ref, bed) {
-      var me = this;
-      var a = [];
-      bed.split("\n").forEach(function(line){
-        if (line[0] == '#' || line == "") return;
-
-        var fields = line.split("\t");
-        if (me._referenceMatchesBed(ref, fields[0])) {
-           a.push({ chr:ref, start:parseInt(fields[1]), end:parseInt(fields[2]) });
-        }
-      });
-      return a;
-   }
-
-   exports._bedToArray = function(bed, region) {
+   exports._bedToArray = function(bed, ref, region) {
       var me = this;
       var a = [];
       bed.split("\n").forEach(function(line){
@@ -1324,19 +1270,34 @@ vcfiobio = function module() {
         var fields = line.split("\t");
         var start = parseInt(fields[1]);
         var end = parseInt(fields[2]);
+        var currRef = me._getCurrRef(fields[0], ref);
         if(!region)
-          a.push({ name:fields[0], 'start':start, 'end':end });
-        else if( region.name == fields[0] &&
+          a.push({ name:currRef, 'start':start, 'end':end });
+        else if( me._referenceMatchesBed(region.name,fields[0]) &&
                 ((start >= region.start && start < region.end) ||
                 (end > region.start && end <= region.end))) {
           a.push({
-                  name:fields[0],
+                  name:currRef,
                   'start':Math.max(region.start,start),
                   'end':Math.min(region.end,end)
           });
         }
       });
       return a;
+   }
+
+   exports._getCurrRef = function(bedRef, fileRef) {
+       var fileChr = (fileRef.slice(0,3).toLowerCase() == 'chr');
+       var bedChr = (bedRef.slice(0,3).toLowerCase() == 'chr');
+
+       if (fileChr && bedChr)
+           return fileRef.slice(0,3) + bedRef.slice(3)
+       else if (!fileChr && bedChr)
+           return bedRef.slice(3);
+       else if (fileChr && !bedChr)
+           return fileRef.slice(0,3) + bedRef;
+       else
+           return bedRef;
    }
 
    /*

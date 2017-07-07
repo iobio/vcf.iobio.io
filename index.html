@@ -285,13 +285,17 @@
                     <div id="variant-density-panel" class="panel">
                         <div class="title">Variant Density</div>
                         <span class="svg-alt hint">(drag bottom chart to select region)</span>
-                     
-                            <div class="checkbox bedfile-checkbox" id="use-bed-cb" >
-                                <label>
-                                    <input type="checkbox"  value="">Exome targets only
-                                </label>
-                            </div>
-               
+
+                        <div class="checkbox bedfile-checkbox" id="use-bed-cb" >
+                            <label>
+                                <input type="checkbox"  value="">GRCh37 exonic regions</input>
+                            </label>
+                        </div>
+                        <input type="file" name="files[]" id="bedfile-input"  multiple />
+
+                        <label id="add-bedfile-button" class="bedfile-button" for="bedfile-input" title="Add Bed format capture target definition file">Add Bed</label>
+                        <label id="remove-bedfile-button" class="bedfile-button" title="Remove Bed format capture target definition file">Remove Bed</label>
+
 
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="variant-density">

@@ -222,6 +222,10 @@ function init() {
 							onReferenceSelected(d, d.idx);
 				   		});
 
+
+    document.getElementById('bedfile-input').addEventListener('change', onAddBed, false);
+    $('#remove-bedfile-button').on('click', onRemoveBed)
+
 	$("#use-bed-cb input[type='checkbox']").change(function(){
         var useBed = this.checked;
         if (useBed) {
@@ -229,7 +233,7 @@ function init() {
         } else {
         	onRemoveBed();
         }
-    });				   		
+    });
 
 	// TSTV grouped barchart (to show ratio)
 	tstvChart = groupedBarD3();
@@ -629,8 +633,40 @@ function onFilesSelected(event) {
 		});
 }
 
+function onAddBed(event) {
+	var h = 5;
+
+	if (event.target.files.length != 1) {
+       alert('must select a .bed file');
+       return;
+    }
+
+    // check file extension
+    var fileType = /[^.]+$/.exec(event.target.files[0].name)[0];
+    if (fileType != 'bed')  {
+	    alert('must select a .bed file');
+	    return;
+    }
+    // clear brush on read coverage chart
+    // resetBrush();
+
+    // // hide add bed / show remove bed buttons
+    $("#add-bedfile-button").css('visibility', 'hidden');
+    $(".bedfile-checkbox").css('visibility', 'hidden');
+    $("#remove-bedfile-button").css('visibility', 'visible')
+
+    // read bed file and store
+    var reader = new FileReader();
+    reader.onload = function(theFile) {
+        window.bed = this.result;
+        loadStats(chromosomeIndex);
+    }
+    reader.readAsText(event.target.files[0])
+}
+
 function onDefaultBed() {
 	var bedurl = './20130108.exome.targets.bed';
+	$("#add-bedfile-button").css('visibility', 'hidden');
 
     // clear brush on read coverage chart
     //resetBrush();
@@ -654,6 +690,10 @@ function onDefaultBed() {
 }
 
 function onRemoveBed() {
+	$("#add-bedfile-button").css('visibility', 'visible');
+    $(".bedfile-checkbox").css('visibility', 'visible');
+    $("#remove-bedfile-button").css('visibility', 'hidden')
+
 	window.bed = undefined;
 	loadStats(chromosomeIndex);
 }
