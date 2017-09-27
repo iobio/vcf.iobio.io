@@ -21,7 +21,8 @@
         <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
         
         <link href="assets/css/selectize.css" rel="stylesheet" type='text/css'>
-        <link href="assets/css/bootstrap.css" rel="stylesheet" type='text/css'>
+        <link href="assets/js/bootstrap/css/bootstrap.css" rel="stylesheet" type='text/css'>
+        <!-- <link href="assets/css/bootstrap.css" rel="stylesheet" type='text/css'> -->
 		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.core.css" />
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.default.css" />
@@ -33,7 +34,8 @@
         <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="components/nprogress/nprogress.js"></script>
         <script type="text/javascript" src="components/alertify.js/lib/alertify.min.js"></script>
-        <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+        <!-- <script type="text/javascript" src="assets/js/bootstrap.min.js"></script> -->
+        <script type="text/javascript" src="assets/js/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="assets/js/class.js"></script>
         <script type="text/javascript" src="assets/js/rdp.js"></script>
         <script type="text/javascript" src="assets/js/selectize.js"></script> 
@@ -51,6 +53,47 @@
 
            <!--  <script type="text/javascript" src="assets/js/binary-vcf.js"></script> -->
         <script type="text/javascript" src="assets/js/iobio.min.js"></script>
+
+        <script>
+          $(document).ready( function(){
+            // Help modals
+              $("#density_help").click(function() {
+                $("#densityModal").modal({
+                  show: true
+                });
+              });
+              $("#tstv_help").click(function() {
+                $("#tstvModal").modal({
+                  show: true
+                });
+              });
+              $("#af_help").click(function() {
+                $("#afModal").modal({
+                  show: true
+                });
+              });
+              $("#bases_help").click(function() {
+                $("#basesModal").modal({
+                  show: true
+                });
+              });
+              $("#variant_help").click(function() {
+                $("#variantModal").modal({
+                  show: true
+                });
+              });
+              $("#indel_help").click(function() {
+                $("#indelModal").modal({
+                  show: true
+                });
+              });
+              $("#quality_help").click(function() {
+                $("#qualityModal").modal({
+                  show: true
+                });
+              });
+            });
+          </script>
         
 	</head>
 	<body>
@@ -269,7 +312,9 @@
 
                    
                     <div id="chromosome-picker" class="panel">
-                        <div class="title">References</div>
+                        <div class="title">References
+                          <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="ref_help" title="Select the reference sequence (e.g. chromosome) to view"></span>
+                        </div>
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="primary-references">
                         </div>    
@@ -282,7 +327,9 @@
                     </div>
 
                     <div id="variant-density-panel" class="panel">
-                        <div class="title">Variant Density</div>
+                        <div class="title">Variant Density
+                          <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="density_help" title="Distribution of variants across genome/region"></span>
+                        </div>
                         <span class="svg-alt hint">(drag bottom chart to select region)</span>
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="variant-density">
@@ -303,7 +350,9 @@
     			<section id="middle"  >
 
                         <div id="tstv-ratio" class="panel">
-                            <div class="title">TSTV Ratio</div>
+                            <div class="title">Ts/Tv Ratio
+                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="tstv_help" title="Expect a value of approximately 2"></span>
+                            </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div id="ratio-panel" class="svg-alt">
                             </div>  
@@ -311,14 +360,58 @@
                             <div class='no-values hide'>No values present</div>
                         </div>
 
+                        <!-- Ts/Tv modal -->
+                        <div id="tstvModal" class="modal fade" role="dialog">
+                          <div class="modal-dialog" style="width:700px;">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Transition/transversion (Ts/Tv) ratio</h4>
+                              </div>
+                              <div class="modal-body" style="overflow:auto;">
+                                <div>
+                                  The transition / transversion (or Ts / Tv) ratio is calculated by looking at SNPs in the selected file, and is expected to have a value of the order of 2. The nucleotides Adenine (A) and Guanine (G) are purines, and Cytosine (C) and Thymine (T) are pyrimidines.
+                                </div>
+                                <div class="row vertical-align">
+                                    <div class="col-xs-6">
+                                      <img title="Transitions" style="width:100%;"  src="images/transitions.png"></img>
+                                    </div>
+                                    <div class="col-xs-6">
+                                      A transition occurs when a purine mutates into another purine. There are four possible transition mutations, as shown in the figure to the left. 
+                                    </div>
+                                </div>
+  
+                                <div class="row vertical-align">
+                                    <div class="col-xs-6">
+                                      <img title="Transversions" style="width:100%;" src="images/transversions.png"></img>
+                                    </div>
+                                    <div class="col-xs-6">
+                                      A transversion occurs when a pyrimidine mutates into another pyrimidine, and there are eight possible ways for this to occur.
+                                    </div>
+                                </div>
+                                <div>
+                                  If single base-pair mutations were purely random events, we would expect to see twice as many transversions as transitions, as there are twice as many ways for a transversion to occur. We would then expect to see a Ts/Tv ratio of 0.5. However, transitions are biologically more favourable, consequently for human DNA, we actually expect to see far more transitions than we would expect by chance: typically we see a Ts/Tv ratio closer to 2. If the observed Ts/Tv is significantly lower than 2, then it is a potential signal of data problems.
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         <div id="allele-freq" class="panel">
-                             <div class="title">Allele Frequency Spectrum</div>
+                            <div class="title">Allele Frequency Spectrum
+                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="af_help" title="AF is dependent on the number of samples"></span>
+                            </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <svg id="allele-freq-histogram"/>
                             <div class='no-values hide'>No values present</div>
                         </div>
                         <div id="mut-spectrum" class="panel">
-                             <div class="title">Base Changes</div>
+                            <div class="title">Base Changes
+                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="bases_help" title="Frequency of observed mutations"></span>
+                            </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div class='no-values hide'>No values present</div>
                         </div>
@@ -328,14 +421,18 @@
 
 
                         <div id="var-type" class="panel">
-                             <div class="title">Variant Types</div>
+                            <div class="title">Variant Types
+                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="variant_help" title="Distribution of different observed variant types"></span>
+                            </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div class='no-values hide'>No values present</div>
                         </div>
 
                         <div id="indel-length" class="panel">
                             <div>
-                                <div class="title" style="display:inline-block">Insertion &amp; Deletion Lengths</div>
+                                <div class="title" style="display:inline-block">Insertion &amp; Deletion Lengths
+                                  <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="indel_help" title="Distribution of insertion and deletion lengths"></span>
+                                </div>
                                 <span class="checkbox" class="svg-alt" style="display:inline-block">
                                     <label>
                                         <input type="checkbox" checked value="true">Outliers
@@ -357,7 +454,9 @@
                         </div>
 
                         <div id="qual-distribution" class="panel">
-                             <div class="title">Variant Quality</div>
+                            <div class="title">Variant Quality
+                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="quality_help" title="Distribution of the quality of observed variants"></span>
+                            </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <svg id="qual-distribution-histogram"/>
                             <div class='no-values hide'>No values present</div>

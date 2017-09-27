@@ -1,6 +1,18 @@
 label {
     font-weight: 300;
 }
+
+.glyphicon.glyphicon-info-sign {
+    cursor: pointer;
+    color: #828282;
+    font-size:14px;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+
 .go-button  { 
   font:300 28px quicksand;
   vertical-align:middle;
