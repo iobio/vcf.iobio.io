@@ -342,8 +342,47 @@
                         </div>
 
 
+
                     </div>
 
+                    <!-- Variant density modal -->
+                    <div id="densityModal" class="modal fade" role="dialog">
+                      <div class="modal-dialog" style="width:700px;">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Variant density</h4>
+                          </div>
+                          <div class="modal-body" style="overflow:auto;">
+                            <div>
+                              The variant density chart shows the distribution of variants across the genome. To zoom in on a specific reference sequence (chromosome), you can select the coloured sequence boxes under the distribution. The appearance of this chart is dependent on a number of different factors, but specifically, the type of sequencing undertaken, e.g. whole genome (WGS) or whole exome (WES).
+                            </div>
+                            <br>
+                            <div><strong><i>Whole genome sequencing</i></strong></div>
+                            <div>
+                              For a WGS VCF file, the variant distribution should be evenly distributed across the whole genome, as shown for a human sample below.
+                            </div>
+                            <img title="WGS variant density" style="width:100%; padding-top:10px; padding-bottom:10px;"  src="images/density_wgs.png"></img>
+                            <div>
+                              You will notice that there are some areas of zero variant density in the above chart. Chromosomes 1, 3, 16, 19, and 20 are <i>metacentric</i> chromosomes, and have a centromeric region where no variants will be present, close to the centre of the chromosome. This gap is particularly large in chromosomes 1 and 16. Chromosome 9 is <i>submetacentric</i> and has a large centromere, but the centromere is offset leading to p and q arms of different lengths. Finally, chromosomes 13, 14, 15, 21, and 22 are <i>acrocentric</i>. Here the p arm is so short, it is difficult to observe, leading to the centromere appearing at the beginning of the chromosomes.
+                            </div>
+                            <br>
+                            <div>
+                              Observing gaps in coverage for these chromosomes is expected, but any other gaps could be indicative of problems with the variant calls. Male samples in the VCF file have reduced coverage on the X chromosome (since they only have one copy), so it is also expected that the average variant density is lower on this chromosome. Often variant calls are not generated for the Y chromosome, or pseudoautosomal and heterochromatic regions are removed, leading to few calls. 
+                            </div>
+                            <br>
+                            <div><strong><i>Whole exome sequencing</i></strong></div>
+                            <div>
+                              For a WES VCF file containing many samples, the variant distribution will appear much more uneven, since the VCF file will only contain variants in exonic regions. Some of the gaps described for the WGS can still be observed, but there is still generally coverage across the whole chart. Any large gaps would be suggestive of data problems.
+                            </div>
+                            <img title="WES variant density" style="width:100%; padding-top:10px; padding-bottom:10px;"  src="images/density_wes.png"></img>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                 </section>
               
@@ -426,6 +465,46 @@
                             </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div class='no-values hide'>No values present</div>
+                        </div>
+
+                        <!-- Variant types modal -->
+                        <div id="variantModal" class="modal fade" role="dialog">
+                          <div class="modal-dialog" style="width:700px;">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Variant types</h4>
+                              </div>
+                              <div class="modal-body" style="overflow:auto;">
+                                <div>
+                                  This chart shows a distribution of the variant types present in the selected VCF file. SNPs are by far the most prevalent type of genetic mutation, so it is expected that these dominate the distribution.
+                                </div>
+                                <div class="row vertical-align">
+                                    <div class="col-xs-6">
+                                      <img title="Transitions" style="width:100%;"  src="images/transitions.png"></img>
+                                    </div>
+                                    <div class="col-xs-6">
+                                      A transition occurs when a purine mutates into another purine. There are four possible transition mutations, as shown in the figure to the left.
+                                    </div>
+                                </div>
+
+                                <div class="row vertical-align">
+                                    <div class="col-xs-6">
+                                      <img title="Transversions" style="width:100%;" src="images/transversions.png"></img>
+                                    </div>
+                                    <div class="col-xs-6">
+                                      A transversion occurs when a pyrimidine mutates into another pyrimidine, and there are eight possible ways for this to occur.
+                                    </div>
+                                </div>
+                                <div>
+                                  If single base-pair mutations were purely random events, we would expect to see twice as many transversions as transitions, as there are twice as many ways for a transversion to occur. We would then expect to see a Ts/Tv ratio of 0.5. However, transitions are biologically more favourable, consequently for human DNA, we actually expect to see far more transitions than we would expect by chance: typically we see a Ts/Tv ratio closer to 2. If the observed Ts/Tv is significantly lower than 2, then it is a potential signal of data problems.
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
 
                         <div id="indel-length" class="panel">
