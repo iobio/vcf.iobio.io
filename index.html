@@ -480,24 +480,24 @@
                                   This chart shows a distribution of the variant types present in the selected VCF file. SNPs are by far the most prevalent type of genetic mutation, so it is expected that these dominate the distribution.
                                 </div>
                                 <div class="row vertical-align">
-                                    <div class="col-xs-6">
-                                      <img title="Transitions" style="width:100%;"  src="images/transitions.png"></img>
+                                    <div class="col-xs-4">
+                                      <img title="WGS variant types" style="width:100%; padding-top:15px; padding-bottom:15px;"  src="images/types_wgs.png"></img>
                                     </div>
-                                    <div class="col-xs-6">
-                                      A transition occurs when a purine mutates into another purine. There are four possible transition mutations, as shown in the figure to the left.
+                                    <div class="col-xs-8">
+                                       For whole genome sequencing data, SNPs dominate, but there is typically an appreciable number of insertion (Ins) and deletion (Del) mutations, as well as <i>Other</i> variant types. These other variants include anything that doesn't fall into the previous categories. For example, consider the case where the reference sequence is ACTG, and sometimes the A is mutated into a C, but whenever it is, the T is always deleted. Rather than these two mutations appearing separately in the VCF file, since they are only ever observed together, the reference will be ACTG, and the alternate will be CCG (the A mutated to C, and the T deleted). This mutation is a combination of a SNP and a deletion, and is listed as a <i>complex</i> variant type and will appear in the <i>Other</i> category.
                                     </div>
                                 </div>
 
                                 <div class="row vertical-align">
-                                    <div class="col-xs-6">
-                                      <img title="Transversions" style="width:100%;" src="images/transversions.png"></img>
+                                    <div class="col-xs-4">
+                                      <img title="WES variant types" style="width:100%; padding-top:15px; padding-bottom:15px;" src="images/types_wes.png"></img>
                                     </div>
-                                    <div class="col-xs-6">
-                                      A transversion occurs when a pyrimidine mutates into another pyrimidine, and there are eight possible ways for this to occur.
+                                    <div class="col-xs-8">
+                                      It is much less likely to find structural variants, when looking at whole exome data. Large events are often not detected since the breakpoints fall outside of the exome sequencing regions. Also, insertions in, or deletions of large coding regions are likely to be more deleterious than in the non-coding regions captured in whole genome sequencing, and so there are less present in these regions. For these reasons, SNPs are expected to dominate the variant types distribution even more in exome sequencing.
                                     </div>
                                 </div>
                                 <div>
-                                  If single base-pair mutations were purely random events, we would expect to see twice as many transversions as transitions, as there are twice as many ways for a transversion to occur. We would then expect to see a Ts/Tv ratio of 0.5. However, transitions are biologically more favourable, consequently for human DNA, we actually expect to see far more transitions than we would expect by chance: typically we see a Ts/Tv ratio closer to 2. If the observed Ts/Tv is significantly lower than 2, then it is a potential signal of data problems.
+                                  This chart is primarily used to check that all expected variants are present. If you are expecting to see a complete VCF including insertions and deleted, but the file has been filtered to leave only SNPs, this chart will quickly help identify this.
                                 </div>
                               </div>
                               <div class="modal-footer">
