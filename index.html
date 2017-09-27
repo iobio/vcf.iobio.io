@@ -19,7 +19,7 @@
         <link href='http://fonts.googleapis.com/css?family=Overlock+SC' rel='stylesheet' type='text/css'>
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
         <link href="assets/css/flat-ui.css" rel="stylesheet" type='text/css'>
-        
+
         <link href="assets/css/selectize.css" rel="stylesheet" type='text/css'>
         <link href="assets/js/bootstrap/css/bootstrap.css" rel="stylesheet" type='text/css'>
         <!-- <link href="assets/css/bootstrap.css" rel="stylesheet" type='text/css'> -->
@@ -38,8 +38,9 @@
         <script type="text/javascript" src="assets/js/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="assets/js/class.js"></script>
         <script type="text/javascript" src="assets/js/rdp.js"></script>
-        <script type="text/javascript" src="assets/js/selectize.js"></script> 
+        <script type="text/javascript" src="assets/js/selectize.js"></script>
         <script type="text/javascript" src="assets/js/iobio.viz.min.js"></script>
+        <script type="text/javascript" src="assets/js/interval-tree.js"></script>
 
         <script src="assets/js/binary.js"></script>
 
@@ -49,7 +50,7 @@
         <script src="assets/js/pako_deflate.min.js"></script>
         <script src="assets/js/jsbgzf.js"></script>
         <script src="assets/js/js-bv-sampling.js"></script>
-        <script src="assets/js/js-local-vcf.js"></script> 
+        <script src="assets/js/js-local-vcf.js"></script>
 
            <!--  <script type="text/javascript" src="assets/js/binary-vcf.js"></script> -->
         <script type="text/javascript" src="assets/js/iobio.min.js"></script>
@@ -98,25 +99,25 @@
 	</head>
 	<body>
         <header>
-          
+
         </header>
 
-        
+
         <div id="selectData">
             <header>
                 <a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
             <div style="float:right" class="iobio-project" style="padding-top:20px">
-                <a href="http://iobio.io" style="margin: 0px 5px 0px 5px;">an iobio project</a>                     
+                <a href="http://iobio.io" style="margin: 0px 5px 0px 5px;">an iobio project</a>
             </div>
-            
-            </header>    
-               
+
+            </header>
+
             <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 70px">
 
-                <div style="margin-left:auto;margin-right:auto;font-size: 28px; color: rgb(110,110,110); margin-bottom:40px">                
+                <div style="margin-left:auto;margin-right:auto;font-size: 28px; color: rgb(110,110,110); margin-bottom:40px">
                     <center>examine your variant file in seconds</center>
                 </div>
-                
+
                 <div class="file" onClick="onFileButtonClicked()">
                     <input type="file" name="files[]" id="file"  multiple />
                     <label class="file-button" for="file" >choose vcf file</label>
@@ -147,24 +148,24 @@
                 <select id="select-build" class="selectized" placeholder="select genome build...">
                 </select>
               </div>
-            
+
               <button id="url-go-button" class="go-button btn disabled" onclick="loadFromUrl()">Go</button>
               <button id="file-go-button" class="hide go-button btn disabled" onclick="loadFromFile()">Go </button>
 
-              <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">                
-              </div>              
+              <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">
+              </div>
             </div>
 
             <div style="clear:both"></div>
-            <div id="info">                                
+            <div id="info">
                 <ul>
                         <li><a href="help.html">File Requirements</a></li>
                         <li><a href="http://bam.iobio.io/license.html">License</a></li>
-                        
-                </ul>           
+
+                </ul>
             </div>
 
-            
+
             <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 10px">
 
                 <strong>Variant files to try</strong>
@@ -194,7 +195,7 @@
 
                 <tr >
                     <td>
-                        1000 Genomes Project 
+                        1000 Genomes Project
                     </td>
 
                     <td>
@@ -232,15 +233,15 @@
 
                 </table>
 
-                <div style="margin-top: 40px"><strong>For sequence alignment files check out </strong><a style="margin-left: 37px" href="http://bam.iobio.io">bam.iobio</a></div>    
+                <div style="margin-top: 40px"><strong>For sequence alignment files check out </strong><a style="margin-left: 37px" href="http://bam.iobio.io">bam.iobio</a></div>
             </div>
 
-            <div id="footer">                        
-                <div class="logos">     
-                    <div style="display:inline;font-size:50px;font-family:'Overlock SC', cursive;">Marthlab</div>     
-                    <img src="assets/images/ustar-ucgd-logo.jpg" style="height:60px;"/>            
-                    <a href="http://www.genetics.utah.edu/"><img src="assets/images/genetics_mainlogo3_lrg.png" style="height:50px"/></a>          
-                </div>                      
+            <div id="footer">
+                <div class="logos">
+                    <div style="display:inline;font-size:50px;font-family:'Overlock SC', cursive;">Marthlab</div>
+                    <img src="assets/images/ustar-ucgd-logo.jpg" style="height:60px;"/>
+                    <a href="http://www.genetics.utah.edu/"><img src="assets/images/genetics_mainlogo3_lrg.png" style="height:50px"/></a>
+                </div>
             </div>
 
         </div>
@@ -252,7 +253,7 @@
                     <a href="javascript:void(0)" class="hide" id="report-problem" data-toggle="modal" data-target="#modal-report-problem">Report Problem</a>
                 </div>
                 <section id="banner" style="clear: both;">
-    				
+
                     <div id="banner-title" >
                         <header><a href="/">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
                          <span id="vcf_file"></span>
@@ -260,7 +261,7 @@
 
 
                     <div id="banner-middle">
-                       
+
                         <div id="vcf_selection">
                             <div id="current-build"></div>
 
@@ -273,7 +274,7 @@
                                        href="javascript:void(0)"
                                        class="btn hide"
                                        onclick="showSamplesDialog()"
-                                       data-toggle="modal" 
+                                       data-toggle="modal"
                                        data-target="#sample-picker-modal">
                                        Filter samples
                                     </a>
@@ -296,8 +297,8 @@
                             <div id="label">variants sampled</div>
                         </div>
                         <div style="padding-top: 10px; ">
-                            <img id="sample-more-button"   
-                                 title="Sample More" 
+                            <img id="sample-more-button"
+                                 title="Sample More"
                                  onClick="increaseSampling()"
                                  src="assets/images/more_sampling.png"
                                  style="width: 20px">
@@ -305,25 +306,25 @@
                         </div>
 
                     </div>
-    				
+
     			</section>
 
                 <section id="top" >
 
-                   
+
                     <div id="chromosome-picker" class="panel">
                         <div class="title">References
                           <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="ref_help" title="Select the reference sequence (e.g. chromosome) to view"></span>
                         </div>
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="primary-references">
-                        </div>    
+                        </div>
                         <div id="other-references">
                              <label>Other references</label>
                              <select id="other-references-dropdown">
                                <option value=""></option>
                              </select>
-                        </div>                    
+                        </div>
                     </div>
 
                     <div id="variant-density-panel" class="panel">
@@ -331,9 +332,21 @@
                           <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="density_help" title="Distribution of variants across genome/region"></span>
                         </div>
                         <span class="svg-alt hint">(drag bottom chart to select region)</span>
+
+                        <div class="checkbox bedfile-checkbox" id="use-bed-cb" >
+                            <label>
+                                <input type="checkbox"  value="">GRCh37 exonic regions</input>
+                            </label>
+                        </div>
+                        <input type="file" name="files[]" id="bedfile-input"  multiple />
+
+                        <label id="add-bedfile-button" class="bedfile-button" for="bedfile-input" title="Add Bed format capture target definition file">Add Bed</label>
+                        <label id="remove-bedfile-button" class="bedfile-button" title="Remove Bed format capture target definition file">Remove Bed</label>
+
+
                         <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
                         <div id="variant-density">
-                        </div>    
+                        </div>
                         <div id="variant-density-vf" >
 
                         </div>
@@ -376,6 +389,9 @@
                               For a WES VCF file containing many samples, the variant distribution will appear much more uneven, since the VCF file will only contain variants in exonic regions. Some of the gaps described for the WGS can still be observed, but there is still generally coverage across the whole chart. Any large gaps would be suggestive of data problems.
                             </div>
                             <img title="WES variant density" style="width:100%; padding-top:10px; padding-bottom:10px;"  src="images/density_wes.png"></img>
+                            <div>
+                              Note that the number of sampled variants is often low for exome sequencing. This is because variants are sampled from across the whole genome, but variants are only found in exonic regions. This can be resolved by restricting sampling to exonic regions using the controls in the top right corner of this chart.
+                            </div>
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -385,7 +401,7 @@
                     </div>
 
                 </section>
-              
+
     			<section id="middle"  >
 
                         <div id="tstv-ratio" class="panel">
@@ -394,7 +410,7 @@
                             </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div id="ratio-panel" class="svg-alt">
-                            </div>  
+                            </div>
                             <div id="ratio-value" class="svg-alt" ></div>
                             <div class='no-values hide'>No values present</div>
                         </div>
@@ -483,7 +499,7 @@
                                     <div class="col-xs-4">
                                       <img title="WGS variant types" style="width:100%; padding-top:15px; padding-bottom:15px;"  src="images/types_wgs.png"></img>
                                     </div>
-                                    <div class="col-xs-8">
+                                    <div class="col-xs-8" style="padding-top:15px; padding-bottom:15px;">
                                        For whole genome sequencing data, SNPs dominate, but there is typically an appreciable number of insertion (Ins) and deletion (Del) mutations, as well as <i>Other</i> variant types. These other variants include anything that doesn't fall into the previous categories. For example, consider the case where the reference sequence is ACTG, and sometimes the A is mutated into a C, but whenever it is, the T is always deleted. Rather than these two mutations appearing separately in the VCF file, since they are only ever observed together, the reference will be ACTG, and the alternate will be CCG (the A mutated to C, and the T deleted). This mutation is a combination of a SNP and a deletion, and is listed as a <i>complex</i> variant type and will appear in the <i>Other</i> category.
                                     </div>
                                 </div>
@@ -492,7 +508,7 @@
                                     <div class="col-xs-4">
                                       <img title="WES variant types" style="width:100%; padding-top:15px; padding-bottom:15px;" src="images/types_wes.png"></img>
                                     </div>
-                                    <div class="col-xs-8">
+                                    <div class="col-xs-8" style="padding-top:15px; padding-bottom:15px;">
                                       It is much less likely to find structural variants, when looking at whole exome data. Large events are often not detected since the breakpoints fall outside of the exome sequencing regions. Also, insertions in, or deletions of large coding regions are likely to be more deleterious than in the non-coding regions captured in whole genome sequencing, and so there are less present in these regions. For these reasons, SNPs are expected to dominate the variant types distribution even more in exome sequencing.
                                     </div>
                                 </div>
@@ -519,7 +535,7 @@
                                 </span>
                             </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-   
+
                             <div id="indel-length-histogram"></div>
 
                             <div class="svg-alt">
@@ -528,7 +544,7 @@
                                 <span  style="font-weight:bold;font-size:13px;">Insertions</span>
                                 <div id="legend-ins"></div>
                             </div>
-                            
+
                             <div class='no-values hide'>No values present</div>
                         </div>
 
@@ -542,7 +558,7 @@
                         </div>
                 </section>
 
-           
+
     		</div>
         </div>
 
@@ -564,7 +580,7 @@
           </div>
           <span class="label"</label>Screen Capture</span>
           <div id="report-problem-screen-capture">
-        </div>    
+        </div>
         <div class="modal-footer">
           <a  id="report-problem-button" href="#email-report-problem"  class="btn">Report</a>  <!--CHANGED TO "#close"-->
           <a  class="btn" data-dismiss="modal">Cancel</a>
@@ -579,7 +595,7 @@
     <div class="modal-content">
       <div class="modal-header" style="padding-top:10px;">
          <h4>Filter samples</h4>
-          <a href="#close" class="btn-close" aria-hidden="true">×</a>         
+          <a href="#close" class="btn-close" aria-hidden="true">×</a>
       </div>
       <div class="modal-body">
 
@@ -588,14 +604,14 @@
               <span class="loader-label" >Initializing</span>
               <img src="assets/images/loading_dots.gif" >
             </div>
-              
+
             <div id="vcf-sample-box" class="hide" style="text-align:center">
               <div id="vcf-sample-select-box"  style="display:inline-block;">
                 <select id="vcf-sample-select"  data-placeholder="choose sample(s)...">
                 </select>
               </div>
-                
-            </div>                            
+
+            </div>
         </div>
 
       </div>
@@ -606,12 +622,12 @@
   </div>
 </div>
 <!-- /Modal -->
-        
+
         <script>
-            var div = d3.select("body").append("div")   
-                .attr("class", "tooltip")               
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
                 .style("opacity", 0);
-        </script>             
+        </script>
 
         <script type="text/javascript" src="app/vcf.iobio.js"></script>
         <script type="text/javascript" src="app/line.d3.js"></script>

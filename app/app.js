@@ -54,6 +54,7 @@ var statsOptions = {
 	samplingMultiplier: 1,
 	binSize : 80000,
     binNumber : 50,
+    minFileSamplingSize: 1000000,
     start : 1
 };
 
@@ -220,6 +221,19 @@ function init() {
 				   			chromosomeChart.clickSlice(i);
 							onReferenceSelected(d, d.idx);
 				   		});
+
+
+    document.getElementById('bedfile-input').addEventListener('change', onAddBed, false);
+    $('#remove-bedfile-button').on('click', onRemoveBed)
+
+	$("#use-bed-cb input[type='checkbox']").change(function(){
+        var useBed = this.checked;
+        if (useBed) {
+	        onDefaultBed();
+        } else {
+        	onRemoveBed();
+        }
+    });
 
 	// TSTV grouped barchart (to show ratio)
 	tstvChart = groupedBarD3();
@@ -395,12 +409,12 @@ function init() {
         var vcfUrl = decodeUrl(getParameterByName('vcf'));
         var tbiUrl = decodeUrl(getParameterByName('tbi'));
         if (vcfUrl && genomeBuildHelper.getCurrentBuild() && genomeBuildHelper.getCurrentSpecies()) {
-         	_loadVcfFromUrl(vcfUrl, tbiUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);        	
+         	_loadVcfFromUrl(vcfUrl, tbiUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);
         } else if (vcfUrl) {
         	$('#url-input').val(vcfUrl);
         	if (tbiUrl) {
 	        	$('#url-tbi-input').val(tbiUrl);
-        	} 
+        	}
         	displayVcfUrlBox();
         }
     }
@@ -556,7 +570,7 @@ function updateUrl(paramName, value) {
 	Object.keys(params).forEach(function(key) {
 		search.push(key + '=' + params[key]);
 	})
-    window.history.replaceState(null,null,'?'+search.join('&'));	
+    window.history.replaceState(null,null,'?'+search.join('&'));
 }
 
 function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
@@ -619,6 +633,71 @@ function onFilesSelected(event) {
 		});
 }
 
+function onAddBed(event) {
+	var h = 5;
+
+	if (event.target.files.length != 1) {
+       alert('must select a .bed file');
+       return;
+    }
+
+    // check file extension
+    var fileType = /[^.]+$/.exec(event.target.files[0].name)[0];
+    if (fileType != 'bed')  {
+	    alert('must select a .bed file');
+	    return;
+    }
+    // clear brush on read coverage chart
+    // resetBrush();
+
+    // // hide add bed / show remove bed buttons
+    $("#add-bedfile-button").css('visibility', 'hidden');
+    $(".bedfile-checkbox").css('visibility', 'hidden');
+    $("#remove-bedfile-button").css('visibility', 'visible')
+
+    // read bed file and store
+    var reader = new FileReader();
+    reader.onload = function(theFile) {
+        window.bed = this.result;
+        loadStats(chromosomeIndex);
+    }
+    reader.readAsText(event.target.files[0])
+}
+
+function onDefaultBed() {
+	var bedurl = './20130108.exome.targets.bed';
+	$("#add-bedfile-button").css('visibility', 'hidden');
+
+    // clear brush on read coverage chart
+    //resetBrush();
+
+    // turn on sampling message and off svg
+    // turn it on here b\c the bed file is so big it takes a while to download
+    // $("section#middle svg").css("display", "none");
+    // $(".samplingLoader").css("display", "block");
+
+    // grab bed from url
+    $.ajax({
+        url: bedurl,
+        dataType: 'text'
+    }).done(function (data) {
+        data = data.replace(/chr/g, '');
+        window.bed = data;
+        //goSampling({sequenceNames : getSelectedSeqIds() });
+        loadStats(chromosomeIndex);
+    });
+
+}
+
+function onRemoveBed() {
+	$("#add-bedfile-button").css('visibility', 'visible');
+    $(".bedfile-checkbox").css('visibility', 'visible');
+    $("#remove-bedfile-button").css('visibility', 'hidden')
+
+	window.bed = undefined;
+	loadStats(chromosomeIndex);
+}
+
 function displayFileError(errorMessage) {
 	d3.select("#selectData")
 	  .style("visibility", "visible")
@@ -646,7 +725,6 @@ function onReferencesLoaded(refData) {
 	chromosomeChart.clickAllSlices(pieChartRefData);
 	onAllReferencesSelected();
 
-	
     vcfiobio.getSampleNames(function(sampleNames) {
     	$('.vcf-sample.loader').addClass("hide");
     	if (sampleNames.length > 1) {
@@ -679,7 +757,6 @@ function onReferencesLoaded(refData) {
 				window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
 				vcfiobio.setSamples(samples);
 				loadStats(chromosomeIndex);
-
 			});
 
     	} else {
@@ -754,7 +831,6 @@ function onAllReferencesSelected() {
 	 d3.select("#variant-density-panel").select(".hint").text("(click bottom chart to select a reference)");
 
 	 loadGenomeVariantDensityData();
-
 }
 
 function onVariantDensityChartRendered() {
@@ -900,6 +976,7 @@ function loadStats(i) {
 	// captures the number of times the "sample more" button
 	// has been pressed by the user
 	options.binNumber = options.binNumber * statsOptions.samplingMultiplier;
+	if (vcfiobio.getVcfFileSize() < statsOptions.minFileSamplingSize) options.fullAnalysis = true;
 
 	vcfiobio.getStats(refs, options, function(data) {
 		renderStats(data);

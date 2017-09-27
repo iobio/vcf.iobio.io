@@ -13,13 +13,13 @@ label {
     align-items: center;
 }
 
-.go-button  { 
+.go-button  {
   font:300 28px quicksand;
   vertical-align:middle;
   margin-top: 20px;
   float: right;
   font-size: 28px !important;
-  background-color: #2d8fc1 !important; 
+  background-color: #2d8fc1 !important;
 }
 
 #go-panel {
@@ -33,11 +33,39 @@ label {
     clear: both;
 }
 
+
+.bedfile-checkbox {
+    position: absolute;
+    right: 15px;
+    top: 30px;
+    font-size: 13px;
+}
+
+.bedfile-button{
+    position:absolute;
+    right:97px;
+    top:20px;
+    font-size:13px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+#remove-bedfile-button { visibility: hidden}
+
+.bedfile-button:hover {
+     border-bottom: 1px solid rgb(180,180,180);
+}
+
+#bedfile-input {
+  visibility:hidden;
+  display:none;
+}
+
 #file-alert {
     min-height:50px;
     text-align:center;
     margin-top:10px;
-    margin-left:auto; 
+    margin-left:auto;
     margin-right:auto;
     width:700px;
     font-weight: 400;
@@ -46,7 +74,7 @@ label {
 
 #current-build {
     font-size: 26px;
-    color: #2687BE;    
+    color: #2687BE;
     margin-right: 20px;
 }
 
@@ -60,14 +88,14 @@ label {
     color: #2d8fc1 ;
 }
 
-#go-panel .selectize-dropdown, 
-#go-panel .selectize-input, 
+#go-panel .selectize-dropdown,
+#go-panel .selectize-input,
 #go-panel .selectize-input input {
     font-size: 18px !important;
 }
 
 /* Work around problem with flatui incompatibility with bootstrap checkboxes */
-.checkbox input, .radio input {    
+.checkbox input, .radio input {
     display: initial;
 }
 
@@ -78,7 +106,7 @@ label {
     font-size: 12px;
 }
 
-#sample-go-button  { 
+#sample-go-button  {
 
 }
 
@@ -205,14 +233,14 @@ font-size: 11px;
 }
 
 text.chartlabel {
-	
+
 	font-size: 9px;
 	fill: white;
     text
 }
 
 text.chartlabelSelected {
-  
+
   font-size: 11px;
   color: white;
   fill: white;
@@ -248,7 +276,7 @@ path.line {
 #page {
 }
 
-    
+
 #report-problem {
     float: right;
     margin-right: 30px;
@@ -257,8 +285,8 @@ path.line {
     font-size: 12px;
     color: red;
     text-decoration: none;
-   
-    
+
+
 }
 
 
@@ -318,21 +346,21 @@ section#banner {
 section#top {
     -webkit-flex-flow: row;
             flex-flow: row;
-   margin-right: 15px;         
-   
-   
+   margin-right: 15px;
+
+
 }
 
 section#middle {
     margin-right: 15px;
-    
+
     -webkit-flex-flow: row;
             flex-flow: row;
 }
 
 section#bottom {
     margin-right: 15px;
-    
+
     -webkit-flex-flow: row;
             flex-flow: row;
 }
@@ -354,15 +382,15 @@ section#bottom {
             flex: 1 0 180px;
     -webkit-order: 1;
             order: 1;
-    height: 280px;                        
+    height: 280px;
 }
 
 
 #primary-references {
     height: 200px;
     padding: 0px;
-    margin-top: 8px;  
-    margin-bottom: 5px;  
+    margin-top: 8px;
+    margin-bottom: 5px;
 }
 
 #other-references {
@@ -410,7 +438,7 @@ section#bottom {
             order: 1;
 
     margin-top: -4px;
-} 
+}
 
 #report-problem-screen-capture header {
     font-size: 36px;
@@ -428,12 +456,12 @@ section#bottom {
     display: -ms-flexbox;
     -webkit-flex-flow: row;
             flex-flow: row;
-    -webkit-justify-content: flex-start;        
+    -webkit-justify-content: flex-start;
             justify-content: flex-start;
     -webkit-align-items: flex-start;
-           align-items: flex-start;   
+           align-items: flex-start;
 
-    margin-top: 4px;     
+    margin-top: 4px;
 }
 
 #vcf_file {
@@ -456,10 +484,10 @@ section#bottom {
     display: -ms-flexbox;
     -webkit-flex-flow: row;
             flex-flow: row;
-    -webkit-justify-content: center;        
+    -webkit-justify-content: center;
             justify-content: center;
     -webkit-align-items: flex-start;
-           align-items: flex-start;        
+           align-items: flex-start;
 }
 
 
@@ -469,7 +497,7 @@ section#bottom {
     -webkit-order: 1;
             order: 1;
     font-size: 26px;
-    color: #2687BE    
+    color: #2687BE
 }
 
 #report-problem-screen-capture #reference_selected {
@@ -478,7 +506,7 @@ section#bottom {
     -webkit-order: 1;
             order: 1;
     font-size: 20px;
-    color: #2687BE    
+    color: #2687BE
 }
 
 #region_selected {
@@ -486,7 +514,7 @@ section#bottom {
             flex: 0 0 auto;
     -webkit-order: 2;
             order: 2;
-    font-size: 14px;  
+    font-size: 14px;
 
 
 }
@@ -512,7 +540,7 @@ section#bottom {
     display: -ms-flexbox;
     -webkit-flex-flow: col;
             flex-flow: col;
-    -webkit-justify-content: flex-end;        
+    -webkit-justify-content: flex-end;
             justify-content: flex-end;
     -webkit-align-items: flex-start;
            align-items: flex-start;
@@ -535,10 +563,10 @@ section#bottom {
 #total-reads #label {
     line-height: 14px;
     font-size: 24px
-    color:#2687BE; 
+    color:#2687BE;
 }
 #sample-more-button {
-    style="width: 20px; 
+    style="width: 20px;
     height: 20px;"
 }
 
@@ -560,7 +588,7 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 2;
             order: 2;
-     height: 200px;                               
+     height: 200px;
 }
 
 .panel#mut-spectrum {
@@ -598,7 +626,7 @@ section#bottom {
             flex: 1 0 30%;
     -webkit-order: 3;
             order: 3;
-     height: 225px;                               
+     height: 225px;
 }
 
 
@@ -622,25 +650,25 @@ section#bottom {
     background-color: #1f77b4;
     display: inline-block;
     margin-left: 4px;
-     
+
 }
 
 
 #ratio-value {
-    font-size:  30px; 
-    color:      #2687BE; 
+    font-size:  30px;
+    color:      #2687BE;
 
-    
+
     display: -webkit-flex;
     display:         flex;
     display: -ms-flexbox;
 
     -webkit-flex-flow: col;
             flex-flow: col;
-    -webkit-justify-content: center;        
+    -webkit-justify-content: center;
             justify-content: center;
     -webkit-align-items: center;
-           align-items: center;  
+           align-items: center;
 }
 
 
@@ -691,8 +719,8 @@ section#bottom {
     margin-top: 14px;
 }
 
-#vcf-sample-select-box .selectize-dropdown, 
-#vcf-sample-select-box .selectize-input, 
+#vcf-sample-select-box .selectize-dropdown,
+#vcf-sample-select-box .selectize-input,
 #vcf-sample-select-box .selectize-input input {
     font-size: 13px;
     width: 600px !important;
@@ -705,12 +733,12 @@ section#bottom {
 
 #info { margin: 20px auto 0px auto; width:100%;text-align: center;}
 #info ul{margin: 0px; padding: 0px; list-style-type: none; }
-#info li {display:inline; margin: 0px 0px 0px 20px;}      
+#info li {display:inline; margin: 0px 0px 0px 20px;}
 
 #footer {
    position: relative;
-   margin-top: 80px;                   
-   width: 100%;                                     
+   margin-top: 80px;
+   width: 100%;
    margin-left: auto;
    margin-right: auto;
    font-size: 18px;
@@ -720,7 +748,7 @@ section#bottom {
     color: rgb(110,110,110);
     color:#2d8fc1;
     text-decoration: underline;
-}   
+}
 
 .logos {
 
@@ -729,10 +757,10 @@ section#bottom {
     display: -ms-flexbox;
     -webkit-flex-flow: row wrap;
             flex-flow: row wrap;
-    -webkit-justify-content: space-around;        
+    -webkit-justify-content: space-around;
             justify-content: space-around;
     -webkit-align-items: center;
-           align-items: center;        
+           align-items: center;
 }
 
 
@@ -801,21 +829,21 @@ header .iobio-project a:hover {color:#2d8fc1;}
 
 
 /* For mobile phones in portrait view */
-@media screen and (max-device-width:768px) and (orientation : portrait), 
+@media screen and (max-device-width:768px) and (orientation : portrait),
        screen and (max-width:768px) and (orientation : portrait) {
-    
+
 
     section#top {
         -webkit-flex-flow: row wrap;
                 flex-flow: row wrap;
-       
+
     }
     #variant-density-panel {
         -webkit-flex: 1 0 100%;
                 flex: 1 0 100%;
     }
 
-}              
+}
 
 /* For mobile phones  */
 @media screen and (max-device-width:1000px), screen and (max-width:1000px) {
@@ -830,9 +858,9 @@ header .iobio-project a:hover {color:#2d8fc1;}
                 flex: 0 0 100%;
         -webkit-order: 1;
                 order: 1;
-       
 
-    }   
+
+    }
 
     header {
          margin-top: -10px;
@@ -843,22 +871,22 @@ header .iobio-project a:hover {color:#2d8fc1;}
         -webkit-flex: 1 0 45%;
                 flex: 1 0 45%;
 
-        -webkit-justify-content: flex-start;        
+        -webkit-justify-content: flex-start;
                 justify-content: flex-start;
         -webkit-align-items: flex-start;
-               align-items: flex-start; 
+               align-items: flex-start;
 
         padding-top: 10px;
         margin-top: 0px;
-        
+
     }
 
     #vcf_selection {
 
-    -webkit-justify-content: flex-start;        
+    -webkit-justify-content: flex-start;
             justify-content: flext-start;
     -webkit-align-items: flex-start;
-           align-items: flex-start;        
+           align-items: flex-start;
     }
 
 
@@ -868,16 +896,16 @@ header .iobio-project a:hover {color:#2d8fc1;}
                 flex: 1 0 45%;
 
 
-        -webkit-justify-content: flex-end;        
+        -webkit-justify-content: flex-end;
                 justify-content: flex-end;
         -webkit-align-items: flex-start;
                align-items: flex-start;
 
-        
-        padding-top: 6px; 
+
+        padding-top: 6px;
 
     }
-   
+
 
 
     section#middle {
@@ -895,7 +923,7 @@ header .iobio-project a:hover {color:#2d8fc1;}
                 flex: 1 0 100%;
         -webkit-order: 3;
                 order: 3;
-         height: 200px;                               
+         height: 200px;
     }
 
     .panel#mut-spectrum {
@@ -913,22 +941,22 @@ header .iobio-project a:hover {color:#2d8fc1;}
                 flex: 1 0 100%;
         -webkit-order: 3;
                 order: 3;
-         height: 200px;                               
+         height: 200px;
     }
 
     #footer {
        position: relative;
-       margin-top: 60px;                   
-       width: 100%;                                     
+       margin-top: 60px;
+       width: 100%;
        margin-left: auto;
        margin-right: auto;
        font-size: 18px;
        text-align: center;
     }
 
-   
 
-}              
+
+}
 
 
 
