@@ -608,6 +608,35 @@
                             <svg id="qual-distribution-histogram"/>
                             <div class='no-values hide'>No values present</div>
                         </div>
+
+                        <!-- Quality distribution modal -->
+                        <div id="qualityModal" class="modal fade" role="dialog">
+                          <div class="modal-dialog" style="width:700px;">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Variant quality scores</h4>
+                              </div>
+                              <div class="modal-body" style="overflow:auto;">
+                                <div>
+                                  Each variant is assigned a quality score to represent the confidence in the variant. The distribution of these scores is highly variable, and no specific distribution is expected. Here we mainly want to check that the quality scores are not crowded into the low (&lt 100) end. Below is an example of a quality score distribution that is weigthed to higher scores and so would be considered normal.
+                                </div>
+                                <img title="Acceptable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_good.png"></img>
+                                <div>
+                                  Below is another average quality score distribution that would be considered acceptable. There are many variants that have a low quality score (e.g. between 0 and 100), however, there are still a large number of variants with high scores. If variant prioritization techniques are used, it may be necessary to check individual variants to ensure that their scores are acceptable. 
+                                </div>
+                                <img title="Acceptable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_avg.png"></img>
+                                <div>
+                                  Below is a quality score distribution that looks more questionable. There are still many variants that appear to be of high quality, but the majority are clustered close to zero. Seeing such a distribution should raise warning flags, but the file should not just be thrown out. Different variant calling tools use different methods to generate quality scores, so it would be prudent to check with whoever generate the variant calls to try to understand the cause of such a distribution.
+                                </div>
+                                <img title="Questionable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_bad.png"></img>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                 </section>
 
 
