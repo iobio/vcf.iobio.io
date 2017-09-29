@@ -473,7 +473,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                  If single base-pair mutations were purely random events, we would expect to see twice as many transversions as transitions, as there are twice as many ways for a transversion to occur. We would then expect to see a Ts/Tv ratio of 0.5. However, transitions are biologically more favourable, consequently for human DNA, we actually expect to see far more transitions than we would expect by chance: typically we see a Ts/Tv ratio closer to 2. If the observed Ts/Tv is significantly lower than 2, then it is a potential signal of data problems.
+                                  If single base-pair mutations were purely random events, we would expect to see twice as many transversions as transitions, as there are twice as many ways for a transversion to occur. We would then expect to see a Ts/Tv ratio of 0.5. However, transitions are chemically and biologically more favourable (transition mutations are about ten times more common than transversions), consequently for human DNA, we actually expect to see far more transitions than we would expect by chance: typically we see a Ts/Tv ratio closer to 2. If the observed Ts/Tv is significantly lower than 2, then it is a potential signal of data problems.
                                 </div>
                               </div>
                               <div class="modal-footer">
@@ -497,6 +497,30 @@
                             </div>
                             <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
                             <div class='no-values hide'>No values present</div>
+                        </div>
+
+                        <!-- Mutation spectrum modal -->
+                        <div id="basesModal" class="modal fade" role="dialog">
+                          <div class="modal-dialog" style="width:700px;">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Mutation spectrum</h4>
+                              </div>
+                              <div class="modal-body" style="overflow:auto;">
+                                <div>
+                                  As discussed in the Ts/Tv help information, transitions are much more common than transversion mutations. This means that it is far more likely for an Adenine (A) to mutate into a Guanine (G), and vice versa, than to mutate to either a Cytosine (C) or Thymine (T). This means the mutation spectrum is expected to look similar to the image below.
+                                </div>
+                                <img title="Expected mutational spectrum" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/mut_spectrum.png"></img>
+                                <div>
+                                  If transition mutations do not dominate the mutation spectrum, this might indicate a problem with the variant calling. If this is the case, you should also observe a Ts/Tv ratio significantly less than 2.
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                 </section>
 
