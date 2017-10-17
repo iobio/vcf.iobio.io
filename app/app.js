@@ -611,6 +611,7 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 
 			$("#url-input").focus();
 			$("#url-input").val(url);
+			$("#tbi-url-input").val(tbiUrl ? tbiUrl : '');
 
 		}
 

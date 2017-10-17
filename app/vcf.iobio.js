@@ -122,15 +122,9 @@ vcfiobio = function module() {
     me.tbiURL = theTbiUrl;
 
 
-    var fileType0 = /([^.]*)\.(vcf\.gz)$/.exec(url);
-    var fileExt0 = fileType0 && fileType0.length > 1 ? fileType0[2] : null;
-    if (fileExt0 == null) {
-      callback(false, "Please specify a URL to a compressed, indexed vcf file with the file extension vcf.gz");
-    } else {
-      this.checkVcfUrl(me.vcfURL, me.tbiURL, function(success, message) {
-          callback(success, message);
-      });
-    }
+    this.checkVcfUrl(me.vcfURL, me.tbiURL, function(success, message) {
+        callback(success, message);
+    });
 
   }
 
@@ -154,9 +148,9 @@ vcfiobio = function module() {
     var buffer = "";
     var recordCount = 0;
 
-    var args = ['-H', url];
+    var args = ['-H', '"'+url+'"'];
     if (theTbiUrl) {
-      args.push(theTbiUrl);
+      args.push('"'+theTbiUrl+'"');
     }
     var cmd = new iobio.cmd(
         tabix,
@@ -492,9 +486,9 @@ vcfiobio = function module() {
 
     var args =  ['-i'];
     if (me.tbiURL) {
-      args.push(me.tbiURL);
+      args.push('"'+me.tbiURL+'"');
     } else {
-      args.push(me.vcfURL + '.tbi');
+      args.push('"'+me.vcfURL + '.tbi' + '"');
     }
     var cmd = new iobio.cmd(
         vcfReadDepther,
@@ -1007,9 +1001,9 @@ vcfiobio = function module() {
 
     var cmd = null;
 
-    var tabixArgs = ['-h', me.vcfURL, regionStr];
+    var tabixArgs = ['-h', '"'+me.vcfURL+'"', regionStr];
     if (me.tbiURL) {
-       tabixArgs.push(me.tbiURL);
+       tabixArgs.push('"'+me.tbiURL+'"');
     }
 
     if (samples && samples.length > 0) {
@@ -1103,9 +1097,9 @@ vcfiobio = function module() {
     var me = this;
 
 
-    var args = ['-h', me.vcfURL, '1:1-1'];
+    var args = ['-h', '"'+me.vcfURL+'"', '1:1-1'];
     if (me.tbiURL) {
-      args.push(me.tbiURL);
+      args.push('"'+me.tbiURL+'"');
     }
     var cmd = new iobio.cmd(
         tabix,
