@@ -85,12 +85,10 @@ var lookupNucleotide = {
 
 var colorListVarType = ["#2171b5", "#eff3ff", "#bdd7e7", "#6baed6", ];
 
-//var iobioServer           = "nv-green.iobio.io";
 var iobioServer           = "nv-prod.iobio.io/";
 var dataSelect            = null;
 var genomeBuildHelper     = null;
-//var genomeBuildServer     = "http://" + iobioServer + "genomebuild/"; // !pointed to nv-dev
-var genomeBuildServer     = "http://" + "nv-dev.iobio.io/" + "genomebuild/"; // !pointed to nv-dev
+var genomeBuildServer     = "http://" + iobioServer + "genomebuild/"; 
 
 
 /*
