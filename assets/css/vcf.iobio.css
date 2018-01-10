@@ -27,7 +27,7 @@ label {
     margin-bottom: 10px;
     text-align: center;
     margin-left: auto;
-    width: 670px;
+    width: 1000px;
     margin-right: auto;
     overflow: visible;
     clear: both;
@@ -723,7 +723,7 @@ section#bottom {
 #vcf-sample-select-box .selectize-input,
 #vcf-sample-select-box .selectize-input input {
     font-size: 13px;
-    width: 600px !important;
+    width: 240 !important;
     color: rgb(110,110,110);
     vertical-align:middle;
 }
@@ -957,6 +957,3 @@ header .iobio-project a:hover {color:#2d8fc1;}
 
 
 }
-
-
-
