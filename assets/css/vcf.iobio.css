@@ -27,10 +27,19 @@ label {
     margin-bottom: 10px;
     text-align: center;
     margin-left: auto;
-    width: 1000px;
+    width: 1125px;
     margin-right: auto;
     overflow: visible;
     clear: both;
+}
+
+
+.cancelButton {
+
+
+  border-radius: 3px;
+
+
 }
 
 
