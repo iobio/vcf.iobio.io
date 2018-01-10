@@ -141,8 +141,7 @@
 
 
 										<span>
-											<!-- <input type="checkbox"  onclick="enableTbiUrl()">
-											<label > Separate URL for index files</label> -->
+
 											<input type="checkbox" style="width: 10%" onclick="enableTbiUrl()">
 											<label > Separate URL for index files</label>
 										</span>
@@ -158,7 +157,7 @@
 				            </span> -->
 										<br>
 
-                    <input id="url-tbi-input" value="" class="disabled" onkeypress="clearTbiUrl()" onkeydown="clearTbiUrl()"  onpaste="clearTbiUrl()" disabled onfocusout="tbiUrlFunction()" placeholder="tbi URL (optional)"></input>
+                    <input id="url-tbi-input" value="" style="display:none" class="disabled" onkeypress="clearTbiUrl()" onkeydown="clearTbiUrl()"  onpaste="clearTbiUrl()" disabled onfocusout="tbiUrlFunction()" placeholder="tbi URL (optional)"></input>
                 </div>
             </div>
             <div id="file-alert" class="alert alert-danger hide" role="alert">
@@ -196,10 +195,13 @@
 							// })
 
 							function enableTbiUrl(){
+								sampleDataFlag= false;
+								$("#sample-Dataset-load").addClass("hide");
 								$("#sampleDataUrl").addClass("hide");
 								if (flag===false) {
 									flag = true;
 									$("#url-tbi-input").prop('disabled', false);
+									$("#url-tbi-input").css('display', "inline");
 									clearTimeout(myTime);
 								}
 							 else if (flag) {
