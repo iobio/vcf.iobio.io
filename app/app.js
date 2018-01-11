@@ -22,7 +22,7 @@ var chromosomePieLayout;
 var sampleNamesFromUrl = null;
 
 
-var samplesSet = false;
+var samplesSet = false; //If samples are set before loading the vizualization
 
 
 var densityPanelDimensions = {
@@ -111,6 +111,8 @@ var urlFunctionTime;
     console.log("sample flag", sampleDataFlag);
     $("#sample-Dataset-load").prop('disabled', false).removeClass("hide");
     $("#clear-options").removeClass("hide");
+    $("#select-build-box").removeClass("hide"); //show the build box
+
   }
 
 
@@ -169,6 +171,7 @@ var urlFunctionTime;
     clearTimeout(myTime);
     $("#clear-options").addClass("hide");
     $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
+    $("#select-build-box").addClass("hide"); //Hide the select build box
     if(flag===true){
       clearTimeout(tbiMyTime)
     }
@@ -183,6 +186,7 @@ var urlFunctionTime;
     $("#sample-Dataset-load").addClass("hide");
     $("#clear-options").addClass("hide");
     $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
+    $("#select-build-box").addClass("hide"); //Hide the select build box
   }
 
 
@@ -217,6 +221,15 @@ $(document).ready( function(){
   //   $("#sample-go-button").removeClass("disabled")
   // })
   //d3BrowserAdjustments();
+  //$('#select-build')[0].selectize.enable();
+
+ //Keep the genome build disabled
+  // $select_region = $('#select-build').selectize();
+  // select_region = $select_region[0].selectize;
+  // select_region.enable();
+
+
+
 
   genomeBuildHelper = new GenomeBuildHelper();
   genomeBuildHelper.promiseInit({DEFAULT_BUILD: null}).then(function() {
@@ -651,6 +664,11 @@ function onFileButtonClicked() {
 }
 
 function loadFromUrl() {
+  // $select_region = $('#select-build').selectize();
+  // select_region = $select_region[0].selectize;
+  // select_region.enable();
+
+
     var url    = $("#url-input").val();
     updateUrl("vcf",  encodeURIComponent(url));
 
@@ -722,6 +740,8 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
         if (sampleNames.length > 1) {
           $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
           $("#clear-input").addClass("hide"); //Hide the clear input button
+          $("#select-build-box").removeClass("hide"); //Show the select-build box
+
 
           $('#show-sample-dialog').removeClass("hide");
 
@@ -828,12 +848,12 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
               .style("visibility", "visible");
 
           $("#showData").removeClass("hide"); //*
-
           }
 
           $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
           $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
           $("#clear-input").addClass("hide"); //Hide the clear input button
+          $("#select-build-box").removeClass("hide"); //Show the select build box
 
 
 
