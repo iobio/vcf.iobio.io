@@ -684,19 +684,6 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 							// loadStats(chromosomeIndex);
 						}
 					else if(samplesSet===true){
-					// 	d3.select("#selectData")   //*
-					// 	.style("visibility", "hidden")
-					// 	.style("display", "none");
-          //
-					// 	d3.select("#showData")    //*
-					// 		.style("visibility", "visible");
-          //
-					// $("#showData").removeClass("hide"); //*
-
-					//vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
-
-					// $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
-					// $("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
 
 						var samples =  $('#vcf-sample-select')[0].selectize.items;
 						console.log("samples ", samples)
@@ -913,14 +900,7 @@ function onReferencesLoaded(refData) {
 
 function onReferencesLoading(refData) {
 
-//important code
-
-drawPieChart();
-//setTimeout(drawPieChart, 100); //Loads the pie chart
-
-
-//setTimeout(onAllReferencesSelected,100); //Loads the variant density
-
+	drawPieChart();
 
 }
 

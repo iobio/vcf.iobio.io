@@ -102,18 +102,7 @@
           });
         </script>
 
-				<!-- <style media="screen">
-					#accessing-headers-gif{
-						margin-top: 10px;
-						margin-bottom: 10px;
-						text-align: center;
-						margin-left: auto;
-						width: 1125px;
-						margin-right: auto;
-						overflow: visible;
-						clear: both;
-					}
-				</style> -->
+
 
 				<style>
 /* The container */
@@ -221,12 +210,6 @@
             <div id="vcf-url" style="visibility:hidden;">
                 <div class="arrow_box" style="display:inline-block;width:1125px;">
 
-
-										<!-- <span>
-
-											<input type="checkbox" style="width: 10%" onclick="enableTbiUrl()">
-											<label > Separate URL for index files</label>
-										</span> -->
 										<center>
 											<label class="checkboxContainer"><strong>Separate URL for index files</strong>
 											  <input type="checkbox" onclick="enableTbiUrl()">
@@ -242,9 +225,7 @@
 										<label id="clear-input" onclick="clearUrlInput()" name="button"><a>Clear input</a></label>
 
 										<small id="sampleDataUrl" onclick="enterSampleData()"> | <a> Sample Dataset <i>Exome Aggregation Consortium (ExAC)	</i></a></small>
-										<!-- <span id="accessing-headers-gif" class="hide" style="text-align:center; margin-top:0px">
-				              <img src="assets/images/wheel.gif" > <small>Accessing file header</small>
-				            </span> -->
+
 										<br>
 
                     <input id="url-tbi-input" value="" style="display:none" class="disabled" onkeypress="clearTbiUrl()"   onfocusout="tbiUrlFunction()" placeholder="tbi URL (optional)"></input>
@@ -271,33 +252,29 @@
 								console.log("sample flag", sampleDataFlag);
 								$("#sample-Dataset-load").prop('disabled', false).removeClass("hide");
 								$("#clear-options").removeClass("hide");
-
-
-								//$("#accessing-headers-gif").removeClass("hide")
-								//timings = setTimeout(loadFromUrl,3000);
-
 							}
+
 
 							function loadUsingSampleDataSet(){
 								loadFromUrl();
 							}
-              //
-							// $("#sample-Dataset-load").on("click", function(){
-							// 	loadFromUrl();
-							// })
+
 
 							function enableTbiUrl(){
 								sampleDataFlag= false;
 								$("#sample-Dataset-load").addClass("hide");
-								$("#sampleDataUrl").addClass("hide");
+
 								if (flag===false) {
 									flag = true;
+									$("#sampleDataUrl").addClass("hide"); //Hides the option to load sample data
 									$("#url-tbi-input").prop('disabled', false);
 									$("#url-tbi-input").css('display', "inline");
+									$("#clear-input").addClass("hide"); //Hides the clear input option
 									clearTimeout(myTime);
 								}
 							 else if (flag) {
 							 	flag = false;
+								$("#sampleDataUrl").removeClass("hide");
 								$("#url-tbi-input").prop('disabled', true);
 								$("#url-tbi-input").css('display', "none");
 								if(document.getElementById("url-input").value.length > 5 ){
@@ -306,77 +283,53 @@
 							 }
 							}
 
-							function urlFunction(){
 
+							function urlFunction(){
 								if (document.getElementById("url-input").value.length > 5) {
 									$("#accessing-headers-gif").removeClass("hide");
+									$("#sampleDataUrl").addClass("hide"); //Removes the option to add sample data
 									  myTime = setTimeout(loadUrlFunc, 3500);
 								}
-
-								//alert("urlFunction");
-								//myTime = setTimeout(loadUrlFunc, 5000);
-								// if(document.getElementById("url-input").value.length > 5 && flag ===false){
-								// 	$("#accessing-headers-gif").removeClass("hide");
-								// //	$("#accessing-headers-gif").removeClass("hide")
-								// 	myTime = setTimeout(loadUrlFunc, 3500);
-								// }
-								// else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
-								// 	$("#accessing-headers-gif").removeClass("hide");
-								// 	myTime = setTimeout(loadUrlFunc, 3500);
-								// }
 							}
 
+
 							function tbiUrlFunction(){
-								//alert("tbiUrlFunction")
 								if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
-									//alert("tbi url function")
-									var tbiMyTime =  setTimeout(loadFromUrl, 5000);
+									var tbiMyTime =  setTimeout(loadFromUrl, 4000);
 									$("#sampleDataUrl").addClass("hide");
-									setTimeout(showCancelButton, 5200);
+									setTimeout(showCancelButton, 4200);
 									$("#accessing-headers-gif").removeClass("hide");
 								}
 							}
-
-
-
 
 
 							function clearUrlFunction(){
 								sampleDataFlag= false;
 								$("#sample-Dataset-load").addClass("hide");
 								clearTimeout(myTime);
-								$("#clear-options").addClass("hide")
-
+								$("#clear-options").addClass("hide");
+								$("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
 								if(flag===true){
 									clearTimeout(tbiMyTime)
 								}
-								// else if(sampleDataFlag){
-								// 	clearTimeout(timings);
-								// 	sampleDataFlag = false;
-								// 	console.log("sample data", sampleDataFlag)
-								// }
 							}
+
 
 							function clearUrlInput(){
 								document.getElementById("url-input").value = "";
 								clearTimeout(myTime);
 								sampleDataFlag= false;
+								$("#sampleDataUrl").removeClass("hide"); //Shows the option to load the sample data
 								$("#sample-Dataset-load").addClass("hide");
-								$("#clear-options").addClass("hide")
-
-								// if(sampleDataFlag){
-								// 	clearTimeout(timings)
-								// }
-
+								$("#clear-options").addClass("hide");
+								$("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
 							}
 
-							function loadUrlFunc(){
-								//alert("loadUrlFunc")
 
+							function loadUrlFunc(){
 								if (flag===false) {
 									$("#clear-input").addClass("hide")
 									$("#sampleDataUrl").addClass("hide")
-									// $("#url-button").addClass("hide")
 									loadFromUrl();
 									setTimeout(showCancelButton, 1750)
 								}
@@ -385,24 +338,12 @@
 									loadFromUrl();
 									setTimeout(showCancelButton, 1750)
 								}
-								// else{
-								// 	//alert("flag was set to true")
-								// }
 							}
 
 
 							function showCancelButton(){
 								$("#clear-options").removeClass("hide");
 							}
-              //
-              //
-							// function clearTbiUrl(){
-							// 	if(flag===true && document.getElementById("url-input").value.length > 5){
-							// 		//alert("sdvsahvdhsjan")
-							// 		clearTimeout(myTime);
-							// 		clearTimeout(tbiMyTime);
-							// 	}
-							// }
 
 
 
@@ -427,13 +368,6 @@
                 </select>
               </div>
 
-							<!-- <script>
-								$('#vcf-sample-select')[0].selectize.on('change', function(value){
-									if(value.length>0){
-										$('#sample-go-button').removeClass("disabled")
-									}
-								})
-							</script> -->
 
 
 							<button type="button" id="go-button-for-noSamples" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide" data-dismiss="modal">Load</button>
@@ -448,9 +382,6 @@
 	              </div>
 	            </div>
 
-							<!-- <div class="vcf-sample loader hide" style="text-align:center; margin-top:0px">
-	              <img src="assets/images/loading_dots.gif" >
-	            </div> -->
 							<button type="button" id="all-sample-go-button" style="margin-top:24px" class="btn hide"  >Select All Samples</button>
 							<button type="button" id="sample-go-button" style="margin-top:24px;" disabled class="btn hide " data-dismiss="modal">Load</button>
 							<button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Clear</button>
@@ -470,9 +401,6 @@
 									document.getElementById("url-input").value = "";
 									$("#url-input").prop('disabled', false)
 									document.getElementById("url-tbi-input").value = "";
-
-									// $("#showData").removeData();
-									//jQuery.removeData( div, "#showData" );
 
 
 									$('#vcf-sample-box').addClass("hide");
