@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>vcf.iobio.io</title>
+  <head>
+    <meta charset="utf-8">
+    <title>vcf.iobio.io</title>
 
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -23,14 +23,14 @@
         <link href="assets/css/selectize.css" rel="stylesheet" type='text/css'>
         <link href="assets/js/bootstrap/css/bootstrap.css" rel="stylesheet" type='text/css'>
         <!-- <link href="assets/css/bootstrap.css" rel="stylesheet" type='text/css'> -->
-		<link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
+    <link href='components/nprogress/nprogress.css' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.core.css" />
         <link rel="stylesheet" href="components/alertify.js/themes/alertify.default.css" />
         <link href="assets/css/iobio.css" rel="stylesheet" type='text/css'>
-		<link href="assets/css/iobio.viz.min.css" rel="stylesheet" type='text/css'>
-		<link href="assets/css/vcf.iobio.css" rel="stylesheet" type='text/css'/>
+    <link href="assets/css/iobio.viz.min.css" rel="stylesheet" type='text/css'>
+    <link href="assets/css/vcf.iobio.css" rel="stylesheet" type='text/css'/>
 
-		<script type="text/javascript" src="components/d3/d3.js"></script>
+    <script type="text/javascript" src="components/d3/d3.js"></script>
         <script type="text/javascript" src="components/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="components/nprogress/nprogress.js"></script>
         <script type="text/javascript" src="components/alertify.js/lib/alertify.min.js"></script>
@@ -101,98 +101,23 @@
             });
           });
         </script>
-
-
-
-				<style>
-/* The container */
-.checkboxContainer {
-    display: block;
-    position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    /* font-size: 22px; */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-/* Hide the browser's default checkbox */
-.checkboxContainer input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-/* Create a custom checkbox */
-.checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 25px;
-    width: 25px;
-    background-color: #dcdcdc;
-		margin-left: 40%;
-}
-
-/* On mouse-over, add a grey background color */
-.checkboxContainer:hover input ~ .checkmark {
-    background-color: #ccc;
-}
-
-/* When the checkbox is checked, add a blue background */
-.checkboxContainer input:checked ~ .checkmark {
-    background-color: #2196F3;
-}
-
-/* Create the checkmark/indicator (hidden when not checked) */
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-}
-
-/* Show the checkmark when checked */
-.checkboxContainer input:checked ~ .checkmark:after {
-    display: block;
-}
-
-/* Style the checkmark/indicator */
-.checkboxContainer .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-}
-</style>
-
-	</head>
-	<body>
-        <header>
-
-        </header>
+  </head>
+  <body>
 
 
         <div id="selectData">
-					<header>
-							<a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
-					<div style="float:right" class="iobio-project" style="padding-top:20px">
-							<a href="http://iobio.io" style="margin: 0px 5px 0px 5px;">an iobio project</a>
-					</div>
+          <header>
+              <a href="">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a>
+          <div style="float:right" class="iobio-project" style="padding-top:20px">
+              <a href="http://iobio.io" style="margin: 0px 5px 0px 5px;">an iobio project</a>
+          </div>
 
-					</header>
+          </header>
 
             <div style="width:800px; margin-left:auto; margin-right:auto; margin-top: 50px">
-							<div style="margin-left:auto;margin-right:auto;font-size: 28px; color: rgb(110,110,110); margin-bottom:40px">
-									<center>examine your variant file in seconds</center>
-							</div>
+              <div style="margin-left:auto;margin-right:auto;font-size: 28px; color: rgb(110,110,110); margin-bottom:40px">
+                  <center>examine your variant file in seconds</center>
+              </div>
 
 
                 <div class="file" onClick="onFileButtonClicked()">
@@ -203,158 +128,35 @@
                 </div>
                 <div style="clear:both"></div>
 
-
-								<!-- https://s3.amazonaws.com/iobio/gene/wgs_platinum/platinum-trio.vcf.gz -->
-
             </div>
             <div id="vcf-url" style="visibility:hidden;">
                 <div class="arrow_box" style="display:inline-block;width:1125px;">
 
-										<center>
-											<label class="checkboxContainer"><strong>Separate URL for index files</strong>
-											  <input type="checkbox" onclick="enableTbiUrl()">
-											  <span class="checkmark"></span>
-											</label>
-										</center>
-
-
-
+                    <center>
+                      <label class="checkboxContainer"><strong>Separate URL for index files</strong>
+                        <input type="checkbox" onclick="enableTbiUrl()">
+                        <span class="checkmark"></span>
+                      </label>
+                    </center>
 
                     <input id="url-input" value="" onkeypress="clearUrlFunction()" onkeydown="clearUrlFunction()" onclick="clearUrlFunction()" onpaste="clearUrlFunction()" onfocusout="urlFunction()" placeholder="vcf.gz URL" ></input>
-										<br>
-										<label id="clear-input" onclick="clearUrlInput()" name="button"><a>Clear input</a></label>
-
-										<small id="sampleDataUrl" onclick="enterSampleData()"> | <a> Sample Dataset <i>Exome Aggregation Consortium (ExAC)	</i></a></small>
-
-										<br>
-
+                    <br>
+                    <label id="clear-input" onclick="clearUrlInput()" name="button"><a>Clear input</a></label>
+                    <small id="sampleDataUrl" onclick="enterSampleData()"> | <a> Sample Dataset <i>Exome Aggregation Consortium (ExAC)  </i></a></small>
+                    <br>
                     <input id="url-tbi-input" value="" style="display:none" class="disabled" onkeypress="clearTbiUrl()"   onfocusout="tbiUrlFunction()" placeholder="tbi URL (optional)"></input>
                 </div>
             </div>
             <div id="file-alert" class="alert alert-danger hide" role="alert">
             </div>
 
-						<script type="text/javascript">
-
-						var flag = false;
-						var myTime;
-						var tbiMyTime;
-						var sampleDataFlag = false;
-						var timings;
-						var urlFunctionTime;
-
-						console.log("sample flag", sampleDataFlag)
-
-							function enterSampleData(){
-								document.getElementById("url-input").value = "http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz"
-								sampleDataFlag = true;
-								$('#sampleDataUrl').prop('onclick',null).off('click');
-								console.log("sample flag", sampleDataFlag);
-								$("#sample-Dataset-load").prop('disabled', false).removeClass("hide");
-								$("#clear-options").removeClass("hide");
-							}
-
-
-							function loadUsingSampleDataSet(){
-								loadFromUrl();
-							}
-
-
-							function enableTbiUrl(){
-								sampleDataFlag= false;
-								$("#sample-Dataset-load").addClass("hide");
-
-								if (flag===false) {
-									flag = true;
-									$("#sampleDataUrl").addClass("hide"); //Hides the option to load sample data
-									$("#url-tbi-input").prop('disabled', false);
-									$("#url-tbi-input").css('display', "inline");
-									$("#clear-input").addClass("hide"); //Hides the clear input option
-									clearTimeout(myTime);
-								}
-							 else if (flag) {
-							 	flag = false;
-								$("#sampleDataUrl").removeClass("hide");
-								$("#url-tbi-input").prop('disabled', true);
-								$("#url-tbi-input").css('display', "none");
-								if(document.getElementById("url-input").value.length > 5 ){
-									myTime = setTimeout(loadUrlFunc, 2000);
-								}
-							 }
-							}
-
-
-							function urlFunction(){
-								if (document.getElementById("url-input").value.length > 5) {
-									$("#accessing-headers-gif").removeClass("hide");
-									$("#sampleDataUrl").addClass("hide"); //Removes the option to add sample data
-									  myTime = setTimeout(loadUrlFunc, 3500);
-								}
-							}
-
-
-							function tbiUrlFunction(){
-								if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
-									var tbiMyTime =  setTimeout(loadFromUrl, 4000);
-									$("#sampleDataUrl").addClass("hide");
-									setTimeout(showCancelButton, 4200);
-									$("#accessing-headers-gif").removeClass("hide");
-								}
-							}
-
-
-							function clearUrlFunction(){
-								sampleDataFlag= false;
-								$("#sample-Dataset-load").addClass("hide");
-								clearTimeout(myTime);
-								$("#clear-options").addClass("hide");
-								$("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
-								if(flag===true){
-									clearTimeout(tbiMyTime)
-								}
-							}
-
-
-							function clearUrlInput(){
-								document.getElementById("url-input").value = "";
-								clearTimeout(myTime);
-								sampleDataFlag= false;
-								$("#sampleDataUrl").removeClass("hide"); //Shows the option to load the sample data
-								$("#sample-Dataset-load").addClass("hide");
-								$("#clear-options").addClass("hide");
-								$("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
-							}
-
-
-							function loadUrlFunc(){
-								if (flag===false) {
-									$("#clear-input").addClass("hide")
-									$("#sampleDataUrl").addClass("hide")
-									loadFromUrl();
-									setTimeout(showCancelButton, 1750)
-								}
-								else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
-									//alert("flag true and tbi url entered")
-									loadFromUrl();
-									setTimeout(showCancelButton, 1750)
-								}
-							}
-
-
-							function showCancelButton(){
-								$("#clear-options").removeClass("hide");
-							}
-
-
-
-						</script>
-						<div id="accessing-headers-gif" class="hide" style="text-align:center; margin-top:20px;">
-							<center>
-								<span >
-								<img style="height:25px" src="assets/images/loading_dots.gif" > <small style="margin-left:5px; font-size:17px"> <strong>Accessing file headers</strong></small>
-								</span>
-							</center>
-						</div>
+            <div id="accessing-headers-gif" class="hide" style="text-align:center; margin-top:20px;">
+              <center>
+                <span >
+                <img style="height:25px" src="assets/images/loading_dots.gif" > <small style="margin-left:5px; font-size:17px"> <strong>Accessing file headers</strong></small>
+                </span>
+              </center>
+            </div>
 
             <div id="go-panel" class="hide">
               <div id="select-species-box" style="font-size:18px;width:230px;float:left;">
@@ -370,69 +172,57 @@
 
 
 
-							<button type="button" id="go-button-for-noSamples" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide" data-dismiss="modal">Load</button>
-							<button type="button" onclick="loadUsingSampleDataSet()" id="sample-Dataset-load" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide" data-dismiss="modal">Load</button>
+              <button type="button" id="go-button-for-noSamples" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide" data-dismiss="modal">Load</button>
+              <button type="button" onclick="loadUsingSampleDataSet()" id="sample-Dataset-load" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide" data-dismiss="modal">Load</button>
 
 
-							<div id="vcf-sample-box" class="hide" style="font-size:18x;width:240px;float:left;margin-left:15px; margin-right:10px; margin-top:0px;" style="text-align:center">
-	              <div id="vcf-sample-select-box" >
-									<span id="build-label">Sample(s)</span>
-	                <select id="vcf-sample-select"  data-placeholder="Select sample(s)...">
-	                </select>
-	              </div>
-	            </div>
+              <div id="vcf-sample-box" class="hide" style="font-size:18x;width:240px;float:left;margin-left:15px; margin-right:10px; margin-top:0px;" style="text-align:center">
+                <div id="vcf-sample-select-box" >
+                  <span id="build-label">Sample(s)</span>
+                  <select id="vcf-sample-select"  data-placeholder="Select sample(s)...">
+                  </select>
+                </div>
+              </div>
 
-							<button type="button" id="all-sample-go-button" style="margin-top:24px" class="btn hide"  >Select All Samples</button>
-							<button type="button" id="sample-go-button" style="margin-top:24px;" disabled class="btn hide " data-dismiss="modal">Load</button>
-							<button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Clear</button>
-
-
+              <button type="button" id="all-sample-go-button" style="margin-top:24px" class="btn hide"  >Select All Samples</button>
+              <button type="button" id="sample-go-button" style="margin-top:24px;" disabled class="btn hide " data-dismiss="modal">Load</button>
+              <button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Clear</button>
 
 
+              <script>
+
+                $("#clear-options").on("click", function(){
+                  var selectTheOptions = $("#vcf-sample-select").selectize();
+                  var control = selectTheOptions[0].selectize;
+                  control.clear();
+
+                  document.getElementById("url-input").value = "";
+                  $("#url-input").prop('disabled', false)
+                  document.getElementById("url-tbi-input").value = "";
 
 
-							<script>
+                  $('#vcf-sample-box').addClass("hide");
+                  $('#sample-go-button').addClass("hide");
+                  $('#all-sample-go-button').addClass("hide");
+                  vcfiobio.vcfURL= "";
+                  window.history.pushState({'index.html' : 'bar'},null,"?vcf=" +"" + "&tbi=" + "" );
+                  location.reload();
+                })
 
-								$("#clear-options").on("click", function(){
-									var selectTheOptions = $("#vcf-sample-select").selectize();
-								  var control = selectTheOptions[0].selectize;
-								  control.clear();
+              </script>
 
-									document.getElementById("url-input").value = "";
-									$("#url-input").prop('disabled', false)
-									document.getElementById("url-tbi-input").value = "";
-
-
-									$('#vcf-sample-box').addClass("hide");
-									$('#sample-go-button').addClass("hide");
-									$('#all-sample-go-button').addClass("hide");
-									vcfiobio.vcfURL= "";
-									window.history.pushState({'index.html' : 'bar'},null,"?vcf=" +"" + "&tbi=" + "" );
-									location.reload();
-								})
-
-							</script>
-
-							<p></p>
-							<br>
-							<!-- sample box 1  -->
-
-
-
-
+              <p></p>
+              <br>
               <button id="file-go-button" class="hide go-button btn disabled" onclick="loadFromFile()">Go </button>
-							<!-- <button id="url-button" class="hide go-button btn" >Go </button> -->
 
               <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">
               </div>
             </div>
-
-						<!-- end go panel  -->
-						<!-- <button type="button" id="clear-options">Clear Options</button> -->
+            <!-- end go panel  -->
 
             <div style="clear:both"></div>
-						<br>
-						<div id="info">
+            <br>
+            <div id="info">
                 <ul>
                         <li><a href="help.html">File Requirements</a></li>
                         <li><a href="http://bam.iobio.io/license.html">License</a></li>
@@ -442,7 +232,7 @@
 
 
 
-						<div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 10px">
+            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 10px">
 
                 <strong>Variant files to try</strong>
 
@@ -511,7 +301,7 @@
 
                 <div style="margin-top: 40px"><strong>For sequence alignment files check out </strong><a style="margin-left: 37px" href="http://bam.iobio.io">bam.iobio</a></div>
             </div>
-						<div id="footer">
+            <div id="footer">
                 <div class="logos">
                     <div style="display:inline;font-size:50px;font-family:'Overlock SC', cursive;">Marthlab</div>
                     <img src="assets/images/ustar-ucgd-logo.jpg" style="height:60px;"/>
@@ -523,52 +313,51 @@
 
 
         </div>
-				<div id="banner-middle">
+        <div id="banner-middle">
 
 
-				</div>
+        </div>
 
 
-        <!-- <div id="showData" style="padding-top:5px; visibility:collapse" class="hide"> -->
-				<div id="showData" style="padding-top:5px; visibility:collapse" >
+        <div id="showData" style="padding-top:5px; visibility:collapse" >
             <div id="page" >
                 <div>
                     <a href="javascript:void(0)" class="hide" id="report-problem" data-toggle="modal" data-target="#modal-report-problem">Report Problem</a>
                 </div>
                 <section id="banner" style="clear: both;">
 
-									<div id="banner-title" >
-											<header><a href="/">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
-											 <span id="vcf_file"></span>
-									</div>
+                  <div id="banner-title" >
+                      <header><a href="/">vcf<span style="color:rgb(200,200,200)">.iobio.io</span></a></header>
+                       <span id="vcf_file"></span>
+                  </div>
 
 
-									<div id="banner-middle">
+                  <div id="banner-middle">
 
-											<div id="vcf_selection">
-													<div id="current-build"></div>
+                      <div id="vcf_selection">
+                          <div id="current-build"></div>
 
-													<div style="text-align:center">
-															<div id="reference_selected"></div>
-															<div id="region_selected"></div>
-													</div>
-													<div id="samples-filter-header" class="" style="text-align:center">
-														<div id="label">
-																	<a id="show-sample-dialog"
-																		 href="javascript:void(0)"
-																		 class="btn hide"
-																		 onclick="showSamplesDialog()"
-																		 data-toggle="modal"
-																		 data-target="#sample-picker-modal">
-																		 Filter samples
-																	</a>
-															</div>
+                          <div style="text-align:center">
+                              <div id="reference_selected"></div>
+                              <div id="region_selected"></div>
+                          </div>
+                          <div id="samples-filter-header" class="" style="text-align:center">
+                            <div id="label">
+                                  <a id="show-sample-dialog"
+                                     href="javascript:void(0)"
+                                     class="btn hide"
+                                     onclick="showSamplesDialog()"
+                                     data-toggle="modal"
+                                     data-target="#sample-picker-modal">
+                                     Filter samples
+                                  </a>
+                              </div>
 
-															<div id="sample-names"></div>
-													</div>
+                              <div id="sample-names"></div>
+                          </div>
 
-											</div>
-									</div>
+                      </div>
+                  </div>
 
 
 
@@ -594,329 +383,329 @@
 
                     </div>
 
-    						</section>
+                </section>
 
                 <section id="top" >
 
 
-									<div id="chromosome-picker" class="panel">
-											<div class="title">References
-												<span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="ref_help" title="Select the reference sequence (e.g. chromosome) to view"></span>
-											</div>
-											<div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
-											<div id="primary-references">
-											</div>
-											<div id="other-references">
-													 <label>Other references</label>
-													 <select id="other-references-dropdown">
-														 <option value=""></option>
-													 </select>
-											</div>
-									</div>
+                  <div id="chromosome-picker" class="panel">
+                      <div class="title">References
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="ref_help" title="Select the reference sequence (e.g. chromosome) to view"></span>
+                      </div>
+                      <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
+                      <div id="primary-references">
+                      </div>
+                      <div id="other-references">
+                           <label>Other references</label>
+                           <select id="other-references-dropdown">
+                             <option value=""></option>
+                           </select>
+                      </div>
+                  </div>
 
-									<div id="variant-density-panel" class="panel">
-											<div class="title">Variant Density
-												<span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="density_help" title="Distribution of variants across genome/region"></span>
-											</div>
-											<span class="svg-alt hint">(drag bottom chart to select region)</span>
+                  <div id="variant-density-panel" class="panel">
+                      <div class="title">Variant Density
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="density_help" title="Distribution of variants across genome/region"></span>
+                      </div>
+                      <span class="svg-alt hint">(drag bottom chart to select region)</span>
 
-											<div class="checkbox bedfile-checkbox" id="use-bed-cb" >
-													<label>
-															<input type="checkbox"  value="">GRCh37 exonic regions</input>
-													</label>
-											</div>
-											<input type="file" name="files[]" id="bedfile-input"  multiple />
+                      <div class="checkbox bedfile-checkbox" id="use-bed-cb" >
+                          <label>
+                              <input type="checkbox"  value="">GRCh37 exonic regions</input>
+                          </label>
+                      </div>
+                      <input type="file" name="files[]" id="bedfile-input"  multiple />
 
-											<label id="add-bedfile-button" class="bedfile-button" for="bedfile-input" title="Add Bed format capture target definition file">Add Bed</label>
-											<label id="remove-bedfile-button" class="bedfile-button" title="Remove Bed format capture target definition file">Remove Bed</label>
-
-
-											<div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
-											<div id="variant-density">
-											</div>
-											<div id="variant-density-vf" >
-
-											</div>
-											<div id="variant-density-ref-vf">
-
-											</div>
+                      <label id="add-bedfile-button" class="bedfile-button" for="bedfile-input" title="Add Bed format capture target definition file">Add Bed</label>
+                      <label id="remove-bedfile-button" class="bedfile-button" title="Remove Bed format capture target definition file">Remove Bed</label>
 
 
+                      <div class="samplingLoader big">Initializing<img src="assets/images//loading_dots.gif"/></div>
+                      <div id="variant-density">
+                      </div>
+                      <div id="variant-density-vf" >
 
-									</div>
+                      </div>
+                      <div id="variant-density-ref-vf">
+
+                      </div>
+
+
+
+                  </div>
 
 
 
                 </section>
 
-								<section id="middle"  >
+                <section id="middle"  >
 
-			                        <div id="tstv-ratio" class="panel">
-			                            <div class="title">Ts/Tv Ratio
-			                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="tstv_help" title="Expect a value of approximately 2"></span>
-			                            </div>
-			                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-			                            <div id="ratio-panel" class="svg-alt">
-			                            </div>
-			                            <div id="ratio-value" class="svg-alt" ></div>
-			                            <div class='no-values hide'>No values present</div>
-			                        </div>
+                              <div id="tstv-ratio" class="panel">
+                                  <div class="title">Ts/Tv Ratio
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="tstv_help" title="Expect a value of approximately 2"></span>
+                                  </div>
+                                  <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                                  <div id="ratio-panel" class="svg-alt">
+                                  </div>
+                                  <div id="ratio-value" class="svg-alt" ></div>
+                                  <div class='no-values hide'>No values present</div>
+                              </div>
 
-			                        <!-- Ts/Tv modal -->
-			                        <div id="tstvModal" class="modal fade" role="dialog">
-			                          <div class="modal-dialog" style="width:700px;">
-			                            <div class="modal-content">
-			                              <div class="modal-header">
-			                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-			                                <h4 class="modal-title">Transition/transversion (Ts/Tv) ratio</h4>
-			                              </div>
-			                              <div class="modal-body" style="overflow:auto;">
-			                                <div>
-			                                  The transition / transversion (or Ts / Tv) ratio is calculated by looking at SNPs in the selected file, and is expected to have a value of the order of 2. The nucleotides Adenine (A) and Guanine (G) are purines, and Cytosine (C) and Thymine (T) are pyrimidines.
-			                                </div>
-			                                <div class="row vertical-align">
-			                                    <div class="col-xs-6">
-			                                      <img title="Transitions" style="width:100%;"  src="images/transitions.png"></img>
-			                                    </div>
-			                                    <div class="col-xs-6">
-			                                      A transition occurs when a purine mutates into another purine, or a pyrimidine mutates into another pyrimidine. There are four possible transition mutations, as shown in the figure to the left.
-			                                    </div>
-			                                </div>
+                              <!-- Ts/Tv modal -->
+                              <div id="tstvModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog" style="width:700px;">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Transition/transversion (Ts/Tv) ratio</h4>
+                                    </div>
+                                    <div class="modal-body" style="overflow:auto;">
+                                      <div>
+                                        The transition / transversion (or Ts / Tv) ratio is calculated by looking at SNPs in the selected file, and is expected to have a value of the order of 2. The nucleotides Adenine (A) and Guanine (G) are purines, and Cytosine (C) and Thymine (T) are pyrimidines.
+                                      </div>
+                                      <div class="row vertical-align">
+                                          <div class="col-xs-6">
+                                            <img title="Transitions" style="width:100%;"  src="images/transitions.png"></img>
+                                          </div>
+                                          <div class="col-xs-6">
+                                            A transition occurs when a purine mutates into another purine, or a pyrimidine mutates into another pyrimidine. There are four possible transition mutations, as shown in the figure to the left.
+                                          </div>
+                                      </div>
 
-			                                <div class="row vertical-align">
-			                                    <div class="col-xs-6">
-			                                      <img title="Transversions" style="width:100%;" src="images/transversions.png"></img>
-			                                    </div>
-			                                    <div class="col-xs-6">
-			                                      A transversion occurs when a purine mutates into a pyrimidine or vice versa, and there are eight possible ways for this to occur.
-			                                    </div>
-			                                </div>
-			                                <div>
-			                                  If single base-pair mutations were purely random events, we would expect to see twice as many transversions as transitions, as there are twice as many ways for a transversion to occur. We would then expect to see a Ts/Tv ratio of 0.5. However, transitions are chemically and biologically more favourable (transition mutations are about ten times more common than transversions). Consequently for human DNA, we actually expect to see far more transitions than we would expect by chance: typically we see a Ts/Tv ratio closer to 2. If the observed Ts/Tv is significantly lower than 2, then it is a potential signal of data problems.
-			                                </div>
-			                              </div>
-			                              <div class="modal-footer">
-			                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			                              </div>
-			                            </div>
-			                          </div>
-			                        </div>
+                                      <div class="row vertical-align">
+                                          <div class="col-xs-6">
+                                            <img title="Transversions" style="width:100%;" src="images/transversions.png"></img>
+                                          </div>
+                                          <div class="col-xs-6">
+                                            A transversion occurs when a purine mutates into a pyrimidine or vice versa, and there are eight possible ways for this to occur.
+                                          </div>
+                                      </div>
+                                      <div>
+                                        If single base-pair mutations were purely random events, we would expect to see twice as many transversions as transitions, as there are twice as many ways for a transversion to occur. We would then expect to see a Ts/Tv ratio of 0.5. However, transitions are chemically and biologically more favourable (transition mutations are about ten times more common than transversions). Consequently for human DNA, we actually expect to see far more transitions than we would expect by chance: typically we see a Ts/Tv ratio closer to 2. If the observed Ts/Tv is significantly lower than 2, then it is a potential signal of data problems.
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
 
-			                        <div id="allele-freq" class="panel">
-			                            <div class="title">Allele Frequency Spectrum
-			                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="af_help" title="AF is dependent on the number of samples"></span>
-			                            </div>
-			                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-			                            <svg id="allele-freq-histogram"/>
-			                            <div class='no-values hide'>No values present</div>
-			                        </div>
+                              <div id="allele-freq" class="panel">
+                                  <div class="title">Allele Frequency Spectrum
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="af_help" title="AF is dependent on the number of samples"></span>
+                                  </div>
+                                  <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                                  <svg id="allele-freq-histogram"/>
+                                  <div class='no-values hide'>No values present</div>
+                              </div>
 
-			                        <!-- Allele frequency spectrum modal -->
-			                        <div id="afModal" class="modal fade" role="dialog">
-			                          <div class="modal-dialog" style="width:700px;">
-			                            <div class="modal-content">
-			                              <div class="modal-header">
-			                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-			                                <h4 class="modal-title">Allele frequency spectrum</h4>
-			                              </div>
-			                              <div class="modal-body" style="overflow:auto;">
-			                                <div>
-			                                  The allele frequency spectrum shows the percentage of alleles (only using SNPs) in the called population that exhibit the alterate allele. This plot is highly dependent on the number of samples that were simultaneously analyzed while generating the variant calls. For example, if this VCF file was generated by considering only a single sample, the allele frequency (AF) can only take one of three values: 0%, the sample is homozygous for the reference allele. Typically, a variant caller would determine that there is no variant at this location, so this would not be reported.; 50%, the sample is heterozygous, and; 100%, the sample is homozygous for the alternate allele.
-			                                </div>
-			                                <br>
-			                                <div>
-			                                  If the calling was performed on a large number of samples (this is often the case - even if only studying a small number of samples, variant calling is often performed with a <i>background</i> of samples. This ensures that common variants in the human population will be represented), we would expect to see the population allele frequency spectrum. This is reasonably well approximated by the ExAC dataset.
-			                                </div>
-			                                <img title="Allele frequency spectrum for a population" style="width:100%; padding-top:10px; padding-bottom:10px;"  src="images/afs.png"></img>
-			                                <div>
-			                                  If only a small number of samples was used in the calling step, this plot will be quite discrete and not hugely informative.
-			                                </div>
-			                                <img title="Allele frequency spectrum for a population" style="width:100%; padding-top:10px; padding-bottom:10px;"  src="images/afs_small.png"></img>
-			                              </div>
-			                              <div class="modal-footer">
-			                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			                              </div>
-			                            </div>
-			                          </div>
-			                        </div>
+                              <!-- Allele frequency spectrum modal -->
+                              <div id="afModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog" style="width:700px;">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Allele frequency spectrum</h4>
+                                    </div>
+                                    <div class="modal-body" style="overflow:auto;">
+                                      <div>
+                                        The allele frequency spectrum shows the percentage of alleles (only using SNPs) in the called population that exhibit the alterate allele. This plot is highly dependent on the number of samples that were simultaneously analyzed while generating the variant calls. For example, if this VCF file was generated by considering only a single sample, the allele frequency (AF) can only take one of three values: 0%, the sample is homozygous for the reference allele. Typically, a variant caller would determine that there is no variant at this location, so this would not be reported.; 50%, the sample is heterozygous, and; 100%, the sample is homozygous for the alternate allele.
+                                      </div>
+                                      <br>
+                                      <div>
+                                        If the calling was performed on a large number of samples (this is often the case - even if only studying a small number of samples, variant calling is often performed with a <i>background</i> of samples. This ensures that common variants in the human population will be represented), we would expect to see the population allele frequency spectrum. This is reasonably well approximated by the ExAC dataset.
+                                      </div>
+                                      <img title="Allele frequency spectrum for a population" style="width:100%; padding-top:10px; padding-bottom:10px;"  src="images/afs.png"></img>
+                                      <div>
+                                        If only a small number of samples was used in the calling step, this plot will be quite discrete and not hugely informative.
+                                      </div>
+                                      <img title="Allele frequency spectrum for a population" style="width:100%; padding-top:10px; padding-bottom:10px;"  src="images/afs_small.png"></img>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
 
-			                        <!-- Mutation spectrum -->
-			                        <div id="mut-spectrum" class="panel">
-			                            <div class="title">Base Changes
-			                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="bases_help" title="Frequency of observed mutations"></span>
-			                            </div>
-			                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-			                            <div class='no-values hide'>No values present</div>
-			                        </div>
+                              <!-- Mutation spectrum -->
+                              <div id="mut-spectrum" class="panel">
+                                  <div class="title">Base Changes
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="bases_help" title="Frequency of observed mutations"></span>
+                                  </div>
+                                  <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                                  <div class='no-values hide'>No values present</div>
+                              </div>
 
-			                        <!-- Mutation spectrum modal -->
-			                        <div id="basesModal" class="modal fade" role="dialog">
-			                          <div class="modal-dialog" style="width:700px;">
-			                            <div class="modal-content">
-			                              <div class="modal-header">
-			                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-			                                <h4 class="modal-title">Mutation spectrum</h4>
-			                              </div>
-			                              <div class="modal-body" style="overflow:auto;">
-			                                <div>
-			                                  As discussed in the Ts/Tv help information, transitions are much more common than transversion mutations. This means that it is far more likely for an Adenine (A) to mutate into a Guanine (G), and vice versa, than to mutate to either a Cytosine (C) or Thymine (T). This means the mutation spectrum is expected to look similar to the image below.
-			                                </div>
-			                                <img title="Expected mutational spectrum" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/mut_spectrum.png"></img>
-			                                <div>
-			                                  If transition mutations do not dominate the mutation spectrum, this might indicate a problem with the variant calling. If this is the case, you should also observe a Ts/Tv ratio significantly less than 2.
-			                                </div>
-			                              </div>
-			                              <div class="modal-footer">
-			                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			                              </div>
-			                            </div>
-			                          </div>
-			                        </div>
-			                </section>
+                              <!-- Mutation spectrum modal -->
+                              <div id="basesModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog" style="width:700px;">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Mutation spectrum</h4>
+                                    </div>
+                                    <div class="modal-body" style="overflow:auto;">
+                                      <div>
+                                        As discussed in the Ts/Tv help information, transitions are much more common than transversion mutations. This means that it is far more likely for an Adenine (A) to mutate into a Guanine (G), and vice versa, than to mutate to either a Cytosine (C) or Thymine (T). This means the mutation spectrum is expected to look similar to the image below.
+                                      </div>
+                                      <img title="Expected mutational spectrum" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/mut_spectrum.png"></img>
+                                      <div>
+                                        If transition mutations do not dominate the mutation spectrum, this might indicate a problem with the variant calling. If this is the case, you should also observe a Ts/Tv ratio significantly less than 2.
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                      </section>
 
-			                <section id="bottom"  >
-
-
-			                        <div id="var-type" class="panel">
-			                            <div class="title">Variant Types
-			                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="variant_help" title="Distribution of different observed variant types"></span>
-			                            </div>
-			                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-			                            <div class='no-values hide'>No values present</div>
-			                        </div>
-
-			                        <!-- Variant types modal -->
-			                        <div id="variantModal" class="modal fade" role="dialog">
-			                          <div class="modal-dialog" style="width:700px;">
-			                            <div class="modal-content">
-			                              <div class="modal-header">
-			                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-			                                <h4 class="modal-title">Variant types</h4>
-			                              </div>
-			                              <div class="modal-body" style="overflow:auto;">
-			                                <div>
-			                                  This chart shows a distribution of the variant types present in the selected VCF file. SNPs are by far the most prevalent type of genetic mutation, so it is expected that these dominate the distribution.
-			                                </div>
-			                                <div class="row vertical-align">
-			                                    <div class="col-xs-4">
-			                                      <img title="WGS variant types" style="width:100%; padding-top:15px; padding-bottom:15px;"  src="images/types_wgs.png"></img>
-			                                    </div>
-			                                    <div class="col-xs-8" style="padding-top:15px; padding-bottom:15px;">
-			                                       For whole genome sequencing data, SNPs dominate, but there is typically an appreciable number of insertion (Ins) and deletion (Del) mutations, as well as <i>Other</i> variant types. These other variants include anything that doesn't fall into the previous categories. For example, consider the case where the reference sequence is ACTG, and sometimes the A is mutated into a C, but whenever it is, the T is always deleted. Rather than these two mutations appearing separately in the VCF file, since they are only ever observed together, the reference will be ACTG, and the alternate will be CCG (the A mutated to C, and the T deleted). This mutation is a combination of a SNP and a deletion, and is listed as a <i>complex</i> variant type and will appear in the <i>Other</i> category.
-			                                    </div>
-			                                </div>
-
-			                                <div class="row vertical-align">
-			                                    <div class="col-xs-4">
-			                                      <img title="WES variant types" style="width:100%; padding-top:15px; padding-bottom:15px;" src="images/types_wes.png"></img>
-			                                    </div>
-			                                    <div class="col-xs-8" style="padding-top:15px; padding-bottom:15px;">
-			                                      It is much less likely to find structural variants, when looking at whole exome data. Large events are often not detected since the breakpoints fall outside of the exome sequencing regions. Also, insertions in, or deletions of large coding regions are likely to be more deleterious than in the non-coding regions captured in whole genome sequencing, and so there are less present in these regions. For these reasons, SNPs are expected to dominate the variant types distribution even more in exome sequencing.
-			                                    </div>
-			                                </div>
-			                                <div>
-			                                  This chart is primarily used to check that all expected variants are present. If you are expecting to see a complete VCF including insertions and deleted, but the file has been filtered to leave only SNPs, this chart will quickly help identify this.
-			                                </div>
-			                              </div>
-			                              <div class="modal-footer">
-			                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			                              </div>
-			                            </div>
-			                          </div>
-			                        </div>
-
-			                        <!-- Indel chart -->
-			                        <div id="indel-length" class="panel">
-			                            <div>
-			                                <div class="title" style="display:inline-block">Insertion &amp; Deletion Lengths
-			                                  <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="indel_help" title="Distribution of insertion and deletion lengths"></span>
-			                                </div>
-			                                <span class="checkbox" class="svg-alt" style="display:inline-block">
-			                                    <label>
-			                                        <input type="checkbox" checked value="true">Outliers
-			                                    </label>
-			                                </span>
-			                            </div>
-			                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-
-			                            <div id="indel-length-histogram"></div>
-
-			                            <div class="svg-alt">
-			                                <span style="font-weight:bold;font-size:13px;">Deletions</span>
-			                                <div id="legend-del"></div>
-			                                <span  style="font-weight:bold;font-size:13px;">Insertions</span>
-			                                <div id="legend-ins"></div>
-			                            </div>
-
-			                            <div class='no-values hide'>No values present</div>
-			                        </div>
-
-			                        <!-- Indel modal -->
-			                        <div id="indelModal" class="modal fade" role="dialog">
-			                          <div class="modal-dialog" style="width:700px;">
-			                            <div class="modal-content">
-			                              <div class="modal-header">
-			                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-			                                <h4 class="modal-title">Distribution of indels</h4>
-			                              </div>
-			                              <div class="modal-body" style="overflow:auto;">
-			                                <div>
-			                                  This plot shows how many insertions and deletions (indels) of specific lengths are present in the VCF file. It is typically easier for variant callers to detect deletion alleles, so we expect to see more deletions than insertions, and we expect to see more short indels than long ones. A typical distribution will look something like:
-			                                </div>
-			                                <img title="Expected indel length distribution" style="width:80%; padding-top:10px; padding-bottom:10px; padding-left:15%"  src="images/indels.png"></img>
-			                                <div>
-			                                  You can click the "Outliers" button to expand the chart to include indels of all lengths. Typically, the number of larger indels is dwarfed by the short, so you typically only see a distribution close to zero. However, you can zoom in on regions of the chart using the lower chart.
-			                                </div>
-			                                <img title="Indel length distribution with outliers" style="width:80%; padding-top:10px; padding-bottom:10px; padding-left:15%"  src="images/indels_outliers.png"></img>
-			                              </div>
-			                              <div class="modal-footer">
-			                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			                              </div>
-			                            </div>
-			                          </div>
-			                        </div>
-
-			                        <div id="qual-distribution" class="panel">
-			                            <div class="title">Variant Quality
-			                              <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="quality_help" title="Distribution of the quality of observed variants"></span>
-			                            </div>
-			                            <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
-			                            <svg id="qual-distribution-histogram"/>
-			                            <div class='no-values hide'>No values present</div>
-			                        </div>
-
-			                        <!-- Quality distribution modal -->
-			                        <div id="qualityModal" class="modal fade" role="dialog">
-			                          <div class="modal-dialog" style="width:700px;">
-			                            <div class="modal-content">
-			                              <div class="modal-header">
-			                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-			                                <h4 class="modal-title">Variant quality scores</h4>
-			                              </div>
-			                              <div class="modal-body" style="overflow:auto;">
-			                                <div>
-			                                  Each variant is assigned a quality score to represent the confidence in the variant. The distribution of these scores is highly variable, and no specific distribution is expected. Here we mainly want to check that the quality scores are not crowded into the low (&lt 100) end. Below is an example of a quality score distribution that is weighted to higher scores and so would be considered acceptable.
-			                                </div>
-			                                <img title="Acceptable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_good.png"></img>
-			                                <div>
-			                                  Below is another average quality score distribution that would be considered acceptable. There are many variants that have a low quality score (e.g. between 0 and 100), however, there are still a large number of variants with high scores. If variant prioritization techniques are used, it may be necessary to check individual variants to ensure that their scores are acceptable.
-			                                </div>
-			                                <img title="Acceptable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_avg.png"></img>
-			                                <div>
-			                                  Below is a quality score distribution that looks more questionable. There are still many variants that appear to be of high quality, but the majority are clustered close to zero. Seeing such a distribution should raise warning flags, but the file should not just be thrown out. Different variant calling tools use different methods to generate quality scores, so it would be prudent to check with whoever generate the variant calls to try to understand the cause of such a distribution.
-			                                </div>
-			                                <img title="Questionable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_bad.png"></img>
-			                              </div>
-			                              <div class="modal-footer">
-			                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			                              </div>
-			                            </div>
-			                          </div>
-			                        </div>
-			                </section>
+                      <section id="bottom"  >
 
 
-    		</div>
+                              <div id="var-type" class="panel">
+                                  <div class="title">Variant Types
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="variant_help" title="Distribution of different observed variant types"></span>
+                                  </div>
+                                  <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                                  <div class='no-values hide'>No values present</div>
+                              </div>
+
+                              <!-- Variant types modal -->
+                              <div id="variantModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog" style="width:700px;">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Variant types</h4>
+                                    </div>
+                                    <div class="modal-body" style="overflow:auto;">
+                                      <div>
+                                        This chart shows a distribution of the variant types present in the selected VCF file. SNPs are by far the most prevalent type of genetic mutation, so it is expected that these dominate the distribution.
+                                      </div>
+                                      <div class="row vertical-align">
+                                          <div class="col-xs-4">
+                                            <img title="WGS variant types" style="width:100%; padding-top:15px; padding-bottom:15px;"  src="images/types_wgs.png"></img>
+                                          </div>
+                                          <div class="col-xs-8" style="padding-top:15px; padding-bottom:15px;">
+                                             For whole genome sequencing data, SNPs dominate, but there is typically an appreciable number of insertion (Ins) and deletion (Del) mutations, as well as <i>Other</i> variant types. These other variants include anything that doesn't fall into the previous categories. For example, consider the case where the reference sequence is ACTG, and sometimes the A is mutated into a C, but whenever it is, the T is always deleted. Rather than these two mutations appearing separately in the VCF file, since they are only ever observed together, the reference will be ACTG, and the alternate will be CCG (the A mutated to C, and the T deleted). This mutation is a combination of a SNP and a deletion, and is listed as a <i>complex</i> variant type and will appear in the <i>Other</i> category.
+                                          </div>
+                                      </div>
+
+                                      <div class="row vertical-align">
+                                          <div class="col-xs-4">
+                                            <img title="WES variant types" style="width:100%; padding-top:15px; padding-bottom:15px;" src="images/types_wes.png"></img>
+                                          </div>
+                                          <div class="col-xs-8" style="padding-top:15px; padding-bottom:15px;">
+                                            It is much less likely to find structural variants, when looking at whole exome data. Large events are often not detected since the breakpoints fall outside of the exome sequencing regions. Also, insertions in, or deletions of large coding regions are likely to be more deleterious than in the non-coding regions captured in whole genome sequencing, and so there are less present in these regions. For these reasons, SNPs are expected to dominate the variant types distribution even more in exome sequencing.
+                                          </div>
+                                      </div>
+                                      <div>
+                                        This chart is primarily used to check that all expected variants are present. If you are expecting to see a complete VCF including insertions and deleted, but the file has been filtered to leave only SNPs, this chart will quickly help identify this.
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!-- Indel chart -->
+                              <div id="indel-length" class="panel">
+                                  <div>
+                                      <div class="title" style="display:inline-block">Insertion &amp; Deletion Lengths
+                                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="indel_help" title="Distribution of insertion and deletion lengths"></span>
+                                      </div>
+                                      <span class="checkbox" class="svg-alt" style="display:inline-block">
+                                          <label>
+                                              <input type="checkbox" checked value="true">Outliers
+                                          </label>
+                                      </span>
+                                  </div>
+                                  <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+
+                                  <div id="indel-length-histogram"></div>
+
+                                  <div class="svg-alt">
+                                      <span style="font-weight:bold;font-size:13px;">Deletions</span>
+                                      <div id="legend-del"></div>
+                                      <span  style="font-weight:bold;font-size:13px;">Insertions</span>
+                                      <div id="legend-ins"></div>
+                                  </div>
+
+                                  <div class='no-values hide'>No values present</div>
+                              </div>
+
+                              <!-- Indel modal -->
+                              <div id="indelModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog" style="width:700px;">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Distribution of indels</h4>
+                                    </div>
+                                    <div class="modal-body" style="overflow:auto;">
+                                      <div>
+                                        This plot shows how many insertions and deletions (indels) of specific lengths are present in the VCF file. It is typically easier for variant callers to detect deletion alleles, so we expect to see more deletions than insertions, and we expect to see more short indels than long ones. A typical distribution will look something like:
+                                      </div>
+                                      <img title="Expected indel length distribution" style="width:80%; padding-top:10px; padding-bottom:10px; padding-left:15%"  src="images/indels.png"></img>
+                                      <div>
+                                        You can click the "Outliers" button to expand the chart to include indels of all lengths. Typically, the number of larger indels is dwarfed by the short, so you typically only see a distribution close to zero. However, you can zoom in on regions of the chart using the lower chart.
+                                      </div>
+                                      <img title="Indel length distribution with outliers" style="width:80%; padding-top:10px; padding-bottom:10px; padding-left:15%"  src="images/indels_outliers.png"></img>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div id="qual-distribution" class="panel">
+                                  <div class="title">Variant Quality
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" id="quality_help" title="Distribution of the quality of observed variants"></span>
+                                  </div>
+                                  <div class="samplingLoader">Sampling <img src="assets/images/loading_dots.gif"/></div>
+                                  <svg id="qual-distribution-histogram"/>
+                                  <div class='no-values hide'>No values present</div>
+                              </div>
+
+                              <!-- Quality distribution modal -->
+                              <div id="qualityModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog" style="width:700px;">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title">Variant quality scores</h4>
+                                    </div>
+                                    <div class="modal-body" style="overflow:auto;">
+                                      <div>
+                                        Each variant is assigned a quality score to represent the confidence in the variant. The distribution of these scores is highly variable, and no specific distribution is expected. Here we mainly want to check that the quality scores are not crowded into the low (&lt 100) end. Below is an example of a quality score distribution that is weighted to higher scores and so would be considered acceptable.
+                                      </div>
+                                      <img title="Acceptable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_good.png"></img>
+                                      <div>
+                                        Below is another average quality score distribution that would be considered acceptable. There are many variants that have a low quality score (e.g. between 0 and 100), however, there are still a large number of variants with high scores. If variant prioritization techniques are used, it may be necessary to check individual variants to ensure that their scores are acceptable.
+                                      </div>
+                                      <img title="Acceptable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_avg.png"></img>
+                                      <div>
+                                        Below is a quality score distribution that looks more questionable. There are still many variants that appear to be of high quality, but the majority are clustered close to zero. Seeing such a distribution should raise warning flags, but the file should not just be thrown out. Different variant calling tools use different methods to generate quality scores, so it would be prudent to check with whoever generate the variant calls to try to understand the cause of such a distribution.
+                                      </div>
+                                      <img title="Questionable quality score distribution" style="width:90%; padding-top:10px; padding-bottom:10px; padding-left:5%;"  src="images/qual_bad.png"></img>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                      </section>
+
+
+        </div>
         </div>
 
 
@@ -968,14 +757,14 @@
                 </select>
               </div>
             </div> -->
-						<div id="filterSampelDiv">
+            <div id="filterSampelDiv">
 
-						</div>
+            </div>
         </div>
 
       </div>
       <div class="modal-footer" style="clear-both">
-				<div id="sample-go-button-inModal" ></div>
+        <div id="sample-go-button-inModal" ></div>
           <!-- <button type="button" id="sample-go-button" class="btn" data-dismiss="modal">Load</button> -->
       </div>
     </div>
@@ -998,5 +787,5 @@
         <script type="text/javascript" src="app/dataSelect.js"></script>
         <script type="text/javascript" src="app/app.js"></script>
 
-	</body>
+  </body>
 </html>
