@@ -102,6 +102,19 @@
           });
         </script>
 
+				<!-- <style media="screen">
+					#accessing-headers-gif{
+						margin-top: 10px;
+						margin-bottom: 10px;
+						text-align: center;
+						margin-left: auto;
+						width: 1125px;
+						margin-right: auto;
+						overflow: visible;
+						clear: both;
+					}
+				</style> -->
+
 	</head>
 	<body>
         <header>
@@ -217,15 +230,23 @@
 							}
 
 							function urlFunction(){
+
+								if (document.getElementById("url-input").value.length > 5) {
+									$("#accessing-headers-gif").removeClass("hide");
+									  myTime = setTimeout(loadUrlFunc, 3500);
+								}
+
 								//alert("urlFunction");
 								//myTime = setTimeout(loadUrlFunc, 5000);
-								if(document.getElementById("url-input").value.length > 5 && flag ===false){
-								//	$("#accessing-headers-gif").removeClass("hide")
-									myTime = setTimeout(loadUrlFunc, 5000);
-								}
-								else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
-									myTime = setTimeout(loadUrlFunc, 5000);
-								}
+								// if(document.getElementById("url-input").value.length > 5 && flag ===false){
+								// 	$("#accessing-headers-gif").removeClass("hide");
+								// //	$("#accessing-headers-gif").removeClass("hide")
+								// 	myTime = setTimeout(loadUrlFunc, 3500);
+								// }
+								// else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
+								// 	$("#accessing-headers-gif").removeClass("hide");
+								// 	myTime = setTimeout(loadUrlFunc, 3500);
+								// }
 							}
 
 							function tbiUrlFunction(){
@@ -295,20 +316,26 @@
 							function showCancelButton(){
 								$("#clear-options").removeClass("hide");
 							}
-
-
-							function clearTbiUrl(){
-								if(flag===true && document.getElementById("url-input").value.length > 5){
-									//alert("sdvsahvdhsjan")
-									clearTimeout(myTime);
-									clearTimeout(tbiMyTime);
-								}
-							}
+              // 
+              //
+							// function clearTbiUrl(){
+							// 	if(flag===true && document.getElementById("url-input").value.length > 5){
+							// 		//alert("sdvsahvdhsjan")
+							// 		clearTimeout(myTime);
+							// 		clearTimeout(tbiMyTime);
+							// 	}
+							// }
 
 
 
 						</script>
-
+						<div id="accessing-headers-gif" class="hide" style="text-align:center; margin-top:20px;">
+							<center>
+								<span >
+								<img style="height:25px" src="assets/images/loading_dots.gif" > <small style="margin-left:5px; font-size:17px"> <strong>Accessing file headers</strong></small>
+								</span>
+							</center>
+						</div>
 
             <div id="go-panel" class="hide">
               <div id="select-species-box" style="font-size:18px;width:230px;float:left;">

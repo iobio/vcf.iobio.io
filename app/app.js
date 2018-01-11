@@ -539,7 +539,6 @@ function onFileButtonClicked() {
 }
 
 function loadFromUrl() {
-	//$("#accessing-headers-gif").addClass("hide")
     var url    = $("#url-input").val();
     updateUrl("vcf",  encodeURIComponent(url));
 
@@ -609,6 +608,8 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 				console.log("sample names", sampleNames)
 				$('.vcf-sample.loader').addClass("hide");
 				if (sampleNames.length > 1) {
+					$("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+
 					$('#show-sample-dialog').removeClass("hide");
 
 				$('#sample-picker').removeClass("hide");
@@ -731,6 +732,8 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 					}
 
 					$("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
+					$("#accessing-headers-gif").addClass("hide")
+
 
 
 					$("#go-button-for-noSamples").on("click", function(){
