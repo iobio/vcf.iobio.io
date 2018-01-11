@@ -609,6 +609,7 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 				$('.vcf-sample.loader').addClass("hide");
 				if (sampleNames.length > 1) {
 					$("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+					$("#clear-input").addClass("hide"); //Hide the clear input button
 
 					$('#show-sample-dialog').removeClass("hide");
 
@@ -732,7 +733,8 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 					}
 
 					$("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
-					$("#accessing-headers-gif").addClass("hide")
+					$("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+					$("#clear-input").addClass("hide"); //Hide the clear input button
 
 
 
@@ -854,6 +856,7 @@ function onRemoveBed() {
 function displayFileError(errorMessage) {
 
 	// $("#url-input").prop('disabled', false);
+	$("#accessing-headers-gif").addClass("hide");
 
 	if(flag){
 		d3.select("#selectData")
