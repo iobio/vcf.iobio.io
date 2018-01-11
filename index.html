@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -104,6 +102,19 @@
           });
         </script>
 
+				<!-- <style media="screen">
+					#accessing-headers-gif{
+						margin-top: 10px;
+						margin-bottom: 10px;
+						text-align: center;
+						margin-left: auto;
+						width: 1125px;
+						margin-right: auto;
+						overflow: visible;
+						clear: both;
+					}
+				</style> -->
+
 	</head>
 	<body>
         <header>
@@ -149,7 +160,7 @@
 										</span>
 
 
-                    <input id="url-input" value="" onkeypress="clearUrlFunction()" onkeydown="clearUrlFunction()"  onpaste="clearUrlFunction()" onfocusout="urlFunction()" placeholder="vcf.gz URL" ></input>
+                    <input id="url-input" value="" onkeypress="clearUrlFunction()" onkeydown="clearUrlFunction()" onclick="clearUrlFunction()" onpaste="clearUrlFunction()" onfocusout="urlFunction()" placeholder="vcf.gz URL" ></input>
 										<br>
 										<label id="clear-input" onclick="clearUrlInput()" name="button"><a>Clear input</a></label> |
 
@@ -159,7 +170,7 @@
 				            </span> -->
 										<br>
 
-                    <input id="url-tbi-input" value="" style="display:none" class="disabled" onkeypress="clearTbiUrl()" onkeydown="clearTbiUrl()"  onpaste="clearTbiUrl()" disabled onfocusout="tbiUrlFunction()" placeholder="tbi URL (optional)"></input>
+                    <input id="url-tbi-input" value="" style="display:none" class="disabled" onkeypress="clearTbiUrl()"   onfocusout="tbiUrlFunction()" placeholder="tbi URL (optional)"></input>
                 </div>
             </div>
             <div id="file-alert" class="alert alert-danger hide" role="alert">
@@ -172,6 +183,7 @@
 						var tbiMyTime;
 						var sampleDataFlag = false;
 						var timings;
+						var urlFunctionTime;
 
 						console.log("sample flag", sampleDataFlag)
 
@@ -210,6 +222,7 @@
 							 else if (flag) {
 							 	flag = false;
 								$("#url-tbi-input").prop('disabled', true);
+								$("#url-tbi-input").css('display', "none");
 								if(document.getElementById("url-input").value.length > 5 ){
 									myTime = setTimeout(loadUrlFunc, 2000);
 								}
@@ -217,29 +230,38 @@
 							}
 
 							function urlFunction(){
-								//myTime = setTimeout(loadUrlFunc, 5000);
-								if(document.getElementById("url-input").value.length > 5 ){
-								//	$("#accessing-headers-gif").removeClass("hide")
-									myTime = setTimeout(loadUrlFunc, 5000);
+
+								if (document.getElementById("url-input").value.length > 5) {
+									$("#accessing-headers-gif").removeClass("hide");
+									  myTime = setTimeout(loadUrlFunc, 3500);
 								}
+
+								//alert("urlFunction");
+								//myTime = setTimeout(loadUrlFunc, 5000);
+								// if(document.getElementById("url-input").value.length > 5 && flag ===false){
+								// 	$("#accessing-headers-gif").removeClass("hide");
+								// //	$("#accessing-headers-gif").removeClass("hide")
+								// 	myTime = setTimeout(loadUrlFunc, 3500);
+								// }
+								// else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
+								// 	$("#accessing-headers-gif").removeClass("hide");
+								// 	myTime = setTimeout(loadUrlFunc, 3500);
+								// }
 							}
 
 							function tbiUrlFunction(){
-
+								//alert("tbiUrlFunction")
 								if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
-									var tbiMyTime =  setTimeout(loadFromUrl, 8000);
+									//alert("tbi url function")
+									var tbiMyTime =  setTimeout(loadFromUrl, 5000);
 									$("#sampleDataUrl").addClass("hide");
-									setTimeout(showCancelButton, 8200)
+									setTimeout(showCancelButton, 5200)
 								}
 							}
 
 
-              //
-							// function clearTbiUrl(){
-							// 	if(flag===true){
-							// 		clearTimeout(tbiMyTime)
-							// 	}
-							// }
+
+
 
 							function clearUrlFunction(){
 								sampleDataFlag= false;
@@ -271,6 +293,7 @@
 							}
 
 							function loadUrlFunc(){
+								//alert("loadUrlFunc")
 
 								if (flag===false) {
 									$("#clear-input").addClass("hide")
@@ -293,11 +316,26 @@
 							function showCancelButton(){
 								$("#clear-options").removeClass("hide");
 							}
+              //
+              //
+							// function clearTbiUrl(){
+							// 	if(flag===true && document.getElementById("url-input").value.length > 5){
+							// 		//alert("sdvsahvdhsjan")
+							// 		clearTimeout(myTime);
+							// 		clearTimeout(tbiMyTime);
+							// 	}
+							// }
 
 
 
 						</script>
-
+						<div id="accessing-headers-gif" class="hide" style="text-align:center; margin-top:20px;">
+							<center>
+								<span >
+								<img style="height:25px" src="assets/images/loading_dots.gif" > <small style="margin-left:5px; font-size:17px"> <strong>Accessing file headers</strong></small>
+								</span>
+							</center>
+						</div>
 
             <div id="go-panel" class="hide">
               <div id="select-species-box" style="font-size:18px;width:230px;float:left;">
@@ -337,7 +375,7 @@
 	            </div> -->
 							<button type="button" id="all-sample-go-button" style="margin-top:24px" class="btn hide"  >Select All Samples</button>
 							<button type="button" id="sample-go-button" style="margin-top:24px;" disabled class="btn hide " data-dismiss="modal">Load</button>
-							<button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Cancel</button>
+							<button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Clear</button>
 
 
 
