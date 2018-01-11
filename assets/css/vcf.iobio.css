@@ -1,3 +1,4 @@
+
 label {
     font-weight: 300;
 }
@@ -31,17 +32,6 @@ label {
     margin-right: auto;
     overflow: visible;
     clear: both;
-}
-
-#accessing-headers-gif{
-  margin-top: 10px;
-  margin-bottom: 10px;
-  text-align: center;
-  margin-left: auto;
-  width: 1125px;
-  margin-right: auto;
-  overflow: visible;
-  clear: both;
 }
 
 

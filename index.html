@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -118,7 +120,7 @@
 
 					</header>
 
-            <div style="width:700px; margin-left:auto; margin-right:auto; margin-top: 50px">
+            <div style="width:800px; margin-left:auto; margin-right:auto; margin-top: 50px">
 							<div style="margin-left:auto;margin-right:auto;font-size: 28px; color: rgb(110,110,110); margin-bottom:40px">
 									<center>examine your variant file in seconds</center>
 							</div>
@@ -137,7 +139,7 @@
 
             </div>
             <div id="vcf-url" style="visibility:hidden;">
-                <div class="arrow_box" style="display:inline-block;width:1000px;">
+                <div class="arrow_box" style="display:inline-block;width:1125px;">
 
 
 										<span>
@@ -179,6 +181,7 @@
 								$('#sampleDataUrl').prop('onclick',null).off('click');
 								console.log("sample flag", sampleDataFlag);
 								$("#sample-Dataset-load").prop('disabled', false).removeClass("hide");
+								$("#clear-options").removeClass("hide");
 
 
 								//$("#accessing-headers-gif").removeClass("hide")
@@ -224,8 +227,9 @@
 							function tbiUrlFunction(){
 
 								if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
-									var tbiMyTime =  setTimeout(loadFromUrl, 15000);
-									$("#sampleDataUrl").addClass("hide")
+									var tbiMyTime =  setTimeout(loadFromUrl, 8000);
+									$("#sampleDataUrl").addClass("hide");
+									setTimeout(showCancelButton, 8200)
 								}
 							}
 
@@ -241,6 +245,7 @@
 								sampleDataFlag= false;
 								$("#sample-Dataset-load").addClass("hide");
 								clearTimeout(myTime);
+								$("#clear-options").addClass("hide")
 
 								if(flag===true){
 									clearTimeout(tbiMyTime)
@@ -257,6 +262,7 @@
 								clearTimeout(myTime);
 								sampleDataFlag= false;
 								$("#sample-Dataset-load").addClass("hide");
+								$("#clear-options").addClass("hide")
 
 								// if(sampleDataFlag){
 								// 	clearTimeout(timings)
@@ -265,19 +271,27 @@
 							}
 
 							function loadUrlFunc(){
+
 								if (flag===false) {
 									$("#clear-input").addClass("hide")
 									$("#sampleDataUrl").addClass("hide")
 									// $("#url-button").addClass("hide")
 									loadFromUrl();
+									setTimeout(showCancelButton, 1750)
 								}
 								else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
 									//alert("flag true and tbi url entered")
 									loadFromUrl();
+									setTimeout(showCancelButton, 1750)
 								}
 								// else{
 								// 	//alert("flag was set to true")
 								// }
+							}
+
+
+							function showCancelButton(){
+								$("#clear-options").removeClass("hide");
 							}
 
 
@@ -318,12 +332,12 @@
 	              </div>
 	            </div>
 
-							<div class="vcf-sample loader hide" style="text-align:center; margin-top:0px">
-	              <!-- <span class="loader-label" >Initializing</span> -->
+							<!-- <div class="vcf-sample loader hide" style="text-align:center; margin-top:0px">
 	              <img src="assets/images/loading_dots.gif" >
-	            </div>
+	            </div> -->
 							<button type="button" id="all-sample-go-button" style="margin-top:24px" class="btn hide"  >Select All Samples</button>
 							<button type="button" id="sample-go-button" style="margin-top:24px;" disabled class="btn hide " data-dismiss="modal">Load</button>
+							<button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Cancel</button>
 
 
 
@@ -331,29 +345,6 @@
 
 
 							<script>
-								// $("#go-button-for-noSamples").on("click", function(){
-								// 	d3.select("#selectData")   //*
-								// 	.style("visibility", "hidden")
-								// 	.style("display", "none");
-                //
-								// 	d3.select("#showData")    //*
-								// 		.style("visibility", "visible");
-                //
-								// $("#showData").removeClass("hide"); //*
-								// vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
-								// // 	d3.select("#selectData")   //*
-								// // 	.style("visibility", "hidden")
-								// // 	.style("display", "none");
-								// // 	vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
-								// // 	// setTimeout(drawPieChart, 500);
-								// // 	// setTimeout(onAllReferencesSelected,500);
-								// // 	// loadStats(chromosomeIndex);
-                // //
-								// // 	d3.select("#showData")    //*
-								// // 		.style("visibility", "visible");
-                // //
-								// // $("#showData").removeClass("hide");
-								// })
 
 								$("#clear-options").on("click", function(){
 									var selectTheOptions = $("#vcf-sample-select").selectize();
@@ -372,7 +363,7 @@
 									$('#sample-go-button').addClass("hide");
 									$('#all-sample-go-button').addClass("hide");
 									vcfiobio.vcfURL= "";
-									window.history.pushState({'index.html' : 'bar'},null,"?vcf=" +" " + "&tbi=" + "" );
+									window.history.pushState({'index.html' : 'bar'},null,"?vcf=" +"" + "&tbi=" + "" );
 									location.reload();
 								})
 
