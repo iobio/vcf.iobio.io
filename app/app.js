@@ -166,6 +166,19 @@ var urlFunctionTime;
 
 
   function clearUrlFunction(){
+    //Clear the samples
+    var selectTheOptions = $("#vcf-sample-select").selectize();
+		var control = selectTheOptions[0].selectize;
+		control.clearOptions();
+
+    //Hide the load button for no samples
+    $("#go-button-for-noSamples").addClass("hide");
+
+    //Hide the load button for files with samples
+    $("#all-sample-go-button").addClass("hide");
+    $("#sample-go-button").addClass("hide");
+    $("#vcf-sample-box").addClass("hide");
+
     sampleDataFlag= false;
     $("#sample-Dataset-load").addClass("hide");
     clearTimeout(myTime);
@@ -177,6 +190,12 @@ var urlFunctionTime;
     }
   }
 
+  // $("#clearSamples").on("click", function(){
+  //   var selectTheOptions = $("#vcf-sample-select").selectize();
+  //   var control = selectTheOptions[0].selectize;
+  //   control.clearOptions();
+  // });
+  //
 
   function clearUrlInput(){
     document.getElementById("url-input").value = "";
@@ -207,6 +226,15 @@ var urlFunctionTime;
 
   function showCancelButton(){
     $("#clear-options").removeClass("hide");
+  }
+
+  function loadWithSample(){
+    loadFromUrl();
+    $("#select-build-box").removeClass("hide");
+    $("#go-button-for-noSamples").removeClass("hide");
+    $("#clear-options").removeClass("hide");
+
+
   }
 
 
@@ -641,6 +669,7 @@ function emailProblem() {
 }
 
 function displayVcfUrlBox() {
+  console.log("clicked!")
     $('#vcf-url').css('visibility','visible');
     $('#vcf-url-button-panel').css('visibility','visible');
     $("#vcf-url").children("input").focus();
@@ -651,7 +680,9 @@ function displayVcfUrlBox() {
     vcfiobio.vcfURL = $('#url-input').val();
     vcfiobio.tbiURL = $('#url-tbi-input').val();
     dataSelect.setDefaultBuildFromData(); //builds data for species and genome build
-    //loadFromUrl();
+    loadWithSample();
+    $('#fileButton').prop('onclick',null).off('click');
+
 }
 function onFileButtonClicked() {
   $('#vcf-url').css('visibility', 'hidden');
@@ -664,10 +695,6 @@ function onFileButtonClicked() {
 }
 
 function loadFromUrl() {
-  // $select_region = $('#select-build').selectize();
-  // select_region = $select_region[0].selectize;
-  // select_region.enable();
-
 
     var url    = $("#url-input").val();
     updateUrl("vcf",  encodeURIComponent(url));
@@ -676,12 +703,7 @@ function loadFromUrl() {
     updateUrl("tbi",  encodeURIComponent(tbiUrl));
 
     $("#url-tbi-input").prop('disabled', true);
-    $("#url-input").prop('disabled', true);
 
-    // d3.select("#showData")
-    //   .style("visibility", "hidden");
-
-    //$("#showData").style("visibility", "hidden")
 
     _loadVcfFromUrl(url, tbiUrl);
 }

@@ -124,7 +124,7 @@
                     <input type="file" name="files[]" id="file"  multiple />
                     <label class="file-button" for="file" >choose vcf file</label>
                 </div>
-                <div class="file-button" style="text-align:center" onClick="displayVcfUrlBox()">choose vcf url
+                <div class="file-button" id="fileButton" style="text-align:center" onClick="displayVcfUrlBox()">choose vcf url
                 </div>
                 <div style="clear:both"></div>
 
@@ -132,17 +132,19 @@
             <div id="vcf-url" style="visibility:hidden;">
                 <div class="arrow_box" style="display:inline-block;width:1125px;">
 
+                  <script>
+
+                  </script>
+
                     <center>
                       <label class="checkboxContainer"><strong>Separate URL for index files</strong>
                         <input type="checkbox" onclick="enableTbiUrl()">
                         <span class="checkmark"></span>
                       </label>
                     </center>
+                    <!-- <button id="clearSamples">clear options</button> -->
 
-                    <input id="url-input" value="" onkeypress="clearUrlFunction()" onkeydown="clearUrlFunction()" onclick="clearUrlFunction()" onpaste="clearUrlFunction()" onfocusout="urlFunction()" placeholder="vcf.gz URL" ></input>
-                    <br>
-                    <label id="clear-input" onclick="clearUrlInput()" name="button"><a>Clear input</a></label>
-                    <small id="sampleDataUrl" onclick="enterSampleData()"> | <a> Sample Dataset <i>Exome Aggregation Consortium (ExAC)  </i></a></small>
+                    <input id="url-input" value="http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz" onkeypress="clearUrlFunction()" onkeydown="clearUrlFunction()"  onpaste="clearUrlFunction()" onfocusout="urlFunction()" placeholder="vcf.gz URL" ></input>
                     <br>
                     <input id="url-tbi-input" value="" style="display:none" class="disabled" onkeypress="clearTbiUrl()"   onfocusout="tbiUrlFunction()" placeholder="tbi URL (optional)"></input>
                 </div>
