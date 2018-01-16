@@ -110,7 +110,7 @@ var urlFunctionTime;
     $('#sampleDataUrl').prop('onclick',null).off('click');
     console.log("sample flag", sampleDataFlag);
     $("#sample-Dataset-load").prop('disabled', false).removeClass("hide");
-    $("#clear-options").removeClass("hide");
+    // $("#clear-options").removeClass("hide");
     $("#select-build-box").removeClass("hide"); //show the build box
 
   }
@@ -159,7 +159,7 @@ var urlFunctionTime;
     if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
       var tbiMyTime =  setTimeout(loadFromUrl, 4000);
       $("#sampleDataUrl").addClass("hide");
-      setTimeout(showCancelButton, 4200);
+      // setTimeout(showCancelButton, 4200);
       $("#accessing-headers-gif").removeClass("hide");
     }
   }
@@ -182,7 +182,7 @@ var urlFunctionTime;
     sampleDataFlag= false;
     $("#sample-Dataset-load").addClass("hide");
     clearTimeout(myTime);
-    $("#clear-options").addClass("hide");
+    // $("#clear-options").addClass("hide");
     $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
     $("#select-build-box").addClass("hide"); //Hide the select build box
     if(flag===true){
@@ -203,7 +203,7 @@ var urlFunctionTime;
     sampleDataFlag= false;
     $("#sampleDataUrl").removeClass("hide"); //Shows the option to load the sample data
     $("#sample-Dataset-load").addClass("hide");
-    $("#clear-options").addClass("hide");
+    // $("#clear-options").addClass("hide");
     $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
     $("#select-build-box").addClass("hide"); //Hide the select build box
   }
@@ -214,25 +214,25 @@ var urlFunctionTime;
       $("#clear-input").addClass("hide")
       $("#sampleDataUrl").addClass("hide")
       loadFromUrl();
-      setTimeout(showCancelButton, 1750)
+      // setTimeout(showCancelButton, 1750)
     }
     else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
       //alert("flag true and tbi url entered")
       loadFromUrl();
-      setTimeout(showCancelButton, 1750)
+      // setTimeout(showCancelButton, 1750)
     }
   }
 
 
   function showCancelButton(){
-    $("#clear-options").removeClass("hide");
+    // $("#clear-options").removeClass("hide");
   }
 
   function loadWithSample(){
     loadFromUrl();
     $("#select-build-box").removeClass("hide");
     $("#go-button-for-noSamples").removeClass("hide");
-    $("#clear-options").removeClass("hide");
+    // $("#clear-options").removeClass("hide");
 
 
   }
@@ -709,15 +709,15 @@ function loadFromUrl() {
     _loadVcfFromUrl(url, tbiUrl);
 }
 
-
-function loadSamplesFromFile(){
-  $("#accessing-headers-gif").removeClass("hide");
-  loadFromFile();
-}
+//
+// function loadSamplesFromFile(){
+//   $("#accessing-headers-gif").removeClass("hide");
+//   loadFromFile();
+// }
 
 function loadFromFile() {
   $('.vcf-sample.loader').removeClass("hide");
-  $("#select-species-box").removeClass("hide");
+
 
   // d3.select("#selectData")
   //   .style("visibility", "hidden")
@@ -735,6 +735,7 @@ function loadFromFile() {
       $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
       $("#clear-input").addClass("hide"); //Hide the clear input button
       $("#select-build-box").removeClass("hide"); //Show the select-build box
+      $("#select-species-box").removeClass("hide"); //Show the select species box
 
 
       $('#show-sample-dialog').removeClass("hide");
@@ -759,7 +760,7 @@ function loadFromFile() {
 
     // Enable and disable load button for samples
     $('#vcf-sample-select')[0].selectize.on("change", function(value){ //*
-      if (value) {
+      if (value ) {
         $("#sample-go-button").prop('disabled', false).removeClass("disabled");
       }
       else if(value === null){
@@ -1071,10 +1072,13 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 
 function onFilesSelected(event) {
   $("#file-alert").addClass("hide");
+  $("#accessing-headers-gif").removeClass("hide");
+  $("#select-species-box").addClass("hide");
   vcfiobio.openVcfFile( event,
     function(vcfFile) {
       d3.select("#vcf_file").text(vcfFile.name);
       dataSelect.setDefaultBuildFromData();
+      loadFromFile();
     },
     function(errorMessage) {
       displayFileError(errorMessage)

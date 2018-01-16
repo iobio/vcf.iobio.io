@@ -120,8 +120,9 @@
               </div>
 
                 <!-- Upload File -->
+                <!-- onchange="setTimeout(loadSamplesFromFile, 750)" -->
                 <div class="file" onClick="onFileButtonClicked()">
-                    <input type="file" name="files[]" id="file"  multiple onchange="setTimeout(loadSamplesFromFile, 750)"/>
+                    <input type="file" name="files[]" id="file"  multiple />
                     <label class="file-button" for="file" >choose vcf file</label>
                 </div>
                 <!-- Url box -->
@@ -131,7 +132,7 @@
 
             </div>
             <div id="vcf-url" style="visibility:hidden;">
-                <div class="arrow_box" style="display:inline-block;width:1125px;">
+                <div class="arrow_box" style="display:inline-block;width:1000px;">
 
                   <script>
 
@@ -189,28 +190,28 @@
 
               <button type="button" id="all-sample-go-button" style="margin-top:24px" class="btn hide"  >Select All Samples</button>
               <button type="button" id="sample-go-button" style="margin-top:24px;" disabled class="btn hide " data-dismiss="modal">Load</button>
-              <button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Clear</button>
+              <!-- <button type="button" id="clear-options" style="margin-top:24px; margin-left:15px; background: #e0e0e0bd; border: #e0e0e0bd solid 1px; color: #2d8fc1;" class="cancelButton btn hide">Clear</button> -->
 
 
               <script>
 
-                $("#clear-options").on("click", function(){
-                  var selectTheOptions = $("#vcf-sample-select").selectize();
-                  var control = selectTheOptions[0].selectize;
-                  control.clear();
-
-                  document.getElementById("url-input").value = "";
-                  $("#url-input").prop('disabled', false)
-                  document.getElementById("url-tbi-input").value = "";
-
-
-                  $('#vcf-sample-box').addClass("hide");
-                  $('#sample-go-button').addClass("hide");
-                  $('#all-sample-go-button').addClass("hide");
-                  vcfiobio.vcfURL= "";
-                  window.history.pushState({'index.html' : 'bar'},null,"?vcf=" +"" + "&tbi=" + "" );
-                  location.reload();
-                })
+                // $("#clear-options").on("click", function(){
+                //   var selectTheOptions = $("#vcf-sample-select").selectize();
+                //   var control = selectTheOptions[0].selectize;
+                //   control.clear();
+                //
+                //   document.getElementById("url-input").value = "";
+                //   $("#url-input").prop('disabled', false)
+                //   document.getElementById("url-tbi-input").value = "";
+                //
+                //
+                //   $('#vcf-sample-box').addClass("hide");
+                //   $('#sample-go-button').addClass("hide");
+                //   $('#all-sample-go-button').addClass("hide");
+                //   vcfiobio.vcfURL= "";
+                //   window.history.pushState({'index.html' : 'bar'},null,"?vcf=" +"" + "&tbi=" + "" );
+                //   location.reload();
+                // })
 
               </script>
 

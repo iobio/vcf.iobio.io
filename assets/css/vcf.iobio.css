@@ -7,7 +7,7 @@ label {
 .checkboxContainer {
     display: block;
     position: relative;
-    padding-left: 35px;
+    padding-left: 55px;
     margin-bottom: 12px;
     cursor: pointer;
     /* font-size: 22px; */
@@ -97,7 +97,7 @@ label {
     margin-bottom: 10px;
     text-align: center;
     margin-left: auto;
-    width: 1125px;
+    width: 1000px;
     margin-right: auto;
     overflow: visible;
     clear: both;
