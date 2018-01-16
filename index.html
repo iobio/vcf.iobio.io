@@ -119,11 +119,12 @@
                   <center>examine your variant file in seconds</center>
               </div>
 
-
+                <!-- Upload File -->
                 <div class="file" onClick="onFileButtonClicked()">
-                    <input type="file" name="files[]" id="file"  multiple />
+                    <input type="file" name="files[]" id="file"  multiple onchange="setTimeout(loadSamplesFromFile, 750)"/>
                     <label class="file-button" for="file" >choose vcf file</label>
                 </div>
+                <!-- Url box -->
                 <div class="file-button" id="fileButton" style="text-align:center" onClick="displayVcfUrlBox()">choose vcf url
                 </div>
                 <div style="clear:both"></div>
@@ -168,7 +169,7 @@
               </div>
               <div id="select-build-box" class="hide" style="font-size:18x;width:250px;float:left;margin-left:15px;">
                 <span id="build-label">Genome Build</span>
-                <select  id="select-build" class="selectized" placeholder="select genome build...">
+                <select required id="select-build" class="selectized" placeholder="select genome build...">
                 </select>
               </div>
 
@@ -215,7 +216,7 @@
 
               <p></p>
               <br>
-              <button id="file-go-button" class="hide go-button btn disabled" onclick="loadFromFile()">Go </button>
+              <!-- <button id="file-go-button" class="hide go-button btn disabled" onclick="loadFromFile()">Go </button> -->
 
               <div id="species-build-warning" class="alert alert-danger hide" style="float:left;width:100%">
               </div>

@@ -690,6 +690,7 @@ function onFileButtonClicked() {
   $("#go-panel").removeClass("hide");
     $("#url-go-button").addClass("hide");
     $("#file-go-button").removeClass("hide");
+    $("#select-species-box").addClass("hide");
     dataSelect.setDefaultBuildFromData();
 
 }
@@ -709,17 +710,168 @@ function loadFromUrl() {
 }
 
 
+function loadSamplesFromFile(){
+  $("#accessing-headers-gif").removeClass("hide");
+  loadFromFile();
+}
+
 function loadFromFile() {
   $('.vcf-sample.loader').removeClass("hide");
+  $("#select-species-box").removeClass("hide");
 
-  d3.select("#selectData")
-    .style("visibility", "hidden")
-    .style("display", "none");
+  // d3.select("#selectData")
+  //   .style("visibility", "hidden")
+  //   .style("display", "none");
 
-  d3.select("#showData")
-    .style("visibility", "visible");
+  // d3.select("#showData")
+  //   .style("visibility", "visible");
 
-  vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+  //vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+
+  vcfiobio.getSampleNames(function(sampleNames) {
+    console.log("sample names", sampleNames)
+    $('.vcf-sample.loader').addClass("hide");
+    if (sampleNames.length > 1) {
+      $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+      $("#clear-input").addClass("hide"); //Hide the clear input button
+      $("#select-build-box").removeClass("hide"); //Show the select-build box
+
+
+      $('#show-sample-dialog').removeClass("hide");
+
+    $('#sample-picker').removeClass("hide");
+    sampleNames.forEach( function(sampleName) {
+      $('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
+    });
+    if (sampleNamesFromUrl) {
+      $('#vcf-sample-select')[0].selectize.setValue(sampleNamesFromUrl.split(","));
+      sampleNamesFromUrl = "";
+    }
+
+    var x = $('#vcf-sample-select').selectize();
+    var selectize  = x[0].selectize;
+
+    $("#all-sample-go-button").click(function(){
+      var z = selectize.setValue(Object.keys(selectize.options));
+      console.log("z", z);
+      $("#all-sample-go-button").addClass("disabled")
+    })
+
+    // Enable and disable load button for samples
+    $('#vcf-sample-select')[0].selectize.on("change", function(value){ //*
+      if (value) {
+        $("#sample-go-button").prop('disabled', false).removeClass("disabled");
+      }
+      else if(value === null){
+        $("#sample-go-button").prop('disabled', true).addClass("disabled");
+      }
+    });
+
+    $('#vcf-sample-box').removeClass("hide");
+    $('#sample-go-button').removeClass("hide");
+      $('#all-sample-go-button').removeClass("hide");
+
+    $('#sample-go-button').off('click');
+
+
+
+    $('#sample-go-button').on('click', function() {
+
+        if (samplesSet===false) {
+          samplesSet=true;
+          d3.select("#selectData")   //*
+          .style("visibility", "hidden")
+          .style("display", "none");
+
+          d3.select("#showData")    //*
+            .style("visibility", "visible");
+
+        $("#showData").removeClass("hide"); //*
+
+        vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+
+
+        $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
+        $("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
+
+          var samples =  $('#vcf-sample-select')[0].selectize.items;
+          console.log("samples ", samples)
+          if (samples.length > 0) {
+                $('#samples-filter-header #sample-names').removeClass("hide");
+                if (samples.length > 6) {
+              $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
+                } else {
+              $('#samples-filter-header #sample-names').text(samples.join(" "));
+                }
+          } else {
+                $('#samples-filter-header #sample-names').addClass("hide");
+          }
+          window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
+          vcfiobio.setSamples(samples);
+          // loadStats(chromosomeIndex);
+        }
+      else if(samplesSet===true){
+
+        var samples =  $('#vcf-sample-select')[0].selectize.items;
+        console.log("samples ", samples)
+        if (samples.length > 0) {
+              $('#samples-filter-header #sample-names').removeClass("hide");
+              if (samples.length > 6) {
+            $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
+              } else {
+            $('#samples-filter-header #sample-names').text(samples.join(" "));
+              }
+        } else {
+              $('#samples-filter-header #sample-names').addClass("hide");
+        }
+        window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
+        vcfiobio.setSamples(samples);
+        loadStats(chromosomeIndex);
+
+      }
+
+
+    });
+    } else {
+      if(sampleDataFlag){
+        //vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
+        vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+        d3.select("#selectData")   //*
+        .style("visibility", "hidden")
+        .style("display", "none");
+
+        d3.select("#showData")    //*
+          .style("visibility", "visible");
+
+      $("#showData").removeClass("hide"); //*
+      }
+
+      $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
+      $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+      $("#clear-input").addClass("hide"); //Hide the clear input button
+      $("#select-build-box").removeClass("hide"); //Show the select build box
+
+
+
+      $("#go-button-for-noSamples").on("click", function(){
+        console.log("url is ", url)
+        //vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
+        vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+
+
+
+        d3.select("#selectData")   //*
+        .style("visibility", "hidden")
+        .style("display", "none");
+
+        d3.select("#showData")    //*
+          .style("visibility", "visible");
+
+      $("#showData").removeClass("hide"); //*
+      })
+
+    }
+  });
 
 }
 function updateUrl(paramName, value) {
@@ -1011,6 +1163,8 @@ function displayFileError(errorMessage) {
 
     $("#file-alert").text(errorMessage);
     $("#file-alert").removeClass("hide");
+    $("#accessing-headers-gif").addClass("hide");
+    $("#select-species-box").addClass("hide");
 
     $("#url-tbi-input").prop('disabled', false);
     $("#url-input").prop('disabled', false);
@@ -1027,6 +1181,8 @@ function displayFileError(errorMessage) {
 
     $("#file-alert").text(errorMessage);
     $("#file-alert").removeClass("hide");
+    $("#accessing-headers-gif").addClass("hide");
+    $("#select-species-box").addClass("hide");
 
     $("#url-input").prop('disabled', false);
   }
@@ -1046,6 +1202,39 @@ function onReferencesLoaded(refData) {
   // // will fire the 'click all' event, causing the stats to load
   chromosomeChart.clickAllSlices(pieChartRefData);
   //onAllReferencesSelected();  //loads  the variant density
+  loadStats(chromosomeIndex);
+
+
+
+}
+
+
+function onReferencesLoaded(refData) {
+
+  //   // Select 'all' chromosomes (for genome level view)
+  pieChartRefData = vcfiobio.getReferences(.005, 1);
+  //
+  // // Select the 'All' references in the chromosome chart.  This
+  // // will fire the 'click all' event, causing the stats to load
+  chromosomeChart.clickAllSlices(pieChartRefData);
+  //onAllReferencesSelected();  //loads  the variant density
+  loadStats(chromosomeIndex);
+
+
+
+}
+
+
+
+function onReferencesLoaded1(refData) {
+
+  // //   // Select 'all' chromosomes (for genome level view)
+  // pieChartRefData = vcfiobio.getReferences(.005, 1);
+  // //
+  // // // Select the 'All' references in the chromosome chart.  This
+  // // // will fire the 'click all' event, causing the stats to load
+  // chromosomeChart.clickAllSlices(pieChartRefData);
+  onAllReferencesSelected();  //loads  the variant density
   loadStats(chromosomeIndex);
 
 
