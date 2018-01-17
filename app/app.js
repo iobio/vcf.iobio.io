@@ -104,6 +104,11 @@ var timings;
 var urlFunctionTime;
 
 
+var buildFlag = false; //Sets true when the build is selected in the file upload
+var sampleLoadFlag = false; //Sets true when the samples are selected in the file upload
+
+
+
   function enterSampleData(){
     document.getElementById("url-input").value = "http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz"
     sampleDataFlag = true;
@@ -233,8 +238,6 @@ var urlFunctionTime;
     $("#select-build-box").removeClass("hide");
     $("#go-button-for-noSamples").removeClass("hide");
     // $("#clear-options").removeClass("hide");
-
-
   }
 
 
@@ -728,7 +731,10 @@ function loadFromFile() {
 
   //vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
 
+
   vcfiobio.getSampleNames(function(sampleNames) {
+    console.log("build name", genomeBuildHelper.getCurrentBuildName());
+    console.log("buildFlag", buildFlag)
     console.log("sample names", sampleNames)
     $('.vcf-sample.loader').addClass("hide");
     if (sampleNames.length > 1) {
@@ -754,13 +760,24 @@ function loadFromFile() {
 
     $("#all-sample-go-button").click(function(){
       var z = selectize.setValue(Object.keys(selectize.options));
-      console.log("z", z);
       $("#all-sample-go-button").addClass("disabled")
+    })
+
+
+    //Enable the load button only if build is selected and the samples are selected
+    $('#select-build')[0].selectize.on("change", function(){
+      if (buildFlag && sampleLoadFlag) {
+        $("#sample-go-button").prop('disabled', false).removeClass("disabled");
+      }
+      else {
+        $("#sample-go-button").prop('disabled', true).addClass("disabled");
+      }
     })
 
     // Enable and disable load button for samples
     $('#vcf-sample-select')[0].selectize.on("change", function(value){ //*
-      if (value ) {
+      sampleLoadFlag = true;
+      if (value && buildFlag) {
         $("#sample-go-button").prop('disabled', false).removeClass("disabled");
       }
       else if(value === null){
