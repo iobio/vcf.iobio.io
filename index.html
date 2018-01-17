@@ -175,9 +175,64 @@
               </div>
 
 
-
               <button type="button" id="go-button-for-noSamples" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide" >Load</button>
-              <button type="button" onclick="loadUsingSampleDataSet()" id="sample-Dataset-load" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide">Load</button>
+              <button type="button" id="go-button-for-load" onclick="demoDataLoad()" style="margin-top:24px; margin-left: -250px;width: 180px;"  class="btn hide">Load</button>
+
+              <script type="text/javascript">
+              // Only for loading the dataset on load
+                function demoDataLoad(){
+                    var url    = $("#url-input").val();
+                    updateUrl("vcf",  encodeURIComponent(url));
+
+                    var tbiUrl = $("#url-tbi-input").val();
+                    updateUrl("tbi",  encodeURIComponent(tbiUrl));
+
+                    _loadDemoVcfFromUrl(url, tbiUrl);
+                }
+
+
+                function _loadDemoVcfFromUrl(url, tbiUrl, sampleNames){
+                  $("#file-alert").addClass("hide");
+                  dataSelect.setDefaultBuildFromData();
+
+                  vcfiobio.openVcfUrl( url, tbiUrl, function( success, message) {
+                    if (success) {
+                      $('.vcf-sample.loader').removeClass("hide");
+                    d3.select("#vcf_file").text(url);
+
+                    vcfiobio.getSampleNames(function(sampleNames) {
+                      $('.vcf-sample.loader').addClass("hide");
+                      if (sampleNames.length === 0 ) {
+                        vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
+
+                        d3.select("#selectData")   //*
+                        .style("visibility", "hidden")
+                        .style("display", "none");
+
+                        d3.select("#showData")    //*
+                          .style("visibility", "visible");
+
+                      $("#showData").removeClass("hide"); //*
+                      }
+                  });
+                  } else {
+                    displayFileError(message);
+
+                    $('#vcf-url').css("visibility", "visible");
+                    $("#go-panel").removeClass("hide");
+                    $("url-go-button").removeClass("hide");
+                    $("file-go-button").addClass("hide");
+
+                    //$("#url-input").focus();
+                    $("#url-input").val(url);
+                    $("#tbi-url-input").val(tbiUrl ? tbiUrl : '');
+
+                  }
+                  });
+
+                }
+
+              </script>
 
 
               <div id="vcf-sample-box" class="hide" style="font-size:18x;width:240px;float:left;margin-left:15px; margin-right:10px; margin-top:0px;" style="text-align:center">
