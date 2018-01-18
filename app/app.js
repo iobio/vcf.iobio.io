@@ -1039,6 +1039,7 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
           $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
           $("#clear-input").addClass("hide"); //Hide the clear input button
           $("#select-build-box").removeClass("hide"); //Show the select build box
+          $("#go-button-for-load").addClass("hide"); //Hide the sample load button
 
 
           $("#go-button-for-noSamples").on("click", function(){
