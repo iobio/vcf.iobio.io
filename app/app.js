@@ -1,5 +1,3 @@
-
-
 /*
 *  Global variables
 */
@@ -20,8 +18,6 @@ var indelLengthChart;
 var chromosomePieLayout;
 
 var sampleNamesFromUrl = null;
-
-
 var samplesSet = false; //If samples are set before loading the vizualization
 
 
@@ -102,171 +98,14 @@ var tbiMyTime;
 var sampleDataFlag = false;
 var timings;
 var urlFunctionTime;
-
-
 var buildFlag = false; //Sets true when the build is selected in the file upload
 var sampleLoadFlag = false; //Sets true when the samples are selected in the file upload
-
-
-
-  function enterSampleData(){
-    document.getElementById("url-input").value = "http://s3.amazonaws.com/vcf.files/ExAC.r0.2.sites.vep.vcf.gz"
-    sampleDataFlag = true;
-    $('#sampleDataUrl').prop('onclick',null).off('click');
-    console.log("sample flag", sampleDataFlag);
-    $("#sample-Dataset-load").prop('disabled', false).removeClass("hide");
-    // $("#clear-options").removeClass("hide");
-    $("#select-build-box").removeClass("hide"); //show the build box
-
-  }
-
-
-  function loadUsingSampleDataSet(){
-    loadFromUrl();
-  }
-
-
-  function enableTbiUrl(){
-    sampleDataFlag= false;
-    $("#sample-Dataset-load").addClass("hide");
-
-    if (flag===false) {
-      flag = true;
-      $("#sampleDataUrl").addClass("hide"); //Hides the option to load sample data
-      $("#url-tbi-input").prop('disabled', false);
-      $("#url-tbi-input").css('display', "inline");
-      $("#clear-input").addClass("hide"); //Hides the clear input option
-      clearTimeout(myTime);
-    }
-   else if (flag) {
-    flag = false;
-    $("#sampleDataUrl").removeClass("hide");
-    $("#clear-input").removeClass("hide");
-    $("#url-tbi-input").prop('disabled', true);
-    $("#url-tbi-input").css('display', "none");
-    if(document.getElementById("url-input").value.length > 5 ){
-      myTime = setTimeout(loadUrlFunc, 2000);
-    }
-   }
-  }
-
-
-  function urlFunction(){
-    if (document.getElementById("url-input").value.length > 5) {
-      $("#accessing-headers-gif").removeClass("hide");
-      $("#sampleDataUrl").addClass("hide"); //Removes the option to add sample data
-        myTime = setTimeout(loadUrlFunc, 1500);
-    }
-  }
-
-
-  function tbiUrlFunction(){
-    if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
-      var tbiMyTime =  setTimeout(loadFromUrl, 4000);
-      $("#sampleDataUrl").addClass("hide");
-      // setTimeout(showCancelButton, 4200);
-      $("#accessing-headers-gif").removeClass("hide");
-    }
-  }
-
-
-  function clearUrlFunction(){
-    //Clear the samples
-    var selectTheOptions = $("#vcf-sample-select").selectize();
-		var control = selectTheOptions[0].selectize;
-		control.clearOptions();
-
-    //Hide the load button for no samples
-    $("#go-button-for-noSamples").addClass("hide");
-    $("#go-button-for-load").addClass("hide");
-
-    //Hide the load button for files with samples
-    $("#all-sample-go-button").addClass("hide");
-    $("#sample-go-button").addClass("hide");
-    $("#vcf-sample-box").addClass("hide");
-
-    sampleDataFlag= false;
-    $("#sample-Dataset-load").addClass("hide");
-    $("#go-button-for-load").addClass("hide");
-    clearTimeout(myTime);
-    // $("#clear-options").addClass("hide");
-    $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
-    $("#select-build-box").addClass("hide"); //Hide the select build box
-    if(flag===true){
-      clearTimeout(tbiMyTime)
-    }
-  }
-
-
-  // $("#clearSamples").on("click", function(){
-  //   var selectTheOptions = $("#vcf-sample-select").selectize();
-  //   var control = selectTheOptions[0].selectize;
-  //   control.clearOptions();
-  // });
-  //
-
-  function clearUrlInput(){
-    document.getElementById("url-input").value = "";
-    clearTimeout(myTime);
-    sampleDataFlag= false;
-    $("#sampleDataUrl").removeClass("hide"); //Shows the option to load the sample data
-    $("#sample-Dataset-load").addClass("hide");
-    // $("#clear-options").addClass("hide");
-    $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
-    $("#select-build-box").addClass("hide"); //Hide the select build box
-  }
-
-
-  function loadUrlFunc(){
-    if (flag===false) {
-      $("#clear-input").addClass("hide")
-      $("#sampleDataUrl").addClass("hide")
-      loadFromUrl();
-      // setTimeout(showCancelButton, 1750)
-    }
-    else if (flag===true && document.getElementById("url-tbi-input").value.length > 5 ) {
-      //alert("flag true and tbi url entered")
-      loadFromUrl();
-      // setTimeout(showCancelButton, 1750)
-    }
-  }
-
-
-  function showCancelButton(){
-    // $("#clear-options").removeClass("hide");
-  }
-
-  function loadWithSample(){
-    $("#select-build-box").removeClass("hide");
-    //$("#go-button-for-noSamples").removeClass("hide");
-    // $("#clear-options").removeClass("hide");
-  }
-
-  // $("#go-button-for-load").on("click", function(){
-  //   loadFromUrl();
-  // })
-
-
 
 
 /*
 *  Document initialization
 */
 $(document).ready( function(){
-
-  // $(".selectize-dropdown-content").click(function(){
-  //   $("#sample-go-button").removeClass("disabled")
-  // })
-  //d3BrowserAdjustments();
-  //$('#select-build')[0].selectize.enable();
-
- //Keep the genome build disabled
-  // $select_region = $('#select-build').selectize();
-  // select_region = $select_region[0].selectize;
-  // select_region.enable();
-
-
-
 
   genomeBuildHelper = new GenomeBuildHelper();
   genomeBuildHelper.promiseInit({DEFAULT_BUILD: null}).then(function() {
@@ -440,9 +279,6 @@ function init() {
   });
 
 
-
-
-
   // Mutation spectrum grouped barchart
   mutSpectrumChart = groupedBarD3();
   mutSpectrumChart.width(355)
@@ -481,22 +317,6 @@ function init() {
           return varTypeCategories[i]
      });
 
-
-  // Indel length chart
-  /*
-  indelLengthChart = histogramD3();
-  indelLengthChart.width( $("#indel-length").width() )
-    .height( $("#indel-length").height()  - 20)
-    .widthPercent("100%")
-    .heightPercent("100%")
-    .margin( {left: 40, right: 0, bottom: 30, top: 20})
-    .xValue( function(d) { return d[0] })
-    .yValue( function(d) { return d[1] })
-    .tooltipText( function(d) {
-      return d[1]  + ' variants with a ' +  Math.abs(d[0]) + " bp " + (d[0] < 0 ? "deletion" : "insertion");
-     })
-    .xAxisLabel( function() { return 'Deletions: x < 0,    Insertions: x > 0'})
-  */
 
   indelLengthChart = iobio.viz.barViewer()
                     .xValue(function(d) { return d[0]; })
@@ -547,44 +367,39 @@ function init() {
   // and proceed directly to the display page
     if (window.location.search != "") {
       // check for low sampling flag
-      var sampling = getParameterByName('sampling')
-      if (sampling == 'low') {
-        statsOptions.binSize = 40000;
-        statsOptions.binNumber = 20;
-      }
-        sampleNamesFromUrl = getParameterByName('samples');
-      if (sampleNamesFromUrl && sampleNamesFromUrl.length > 0) {
-            $('#samples-filter-header #sample-names').removeClass("hide");
-            var sampleNames = sampleNamesFromUrl.split(",");
-            if (sampleNames.length > 6) {
-          $('#samples-filter-header #sample-names').text(sampleNames.length + " samples filtered");
-            } else {
-          $('#samples-filter-header #sample-names').text(sampleNames.join(" "));
-            }
-      } else {
-            $('#samples-filter-header #sample-names').addClass("hide");
-      }
+        var sampling = getParameterByName('sampling')
+        if (sampling == 'low') {
+          statsOptions.binSize = 40000;
+          statsOptions.binNumber = 20;
+        }
+          sampleNamesFromUrl = getParameterByName('samples');
+        if (sampleNamesFromUrl && sampleNamesFromUrl.length > 0) {
+              $('#samples-filter-header #sample-names').removeClass("hide");
+              var sampleNames = sampleNamesFromUrl.split(",");
+              if (sampleNames.length > 6) {
+            $('#samples-filter-header #sample-names').text(sampleNames.length + " samples filtered");
+              } else {
+            $('#samples-filter-header #sample-names').text(sampleNames.join(" "));
+              }
+        } else {
+              $('#samples-filter-header #sample-names').addClass("hide");
+        }
 
-    var species = getParameterByName('species');
-    if (species && species.length > 0) {
-      genomeBuildHelper.setCurrentSpecies(species);
-    }
-    var build   = getParameterByName('build');
-    if (build && build.length > 0) {
-      $('#current-build').text(build)
-      genomeBuildHelper.setCurrentBuild(build);
-    }
+        var species = getParameterByName('species');
+        if (species && species.length > 0) {
+          genomeBuildHelper.setCurrentSpecies(species);
+        }
+        var build   = getParameterByName('build');
+        if (build && build.length > 0) {
+          $('#current-build').text(build)
+          genomeBuildHelper.setCurrentBuild(build);
+        }
 
         var vcfUrl = decodeUrl(getParameterByName('vcf'));
         var tbiUrl = decodeUrl(getParameterByName('tbi'));
-        console.log("vcfUrl", vcfUrl);
-        console.log("genomeBuildHelper.getCurrentBuild() ", genomeBuildHelper.getCurrentBuild() );
-        console.log("genomeBuildHelper.getCurrentSpecies", genomeBuildHelper.getCurrentSpecies());
-        console.log("sampleNamesFromUrl", sampleNamesFromUrl)
 
         if (vcfUrl && genomeBuildHelper.getCurrentBuild() && genomeBuildHelper.getCurrentSpecies()) {
           onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);
-          //_loadVcfFromUrl(vcfUrl, tbiUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);
 
         } else if (vcfUrl) {
           $('#url-input').val(vcfUrl);
@@ -600,117 +415,26 @@ function init() {
     $('#report-problem-button').on('click', emailProblem);
 
 }
-console.log("samplesSet", samplesSet);
-
 
 var sampleNamesFromUrlArray = [];
 
 function onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl){
-  // console.log("sampleNamesFromUrl", sampleNamesFromUrl)
-  // if (sampleNamesFromUrl !== null ) {
-  //   vcfiobio.setSamples(sampleNamesFromUrl);
-  //     if (samplesSet===false) {
-  //       samplesSet=true;
-  //       d3.select("#selectData")   //*
-  //       .style("visibility", "hidden")
-  //       .style("display", "none");
-  //
-  //       d3.select("#showData")    //*
-  //         .style("visibility", "visible");
-  //
-  //     $("#showData").removeClass("hide"); //*
-  //
-  //     vcfiobio.loadRemoteIndex(vcfUrl, tbiUrl, onReferencesLoading, onReferencesLoaded);
-  //
-  //     $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
-  //     $("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
-  //
-  //       var samples =  $('#vcf-sample-select')[0].selectize.items;
-  //       console.log("samples ", samples)
-  //       if (samples.length > 0) {
-  //             $('#samples-filter-header #sample-names').removeClass("hide");
-  //             if (samples.length > 6) {
-  //           $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
-  //             } else {
-  //           $('#samples-filter-header #sample-names').text(samples.join(" "));
-  //             }
-  //       } else {
-  //             $('#samples-filter-header #sample-names').addClass("hide");
-  //       }
-  //       window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
-  //       vcfiobio.setSamples(samples);
-  //       // loadStats(chromosomeIndex);
-  //     }
-  //   else if(samplesSet===true){
-  //
-  //     var samples =  $('#vcf-sample-select')[0].selectize.items;
-  //     console.log("samples ", samples)
-  //     if (samples.length > 0) {
-  //           $('#samples-filter-header #sample-names').removeClass("hide");
-  //           if (samples.length > 6) {
-  //         $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
-  //           } else {
-  //         $('#samples-filter-header #sample-names').text(samples.join(" "));
-  //           }
-  //     } else {
-  //           $('#samples-filter-header #sample-names').addClass("hide");
-  //     }
-  //     window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
-  //     vcfiobio.setSamples(samples);
-  //     loadStats(chromosomeIndex);
-  //   }
-  // }
-
-
-
-
-
-
-
 
   if(sampleNamesFromUrl===null || sampleNamesFromUrl.length===0){
     vcfiobio.loadRemoteIndex(vcfUrl, tbiUrl, onReferencesLoading, onReferencesLoaded);
-
-    d3.select("#selectData")   //*
-    .style("visibility", "hidden")
-    .style("display", "none");
-
-    d3.select("#showData")    //*
-      .style("visibility", "visible");
-
-    $("#showData").removeClass("hide"); //*
+    toggleDisplayProperties();
   }
   else {
     vcfiobio.setSamples(sampleNamesFromUrl);
       if (samplesSet===false) {
         samplesSet=true;
-        //sampleNamesFromUrlArray = sampleNamesFromUrl.split(",")
-        console.log( sampleNamesFromUrl )
-
-        d3.select("#selectData")   //*
-        .style("visibility", "hidden")
-        .style("display", "none");
-
-        d3.select("#showData")    //*
-          .style("visibility", "visible");
-
-      $("#showData").removeClass("hide"); //*
-
-      $('#sample-picker').removeClass("hide");
-
+        toggleDisplayProperties();
+       $('#sample-picker').removeClass("hide");
 
       vcfiobio.loadRemoteIndex(vcfUrl, tbiUrl, onReferencesLoading, onReferencesLoaded);
 
-      // $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
-      // //$("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
-      // $("#sample-go-button-inModal").append("<button id='onRefresh-load' type='button' class='btn' data-dismiss='modal'>Load</button>")
-
-        // var samples =  $('#vcf-sample-select')[0].selectize.items;
-        // console.log("samples ", samples)
         if (sampleNamesFromUrl.length > 0) {
               $('#samples-filter-header #sample-names').removeClass("hide");
-            //  $('#samples-filter-header #label>a').removeClass("hide");
-            //  $('#sample-go-button').removeClass("hide").prop('disabled', false).removeClass("disabled");;
               if (sampleNamesFromUrl.length > 6) {
             $('#samples-filter-header #sample-names').text(sampleNamesFromUrl.length + " samples filtered");
               } else {
@@ -721,32 +445,15 @@ function onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl){
         }
         window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
         vcfiobio.setSamples(sampleNamesFromUrl);
-        // loadStats(chromosomeIndex);
 
 
         //Set the options of the dropdown in the modal
-
       sampleNamesFromUrl.forEach( function(sampleName) {
         $('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
       });
 
-      //
-      // $('#onRefresh-load').on('click', function() {
-      //   alert("hello")
-      // }
       }
-    else if(samplesSet===true){
-
-      // sampleNamesFromUrlArray = sampleNamesFromUrl.split(",")
-      // console.log(sampleNamesFromUrlArray)
-      //
-      // $('#onRefresh-load').on('click', function() {
-      //   alert("hello")
-      // }
-
-
-      // var samples =  $('#vcf-sample-select')[0].selectize.items;
-      // console.log("samples ", samples)
+    else if(samplesSet){
       $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
       $("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
       if (sampleNamesFromUrl.length > 0) {
@@ -846,9 +553,95 @@ function emailProblem() {
 
   $('#modal-report-problem').modal('hide');
 
-
-
 }
+
+  function enableTbiUrl(){
+    sampleDataFlag= false;
+    $("#sample-Dataset-load").addClass("hide");
+
+    if (!flag) {
+      flag = true;
+      $("#url-tbi-input").prop('disabled', false);
+      $("#url-tbi-input").css('display', "inline");
+      clearTimeout(myTime);
+    }
+   else if (flag) {
+    flag = false;
+    $("#url-tbi-input").prop('disabled', true);
+    $("#url-tbi-input").css('display', "none");
+    if(document.getElementById("url-input").value.length > 5 ){
+      myTime = setTimeout(loadUrlFunc, 2000);
+    }
+   }
+  }
+
+
+  function urlFunction(){
+    if (document.getElementById("url-input").value.length > 5) {
+      $("#accessing-headers-gif").removeClass("hide");
+        myTime = setTimeout(loadUrlFunc, 1500);
+    }
+  }
+
+
+  function tbiUrlFunction(){
+    if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
+      var tbiMyTime =  setTimeout(loadFromUrl, 4000);
+      $("#sampleDataUrl").addClass("hide");
+      $("#accessing-headers-gif").removeClass("hide");
+    }
+  }
+
+
+  function clearUrlFunction(){
+    //Clear the samples
+    var selectTheOptions = $("#vcf-sample-select").selectize();
+		var control = selectTheOptions[0].selectize;
+		control.clearOptions();
+
+    //Hide the load button for no samples
+    $("#go-button-for-noSamples").addClass("hide");
+    $("#go-button-for-load").addClass("hide");
+
+    //Hide the load button for files with samples
+    $("#all-sample-go-button").addClass("hide");
+    $("#sample-go-button").addClass("hide");
+    $("#vcf-sample-box").addClass("hide");
+
+    sampleDataFlag= false;
+    $("#sample-Dataset-load").addClass("hide");
+    $("#go-button-for-load").addClass("hide");
+    clearTimeout(myTime);
+    $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
+    $("#select-build-box").addClass("hide"); //Hide the select build box
+    if(flag===true){
+      clearTimeout(tbiMyTime)
+    }
+  }
+
+
+  function clearUrlInput(){
+    document.getElementById("url-input").value = "";
+    clearTimeout(myTime);
+    sampleDataFlag= false;
+    $("#sample-Dataset-load").addClass("hide");
+    $("#accessing-headers-gif").addClass("hide"); //Stop the loading gif
+    $("#select-build-box").addClass("hide"); //Hide the select build box
+  }
+
+
+  function loadUrlFunc(){
+    if (!flag) {
+      loadFromUrl();
+    }
+    else if (flag && document.getElementById("url-tbi-input").value.length > 5 ) {
+      loadFromUrl();
+    }
+  }
+
+
+
+
 
 function displayVcfUrlBox() {
     $('#vcf-url').css('visibility','visible');
@@ -868,13 +661,59 @@ function displayVcfUrlBox() {
     vcfiobio.tbiURL = $('#url-tbi-input').val();
     dataSelect.setDefaultBuildFromData(); //builds data for species and genome build
     loadWithSample();
-    //$('#fileButton').prop('onclick',null).off('click');
-
 }
+
+function loadWithSample(){
+  $("#select-build-box").removeClass("hide");
+}
+
+
+// Only for loading the sample dataset on load
+  function demoDataLoad(){
+      var url    = $("#url-input").val();
+      updateUrl("vcf",  encodeURIComponent(url));
+
+      var tbiUrl = $("#url-tbi-input").val();
+      updateUrl("tbi",  encodeURIComponent(tbiUrl));
+
+      _loadDemoVcfFromUrl(url, tbiUrl);
+  }
+
+
+  function _loadDemoVcfFromUrl(url, tbiUrl, sampleNames){
+    $("#file-alert").addClass("hide");
+    dataSelect.setDefaultBuildFromData();
+
+    vcfiobio.openVcfUrl( url, tbiUrl, function( success, message) {
+      if (success) {
+        $('.vcf-sample.loader').removeClass("hide");
+      d3.select("#vcf_file").text(url);
+
+      vcfiobio.getSampleNames(function(sampleNames) {
+        $('.vcf-sample.loader').addClass("hide");
+        if (sampleNames.length === 0 ) {
+          vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
+          toggleDisplayProperties();
+        }
+    });
+    } else {
+      displayFileError(message);
+
+      $('#vcf-url').css("visibility", "visible");
+      $("#go-panel").removeClass("hide");
+      $("url-go-button").removeClass("hide");
+      $("file-go-button").addClass("hide");
+      $("#url-input").val(url);
+      $("#tbi-url-input").val(tbiUrl ? tbiUrl : '');
+    }
+    });
+  }
+
+
 function onFileButtonClicked() {
-  $('#vcf-url').css('visibility', 'hidden');
-  $('#vcf-url-button-panel').css('visibility', 'hidden');
-  $("#go-panel").removeClass("hide");
+    $('#vcf-url').css('visibility', 'hidden');
+    $('#vcf-url-button-panel').css('visibility', 'hidden');
+    $("#go-panel").removeClass("hide");
     $("#url-go-button").addClass("hide");
     $("#file-go-button").removeClass("hide");
     $("#select-species-box").addClass("hide");
@@ -885,7 +724,6 @@ function onFileButtonClicked() {
     $("#sample-go-button").addClass("hide");
     $("#go-button-for-load").addClass("hide");
     dataSelect.setDefaultBuildFromData();
-
 }
 
 function loadFromUrl() {
@@ -900,23 +738,15 @@ function loadFromUrl() {
 }
 
 
-
 function loadFromFile() {
   $('.vcf-sample.loader').removeClass("hide");
 
   vcfiobio.getSampleNames(function(sampleNames) {
-    console.log("sample names", sampleNames)
     $('.vcf-sample.loader').addClass("hide");
+    //If the samples are present in the file
     if (sampleNames.length > 1) {
-      $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
-      $("#clear-input").addClass("hide"); //Hide the clear input button
-      $("#select-build-box").removeClass("hide"); //Show the select-build box
-      $("#select-species-box").removeClass("hide"); //Show the select species box
-      $("#vcf-sample-select-box").removeClass("hide"); //Show the samples
+      enableSampleSelectDropDown();
 
-      $('#show-sample-dialog').removeClass("hide");
-
-    $('#sample-picker').removeClass("hide");
     sampleNames.forEach( function(sampleName) {
       $('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
     });
@@ -928,6 +758,7 @@ function loadFromFile() {
     var x = $('#vcf-sample-select').selectize();
     var selectize  = x[0].selectize;
 
+    //Selecting all samples
     $("#all-sample-go-button").click(function(){
       var z = selectize.setValue(Object.keys(selectize.options));
       $("#all-sample-go-button").addClass("disabled")
@@ -961,99 +792,61 @@ function loadFromFile() {
 
     $('#sample-go-button').off('click');
 
-
-
-    $('#sample-go-button').on('click', function() {
-
-        if (samplesSet===false) {
-          samplesSet=true;
-          d3.select("#selectData")   //*
-          .style("visibility", "hidden")
-          .style("display", "none");
-
-          d3.select("#showData")    //*
-            .style("visibility", "visible");
-
-        $("#showData").removeClass("hide"); //*
-
-        vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
-
-
-        $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
-        $("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
-
-          var samples =  $('#vcf-sample-select')[0].selectize.items;
-          console.log("samples ", samples)
-          if (samples.length > 0) {
-                $('#samples-filter-header #sample-names').removeClass("hide");
-                if (samples.length > 6) {
-              $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
-                } else {
-              $('#samples-filter-header #sample-names').text(samples.join(" "));
-                }
-          } else {
-                $('#samples-filter-header #sample-names').addClass("hide");
-          }
-          window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
-          vcfiobio.setSamples(samples);
-          // loadStats(chromosomeIndex);
-        }
-      else if(samplesSet===true){
-
-        var samples =  $('#vcf-sample-select')[0].selectize.items;
-        console.log("samples ", samples)
-        if (samples.length > 0) {
-              $('#samples-filter-header #sample-names').removeClass("hide");
-              if (samples.length > 6) {
-            $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
-              } else {
-            $('#samples-filter-header #sample-names').text(samples.join(" "));
-              }
-        } else {
-              $('#samples-filter-header #sample-names').addClass("hide");
-        }
-        window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
-        vcfiobio.setSamples(samples);
-        loadStats(chromosomeIndex);
-
-      }
-    });
-    } else {
-      if(sampleDataFlag){
-        vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
-        d3.select("#selectData")   //*
-        .style("visibility", "hidden")
-        .style("display", "none");
-
-        d3.select("#showData")    //*
-          .style("visibility", "visible");
-
-      $("#showData").removeClass("hide"); //*
-      }
-
+    //Clicking the load button
+    handleSampleGoButtonForFile();
+    }
+    else {
+      //If the file contains no samples.
       $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
       $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
-      $("#clear-input").addClass("hide"); //Hide the clear input button
       $("#select-build-box").removeClass("hide"); //Show the select build box
-
 
       $("#go-button-for-noSamples").on("click", function(){
         console.log("url is ", url)
         vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
-
-        d3.select("#selectData")   //*
-        .style("visibility", "hidden")
-        .style("display", "none");
-
-        d3.select("#showData")    //*
-          .style("visibility", "visible");
-
-      $("#showData").removeClass("hide"); //*
+        toggleDisplayProperties();
       })
+    }
+  });
+}
+
+function handleSampleGoButtonForFile(){
+  $('#sample-go-button').on('click', function() {
+      if (samplesSet===false) {
+        samplesSet=true;
+        toggleDisplayProperties();
+
+      vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
+
+      $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
+      $("#sample-go-button").detach().appendTo('#sample-go-button-inModal');
+      handleSelectedSamplesForFile();
+
+      }
+    else if(samplesSet){
+      handleSelectedSamplesForFile();
+      loadStats(chromosomeIndex);
 
     }
   });
+}
 
+
+function handleSelectedSamplesForFile(){
+  var samples =  $('#vcf-sample-select')[0].selectize.items;
+  console.log("samples ", samples)
+  if (samples.length > 0) {
+        $('#samples-filter-header #sample-names').removeClass("hide");
+        if (samples.length > 6) {
+      $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
+        } else {
+      $('#samples-filter-header #sample-names').text(samples.join(" "));
+        }
+  } else {
+        $('#samples-filter-header #sample-names').addClass("hide");
+  }
+  window.history.pushState({'index.html' : 'bar'},null,'?build=' + genomeBuildHelper.getCurrentBuildName());
+  vcfiobio.setSamples(samples);
 }
 
 
@@ -1076,7 +869,6 @@ function updateUrl(paramName, value) {
 }
 
 
-// Handle when used with url
 function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
   $("#file-alert").addClass("hide");
   dataSelect.setDefaultBuildFromData();
@@ -1094,20 +886,11 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 
       //get samples
       vcfiobio.getSampleNames(function(sampleNames) {
-        console.log("sample names", sampleNames)
         $('.vcf-sample.loader').addClass("hide");
+        //If the samples are present in the url
         if (sampleNames.length > 1) {
-          $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
-          $("#clear-input").addClass("hide"); //Hide the clear input button
-          $("#select-build-box").removeClass("hide"); //Show the select-build box
-          $("#vcf-sample-select-box").removeClass("hide"); //Show the samples
-          $("#select-species-box").removeClass("hide"); //Show the select species box
+          enableSampleSelectDropDown();
 
-
-
-          $('#show-sample-dialog').removeClass("hide");
-
-        $('#sample-picker').removeClass("hide");
         sampleNames.forEach( function(sampleName) {
           $('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
         });
@@ -1119,6 +902,7 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
         var x = $('#vcf-sample-select').selectize();
         var selectize  = x[0].selectize;
 
+      //Selecting all the samples
         $("#all-sample-go-button").click(function(){
           var z = selectize.setValue(Object.keys(selectize.options));
           console.log("z", z);
@@ -1126,7 +910,7 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
         })
 
         // Enable and disable load button for samples
-        $('#vcf-sample-select')[0].selectize.on("change", function(value){ //*
+        $('#vcf-sample-select')[0].selectize.on("change", function(value){
           if (value) {
             $("#sample-go-button").prop('disabled', false).removeClass("disabled");
           }
@@ -1140,101 +924,22 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
           $('#all-sample-go-button').removeClass("hide");
 
         $('#sample-go-button').off('click');
-
-        $('#sample-go-button').on('click', function() {
-
-            if (samplesSet===false) {
-              samplesSet=true;
-              d3.select("#selectData")   //*
-              .style("visibility", "hidden")
-              .style("display", "none");
-
-              d3.select("#showData")    //*
-                .style("visibility", "visible");
-
-            $("#showData").removeClass("hide"); //*
-
-            vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
-
-            $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
-            $("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
-
-              var samples =  $('#vcf-sample-select')[0].selectize.items;
-              console.log("samples ", samples)
-              if (samples.length > 0) {
-                    $('#samples-filter-header #sample-names').removeClass("hide");
-                    if (samples.length > 6) {
-                  $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
-                    } else {
-                  $('#samples-filter-header #sample-names').text(samples.join(" "));
-                    }
-              } else {
-                    $('#samples-filter-header #sample-names').addClass("hide");
-              }
-              vcfiobio.setSamples(samples);
-              window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
-
-              // loadStats(chromosomeIndex);
-            }
-          else if(samplesSet===true){
-
-            var samples =  $('#vcf-sample-select')[0].selectize.items;
-            console.log("samples ", samples)
-            if (samples.length > 0) {
-                  $('#samples-filter-header #sample-names').removeClass("hide");
-                  if (samples.length > 6) {
-                $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
-                  } else {
-                $('#samples-filter-header #sample-names').text(samples.join(" "));
-                  }
-            } else {
-                  $('#samples-filter-header #sample-names').addClass("hide");
-            }
-            vcfiobio.setSamples(samples);
-            window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
-
-            loadStats(chromosomeIndex);
-          }
-
-        });
-        } else {
-          if(sampleDataFlag){
-            vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
-            d3.select("#selectData")   //*
-            .style("visibility", "hidden")
-            .style("display", "none");
-
-            d3.select("#showData")    //*
-              .style("visibility", "visible");
-
-          $("#showData").removeClass("hide"); //*
-          }
-
+        handleSampleGoButtonClick(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
+        }
+        else {
           $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
           $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
-          $("#clear-input").addClass("hide"); //Hide the clear input button
           $("#select-build-box").removeClass("hide"); //Show the select build box
           $("#go-button-for-load").addClass("hide"); //Hide the sample load button
-
 
           $("#go-button-for-noSamples").on("click", function(){
             console.log("url is ", url)
             vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
-
-            d3.select("#selectData")   //*
-            .style("visibility", "hidden")
-            .style("display", "none");
-
-            d3.select("#showData")    //*
-              .style("visibility", "visible");
-
-          $("#showData").removeClass("hide"); //*
+            toggleDisplayProperties();
           })
-
         }
       });
 
-      //
     } else {
       displayFileError(message);
 
@@ -1242,8 +947,6 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
       $("#go-panel").removeClass("hide");
       $("url-go-button").removeClass("hide");
       $("file-go-button").addClass("hide");
-
-      //$("#url-input").focus();
       $("#url-input").val(url);
       $("#tbi-url-input").val(tbiUrl ? tbiUrl : '');
 
@@ -1252,7 +955,64 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 
 }
 
+function enableSampleSelectDropDown(){
+  $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+  $("#select-build-box").removeClass("hide"); //Show the select-build box
+  $("#select-species-box").removeClass("hide"); //Show the select species box
+  $("#vcf-sample-select-box").removeClass("hide"); //Show the samples
+  $('#show-sample-dialog').removeClass("hide");
+  $('#sample-picker').removeClass("hide");
+}
 
+function handleSampleGoButtonClick(url, tbiUrl, onReferencesLoading, onReferencesLoaded){
+  $('#sample-go-button').on('click', function() {
+      if (!samplesSet) { //Check if we are on the home page or analysis page
+        samplesSet=true;
+        toggleDisplayProperties();
+
+      vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
+
+      $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
+      $("#sample-go-button").detach().appendTo('#sample-go-button-inModal');
+      handleSelectedSamples();
+      }
+    else if(samplesSet){
+      handleSelectedSamples();
+      loadStats(chromosomeIndex);
+    }
+
+  });
+}
+
+
+function handleSelectedSamples(){
+  var samples =  $('#vcf-sample-select')[0].selectize.items;
+  console.log("samples ", samples)
+  if (samples.length > 0) {
+        $('#samples-filter-header #sample-names').removeClass("hide");
+        if (samples.length > 6) {
+      $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
+        } else {
+      $('#samples-filter-header #sample-names').text(samples.join(" "));
+        }
+  } else {
+        $('#samples-filter-header #sample-names').addClass("hide");
+  }
+  vcfiobio.setSamples(samples);
+  window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
+
+}
+
+function toggleDisplayProperties(){
+  d3.select("#selectData")
+  .style("visibility", "hidden")
+  .style("display", "none");
+
+  d3.select("#showData")
+    .style("visibility", "visible");
+
+  $("#showData").removeClass("hide");
+}
 
 
 function onFilesSelected(event) {
@@ -1336,8 +1096,6 @@ function onRemoveBed() {
 }
 
 function displayFileError(errorMessage) {
-
-  // $("#url-input").prop('disabled', false);
   $("#accessing-headers-gif").addClass("hide");
 
   if(flag){
@@ -1384,16 +1142,13 @@ function showSamplesDialog() {
 
 function onReferencesLoaded(refData) {
 
-  //   // Select 'all' chromosomes (for genome level view)
+    // Select 'all' chromosomes (for genome level view)
   pieChartRefData = vcfiobio.getReferences(.005, 1);
-  //
-  // // Select the 'All' references in the chromosome chart.  This
-  // // will fire the 'click all' event, causing the stats to load
+
+  // Select the 'All' references in the chromosome chart.  This
+  // will fire the 'click all' event, causing the stats to load
   chromosomeChart.clickAllSlices(pieChartRefData);
-  //onAllReferencesSelected();  //loads  the variant density
   loadStats(chromosomeIndex);
-
-
 
 }
 
@@ -1406,43 +1161,20 @@ function onReferencesLoaded(refData) {
   // // Select the 'All' references in the chromosome chart.  This
   // // will fire the 'click all' event, causing the stats to load
   chromosomeChart.clickAllSlices(pieChartRefData);
-  //onAllReferencesSelected();  //loads  the variant density
   loadStats(chromosomeIndex);
-
-
 
 }
 
-
-
-function onReferencesLoaded1(refData) {
-
-  // //   // Select 'all' chromosomes (for genome level view)
-  // pieChartRefData = vcfiobio.getReferences(.005, 1);
-  // //
-  // // // Select the 'All' references in the chromosome chart.  This
-  // // // will fire the 'click all' event, causing the stats to load
-  // chromosomeChart.clickAllSlices(pieChartRefData);
-  onAllReferencesSelected();  //loads  the variant density
-  loadStats(chromosomeIndex);
-
-
-
-}
 
 function onReferencesLoading(refData) {
-
   drawPieChart();
-
 }
 
 
 
 function drawPieChart(){
-
-
-      d3.selectAll("section#top svg").classed("hide", false)
-      d3.selectAll("section#top .svg-alt").classed("hide", false);
+    d3.selectAll("section#top svg").classed("hide", false)
+    d3.selectAll("section#top .svg-alt").classed("hide", false);
     d3.selectAll("section#top .samplingLoader").classed("hide", true);
 
     var otherRefData = null;
@@ -1453,9 +1185,7 @@ function drawPieChart(){
     var selection = d3.select("#primary-references").datum( chromosomePieLayout(pieChartRefData) );
       chromosomeChart( selection );
 
-
     otherRefData = vcfiobio.getReferences(0, .005);
-
 
 
     if (otherRefData.length > 0) {
@@ -1494,8 +1224,7 @@ function onReferenceSelected(ref, i) {
    d3.select("#region_selected").text("0 - " + d3.format(",")(ref.value));
    d3.select("#variant-density-panel").select(".hint").text("(drag bottom chart to select a region)");
 
-     loadVariantDensityData(ref, i);
-     //setTimeout(loadVariantDensityData.bind(null, ref, i), 9000)
+   loadVariantDensityData(ref, i);
    loadStats(chromosomeIndex);
 
 }
@@ -1878,7 +1607,5 @@ function getChartDimensions() {
 
   densityPanelDimensions.width  = $("#variant-density-panel").width() - densityPanelDimensions.padding;
     densityPanelDimensions.height = $("#variant-density-panel").height();
-
-
 
 }
