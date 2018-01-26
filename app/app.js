@@ -556,8 +556,6 @@ function emailProblem() {
 }
 
   function enableTbiUrl(){
-    sampleDataFlag= false;
-    $("#sample-Dataset-load").addClass("hide");
 
     if (!flag) {
       flag = true;
@@ -577,7 +575,15 @@ function emailProblem() {
 
 
   function urlFunction(){
-    if (document.getElementById("url-input").value.length > 5) {
+
+    if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 && flag){
+      $("#accessing-headers-gif").removeClass("hide");
+      myTime = setTimeout(loadUrlFunc, 1500);
+    }
+    else if(document.getElementById("url-input").value.length > 5 && flag){
+      $("#accessing-headers-gif").addClass("hide");
+    }
+    else if (document.getElementById("url-input").value.length > 5) {
       $("#accessing-headers-gif").removeClass("hide");
         myTime = setTimeout(loadUrlFunc, 1500);
     }
@@ -586,7 +592,7 @@ function emailProblem() {
 
   function tbiUrlFunction(){
     if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
-      var tbiMyTime =  setTimeout(loadFromUrl, 4000);
+      var tbiMyTime =  setTimeout(loadFromUrl, 3500);
       $("#sampleDataUrl").addClass("hide");
       $("#accessing-headers-gif").removeClass("hide");
     }
@@ -729,10 +735,10 @@ function onFileButtonClicked() {
 function loadFromUrl() {
 
     var url    = $("#url-input").val();
-    updateUrl("vcf",  encodeURIComponent(url));
+
 
     var tbiUrl = $("#url-tbi-input").val();
-    updateUrl("tbi",  encodeURIComponent(tbiUrl));
+
 
     _loadVcfFromUrl(url, tbiUrl);
 }
@@ -802,7 +808,6 @@ function loadFromFile() {
       $("#select-build-box").removeClass("hide"); //Show the select build box
 
       $("#go-button-for-noSamples").on("click", function(){
-        console.log("url is ", url)
         vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
         toggleDisplayProperties();
       })
@@ -834,7 +839,6 @@ function handleSampleGoButtonForFile(){
 
 function handleSelectedSamplesForFile(){
   var samples =  $('#vcf-sample-select')[0].selectize.items;
-  console.log("samples ", samples)
   if (samples.length > 0) {
         $('#samples-filter-header #sample-names').removeClass("hide");
         if (samples.length > 6) {
@@ -870,6 +874,7 @@ function updateUrl(paramName, value) {
 
 
 function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
+
   $("#file-alert").addClass("hide");
   dataSelect.setDefaultBuildFromData();
 
@@ -905,7 +910,6 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
       //Selecting all the samples
         $("#all-sample-go-button").click(function(){
           var z = selectize.setValue(Object.keys(selectize.options));
-          console.log("z", z);
           $("#all-sample-go-button").addClass("disabled")
         })
 
@@ -931,12 +935,8 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
           $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
           $("#select-build-box").removeClass("hide"); //Show the select build box
           $("#go-button-for-load").addClass("hide"); //Hide the sample load button
+          handleSampleGoButtonNoSamples(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
 
-          $("#go-button-for-noSamples").on("click", function(){
-            console.log("url is ", url)
-            vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
-            toggleDisplayProperties();
-          })
         }
       });
 
@@ -964,8 +964,21 @@ function enableSampleSelectDropDown(){
   $('#sample-picker').removeClass("hide");
 }
 
+
+function handleSampleGoButtonNoSamples(url, tbiUrl, onReferencesLoading, onReferencesLoaded){
+  $("#go-button-for-noSamples").on("click", function(){
+    updateUrl("vcf",  encodeURIComponent(url));
+    updateUrl("tbi",  encodeURIComponent(tbiUrl));
+    toggleDisplayProperties();
+    vcfiobio.loadRemoteIndex(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
+
+  })
+}
+
 function handleSampleGoButtonClick(url, tbiUrl, onReferencesLoading, onReferencesLoaded){
   $('#sample-go-button').on('click', function() {
+    updateUrl("vcf",  encodeURIComponent(url));
+    updateUrl("tbi",  encodeURIComponent(tbiUrl));
       if (!samplesSet) { //Check if we are on the home page or analysis page
         samplesSet=true;
         toggleDisplayProperties();
@@ -987,7 +1000,6 @@ function handleSampleGoButtonClick(url, tbiUrl, onReferencesLoading, onReference
 
 function handleSelectedSamples(){
   var samples =  $('#vcf-sample-select')[0].selectize.items;
-  console.log("samples ", samples)
   if (samples.length > 0) {
         $('#samples-filter-header #sample-names').removeClass("hide");
         if (samples.length > 6) {
@@ -1106,8 +1118,6 @@ function displayFileError(errorMessage) {
     d3.select("#showData")
       .style("visibility", "hidden");
 
-      console.log("flag", flag)
-
     $("#file-alert").text(errorMessage);
     $("#file-alert").removeClass("hide");
     $("#accessing-headers-gif").addClass("hide");
@@ -1123,8 +1133,6 @@ function displayFileError(errorMessage) {
 
     d3.select("#showData")
       .style("visibility", "hidden");
-
-      console.log("flag", flag)
 
     $("#file-alert").text(errorMessage);
     $("#file-alert").removeClass("hide");
@@ -1142,26 +1150,13 @@ function showSamplesDialog() {
 
 function onReferencesLoaded(refData) {
 
-    // Select 'all' chromosomes (for genome level view)
-  pieChartRefData = vcfiobio.getReferences(.005, 1);
-
-  // Select the 'All' references in the chromosome chart.  This
-  // will fire the 'click all' event, causing the stats to load
-  chromosomeChart.clickAllSlices(pieChartRefData);
-  loadStats(chromosomeIndex);
-
-}
-
-
-function onReferencesLoaded(refData) {
-
   //   // Select 'all' chromosomes (for genome level view)
   pieChartRefData = vcfiobio.getReferences(.005, 1);
   //
   // // Select the 'All' references in the chromosome chart.  This
   // // will fire the 'click all' event, causing the stats to load
   chromosomeChart.clickAllSlices(pieChartRefData);
-  loadStats(chromosomeIndex);
+  //loadStats(chromosomeIndex);
 
 }
 
@@ -1215,7 +1210,6 @@ function drawPieChart(){
       d3.select("#other-references").style("display", "none");
     }
 }
-
 
 
 
