@@ -446,16 +446,35 @@ function onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl){
         window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
         vcfiobio.setSamples(sampleNamesFromUrl);
 
+        vcfiobio.getSampleNames(function(sampleNames){
+          //If the samples are present in the url
+          if (sampleNames.length > 1) {
 
-        //Set the options of the dropdown in the modal
-      sampleNamesFromUrl.forEach( function(sampleName) {
-        $('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
-      });
+          $('#show-sample-dialog').removeClass("hide");
+          $('#sample-picker').removeClass("hide");
+
+          sampleNames.forEach( function(sampleName) {
+            $('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
+          });
+          if (sampleNamesFromUrl) {
+            $('#vcf-sample-select')[0].selectize.setValue(sampleNamesFromUrl.split(","));
+            sampleNamesFromUrl = "";
+          }
+
+          var x = $('#vcf-sample-select').selectize();
+          var selectize  = x[0].selectize;
+          $('#vcf-sample-box').removeClass("hide");
+
+          }
+        });
+      $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
+       $("#sample-go-button").detach().appendTo('#sample-go-button-inModal').removeClass("hide").prop('disabled', false)
+       handleSampleGoButtonClick(vcfUrl, tbiUrl, onReferencesLoading, onReferencesLoaded)
 
       }
     else if(samplesSet){
       $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
-      $("#sample-go-button").detach().appendTo('#sample-go-button-inModal')
+      $("#sample-go-button").detach().appendTo('#sample-go-button-inModal');
       if (sampleNamesFromUrl.length > 0) {
             $('#samples-filter-header #sample-names').removeClass("hide");
             if (samples.length > 6) {
@@ -575,14 +594,16 @@ function emailProblem() {
 
 
   function urlFunction(){
-
+    //If flag is set and tbi url is entered first
     if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 && flag){
       $("#accessing-headers-gif").removeClass("hide");
       myTime = setTimeout(loadUrlFunc, 1500);
     }
+    //If flag is set and url is entered
     else if(document.getElementById("url-input").value.length > 5 && flag){
       $("#accessing-headers-gif").addClass("hide");
     }
+    //If just vcf url is entered and flag is not set
     else if (document.getElementById("url-input").value.length > 5) {
       $("#accessing-headers-gif").removeClass("hide");
         myTime = setTimeout(loadUrlFunc, 1500);
@@ -644,8 +665,6 @@ function emailProblem() {
       loadFromUrl();
     }
   }
-
-
 
 
 
