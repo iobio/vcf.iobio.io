@@ -23,24 +23,24 @@
   opacity: 0.01;
   visibility:hidden;
   cursor: pointer;
-} 
+}
 
 
 body {
     font-family: Quicksand;
-    font-weight: 300;  
-    width: 100% ; 
-}            
+    font-weight: 300;
+    width: 100% ;
+}
 header {
    font-size: 46px;
    color:#2d8fc1;
-   text-align: left;               
+   text-align: left;
 }
 header a:visited {color:none;}
 header a {text-decoration:none; color:#2d8fc1;}
 
 
-#help { 
+#help {
   float:left;
   margin-right: 80px;
 }
@@ -48,10 +48,10 @@ header a {text-decoration:none; color:#2d8fc1;}
 #browser-compatability { float:right;}
 
 
-      
+
 #showData {
     visibility: hidden;
-}            
+}
 
 section {
     margin: 0px;
@@ -80,7 +80,7 @@ section#top {
 
 .checkbox.checked, .checkbox.checked .icons{ color: #267FAD;}
 .checkbox {padding-left: 18px;}
-.checkbox, .checkbox .icons{ 
+.checkbox, .checkbox .icons{
     height: 13px;
     line-height: 13px;
     font-size: 13px;
@@ -91,11 +91,11 @@ section#top {
 .bar rect {
   fill: #2d8fc1;
   shape-rendering: crispEdges;
-}  
+}
 
 .bar rect.unselected {
     fill: #9C9E9F;
-}          
+}
 
 .bar text {
   fill: 'black';
@@ -128,7 +128,7 @@ section#top {
     font-size: 16px;
 }
 
-.arc .fill {fill: #2d8fc1}             
+.arc .fill {fill: #2d8fc1}
 .alpha {fill: rgba(45,143,193,0.2);}
 
 
@@ -139,6 +139,7 @@ section#top {
     border: 2px solid #2d8fc1;
     border-radius: 4px;
     padding-top: 8px;
+    padding-bottom:8px;
 }
 .arrow_box:after, .arrow_box:before {
     bottom: 100%;
@@ -162,7 +163,7 @@ section#top {
     border-width: 23px;
     left: 78%;
     margin-left: -23px;
-}                          
+}
 .arrow_box input {
     border: none;
     outline: none;
@@ -175,7 +176,7 @@ section#top {
     padding-left: 4px;
     padding-right: 4px;
 }
-.arrow_box button { 
+.arrow_box button {
   font:300 28px quicksand;
   margin-top: 4px;
 }
@@ -189,11 +190,11 @@ section#top {
 .resize path {
     fill: #eee;
     stroke: #666;
-} 
+}
 
 .chart-chooser {
 /*                font-size: 16px;*/
-    color: rgb(180,180,180);                
+    color: rgb(180,180,180);
     font-weight: 400;
 /*                text-align: right;*/
 }
@@ -238,23 +239,20 @@ section#top {
     margin-left: 10px;
 }
 
-div.tooltip {   
-  position: absolute;           
-  text-align: center;           
+div.tooltip {
+  position: absolute;
+  text-align: center;
   z-index:20;
   color:white;
-  padding: 4px 6px 4px 6px;             
-  font: 11px arial;        
-  background: rgb(80,80,80);   
-  border: 0px;      
-  border-radius: 4px;           
-  pointer-events: none; 
+  padding: 4px 6px 4px 6px;
+  font: 11px arial;
+  background: rgb(80,80,80);
+  border: 0px;
+  border-radius: 4px;
+  pointer-events: none;
 }
 
 svg g text {
   fill: black;
   font-size: 20px;
 }
-
-
-
