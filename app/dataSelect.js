@@ -95,7 +95,6 @@ DataSelect.prototype.addBuildListener = function() {
 				return;
 			}
 			genomeBuildHelper.setCurrentBuild(value);
-			//console.log("build val", value);
 			updateUrl("build", value);
 			buildFlag = true;
 			$('#current-build').text(value);
