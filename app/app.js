@@ -748,7 +748,7 @@ function onFileButtonClicked() {
     $("#all-sample-go-button").addClass("hide");
     $("#sample-go-button").addClass("hide");
     $("#go-button-for-load").addClass("hide");
-    dataSelect.setDefaultBuildFromData();
+    // dataSelect.setDefaultBuildFromData();
 }
 
 function loadFromUrl() {
@@ -789,6 +789,10 @@ function loadFromFile() {
       $("#all-sample-go-button").addClass("disabled")
     })
 
+
+    if($('#select-build')[0].selectize.getValue().length>0){
+      buildFlag = true;
+    }
 
     //Enable the load button only if build is selected and the samples are selected
     $('#select-build')[0].selectize.on("change", function(){
