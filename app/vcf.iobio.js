@@ -316,6 +316,8 @@ vcfiobio = function module() {
         referenceNames.push(ref);
       }
 
+
+      var promises = [];
       for (var i = 0; i < referenceNames.length; i++) {
         var ref   = referenceNames[i];
 
@@ -324,142 +326,174 @@ vcfiobio = function module() {
 
         var refLength = genomeBuildHelper.getReferenceLength(ref);
 
-        // Use the linear index to load the estimated density data
-        var intervalPoints = [];
-        for (var x = 0; x < indexseq.n_intv; x++) {
-          var interval = indexseq.intervseq[x];
-          var fileOffset = interval.valueOf();
-          var fileOffsetPrev = x > 0 ? indexseq.intervseq[x - 1].valueOf() : 0;
-          var intervalPos = x * size16kb;
-          intervalPoints.push( [intervalPos, fileOffset - fileOffsetPrev] );
 
-        }
-        if (calcRefLength < refLength) {
-          var lastPos = intervalPoints[intervalPoints.length-1][0];
-          intervalPoints.push([lastPos+1, 0]);
-          intervalPoints.push([refLength-1, 0]);
-        }
+        var loadIndexForRef = function(ref, refIdx) {
+          // Use the linear index to load the estimated density data
+          var intervalPoints = [];
+          for (var x = 0; x < indexseq.n_intv; x++) {
+            var interval = indexseq.intervseq[x];
+            var fileOffset = interval.valueOf();
+            var fileOffsetPrev = x > 0 ? indexseq.intervseq[x - 1].valueOf() : 0;
+            var intervalPos = x * size16kb;
+            intervalPoints.push( [intervalPos, fileOffset - fileOffsetPrev] );
 
-        // Load the reference density data.  Exclude reference if 0 points.
-        refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints};
-        refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": i});
-
-
-
-      }
-
-
-      // Call function from js-bv-sampling to obtain point data.
-      estimateCoverageDepth(tbiIdx, function(estimates) {
-
-      for (var i = 0; i < referenceNames.length; i++) {
-
-
-          var refName   = referenceNames[i];
-          var pointData = estimates[i];
-          var refDataLength  =  refData[i].refLength;
-
-
-
-
-          // Sort by position of read; otherwise, we get a wonky
-          // line chart for read depth.  (When a URL is provided,
-          // bamtools returns a sorted array.  We need this same
-          // behavior when the BAM file is loaded from a file
-          // on the client.
-          pointData.push({pos: 0, depth: 0});
-          pointData = pointData.sort(function(a,b) {
-              var x = +a.pos;
-              var y = +b.pos;
-              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-          });
-
-          // Make sure to zero fill to the end of the reference
-          var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
-          var refLength = genomeBuildHelper.getReferenceLength(refName);
-          if (refLength == null) {
-            refLength = calcRefLength;
           }
           if (calcRefLength < refLength) {
-            pointData.push({pos: refLength-1, depth: 0});
-          } else if (calcRefLength > refLength) {
-            // Remove any points that go past the reference length
-            var idxToTruncate = 0;
-            for( var idx = 0; idx < pointData.length; idx++) {
-              if (pointData[idx].pos > refLength) {
-                if (idxToTruncate == 0) {
-                  idxToTruncate = idx;
-                }
-              }
-            }
-            if (idxToTruncate > 0) {
-              pointData = pointData.slice(0, idxToTruncate);
-              pointData.push({pos: refLength - 1, depth: 0});
-            }
+            var lastPos = intervalPoints[intervalPoints.length-1][0];
+            intervalPoints.push([lastPos+1, 0]);
+            intervalPoints.push([refLength-1, 0]);
           }
 
-
-
-          // If we have sparse data, keep track of these regions
-          if (pointData.length < 100) {
-            refData[i].sparsePointData = pointData;
-          }
-
-          // Zero fill any 16kb points not in array
-          var zeroPointData = [];
-          for (var x = 1; x < pointData.length; x++) {
-              var posPrev = pointData[x-1].pos;
-              var pos     = pointData[x].pos;
-              var posDiff = pos - posPrev;
-              if (posDiff > size16kb) {
-                  var intervalCount = posDiff / size16kb;
-                  for (var y = 0; y < intervalCount; y++) {
-                    zeroPointData.push({pos: posPrev + (y*size16kb), depth: 0});
-                  }
-              }
-          }
-
-          //pointData.push({pos: refDataLength, depth: 0});
-
-          if (zeroPointData.length > 0) {
-            pointData = pointData.concat(zeroPointData);
-            pointData = pointData.sort(function(a,b) {
-              var x = +a.pos;
-              var y = +b.pos;
-              return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-            });
-
-          }
-
-
-
-          //refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": + i});
-          var refObject = refDensity[refName];
-          refObject.points = [];
-
-          for (var x = 0; x < pointData.length; x++) {
-            var point = [pointData[x].pos, pointData[x].depth];
-            refObject.points.push(point);
-          }
-          // Sort ref data so that refs are ordered numerically
-          refData = me.sortRefData(refData);
-
-          if (callbackData) {
-            callbackData(refData);
-          }
-
+          // Load the reference density data.  Exclude reference if 0 points.
+          refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints};
+          refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": refIdx});
 
         }
 
-      });
-
-      // Sort ref data so that refs are ordered numerically
-      refData = me.sortRefData(refData);
-      me.vcfFileSize = vcfFile.size;
-
-      if (callbackEnd) {
-        callbackEnd(refData, vcfFile.size);
+        // If a build wasn't selected, just use the ref length calculated
+        if (refLength == null && genomeBuildHelper.currentBuild == null) {
+          var p = new Promise(function(resolve1, reject1) {
+            let refIdx = i;
+            me.promiseGetRefLengthsFromHeader()
+            .then(function(refMap) {
+              if (refMap && refMap[ref]) {
+                refLength = refMap[ref];
+              } else {
+                refLength = calcRefLength;
+              }
+              loadIndexForRef(ref, refIdx);
+              resolve1();
+            })
+            .catch(function(error) {
+              reject1(error);
+            })
+          })
+          promises.push(p);
+        } else {
+          loadIndexForRef(ref, i);
+          promises.push(Promise.resolve());
+        }
       }
+
+
+      Promise.all(promises)
+      .then(function() {
+        // Call function from js-bv-sampling to obtain point data.
+        estimateCoverageDepth(tbiIdx, function(estimates) {
+
+        for (var i = 0; i < referenceNames.length; i++) {
+
+
+            var refName   = referenceNames[i];
+            var pointData = estimates[i];
+            var refDataLength  =  refData[i].refLength;
+
+
+
+
+            // Sort by position of read; otherwise, we get a wonky
+            // line chart for read depth.  (When a URL is provided,
+            // bamtools returns a sorted array.  We need this same
+            // behavior when the BAM file is loaded from a file
+            // on the client.
+            pointData.push({pos: 0, depth: 0});
+            pointData = pointData.sort(function(a,b) {
+                var x = +a.pos;
+                var y = +b.pos;
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
+
+            // Make sure to zero fill to the end of the reference
+            var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
+            var refLength = genomeBuildHelper.getReferenceLength(refName);
+            if (refLength == null) {
+              refLength = calcRefLength;
+            }
+            if (calcRefLength < refLength) {
+              pointData.push({pos: refLength-1, depth: 0});
+            } else if (calcRefLength > refLength) {
+              // Remove any points that go past the reference length
+              var idxToTruncate = 0;
+              for( var idx = 0; idx < pointData.length; idx++) {
+                if (pointData[idx].pos > refLength) {
+                  if (idxToTruncate == 0) {
+                    idxToTruncate = idx;
+                  }
+                }
+              }
+              if (idxToTruncate > 0) {
+                pointData = pointData.slice(0, idxToTruncate);
+                pointData.push({pos: refLength - 1, depth: 0});
+              }
+            }
+
+
+
+            // If we have sparse data, keep track of these regions
+            if (pointData.length < 100) {
+              refData[i].sparsePointData = pointData;
+            }
+
+            // Zero fill any 16kb points not in array
+            var zeroPointData = [];
+            for (var x = 1; x < pointData.length; x++) {
+                var posPrev = pointData[x-1].pos;
+                var pos     = pointData[x].pos;
+                var posDiff = pos - posPrev;
+                if (posDiff > size16kb) {
+                    var intervalCount = posDiff / size16kb;
+                    for (var y = 0; y < intervalCount; y++) {
+                      zeroPointData.push({pos: posPrev + (y*size16kb), depth: 0});
+                    }
+                }
+            }
+
+            //pointData.push({pos: refDataLength, depth: 0});
+
+            if (zeroPointData.length > 0) {
+              pointData = pointData.concat(zeroPointData);
+              pointData = pointData.sort(function(a,b) {
+                var x = +a.pos;
+                var y = +b.pos;
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+              });
+
+            }
+
+
+
+            //refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": + i});
+            var refObject = refDensity[refName];
+            refObject.points = [];
+
+            for (var x = 0; x < pointData.length; x++) {
+              var point = [pointData[x].pos, pointData[x].depth];
+              refObject.points.push(point);
+            }
+            // Sort ref data so that refs are ordered numerically
+            refData = me.sortRefData(refData);
+
+            if (callbackData) {
+              callbackData(refData);
+            }
+
+
+          }
+
+        });
+
+        // Sort ref data so that refs are ordered numerically
+        refData = me.sortRefData(refData);
+        me.vcfFileSize = vcfFile.size;
+
+        if (callbackEnd) {
+          callbackEnd(refData, vcfFile.size);
+        }
+
+      })
+      .catch(function(error) {
+        reject(error);
+      })
 
     });
 
@@ -849,6 +883,37 @@ vcfiobio = function module() {
 
   }
 
+  exports.promiseGetRefLengthsFromHeader = function() {
+    var me = this;
+    return new Promise(function(resolve, reject) {
+      var refMap = {};
+      me.getHeader(function(header) {
+        header.split("\n").forEach(function(headerRec) {
+          if (headerRec.indexOf("##contig=<") == 0) {
+            var allFields = headerRec.split("##contig=<")[1];
+
+            var fields = allFields.split(/[,>]/);
+            var refName = null;
+            var refLength = null;
+            fields.forEach(function(field) {
+              if (field.indexOf("ID=") == 0) {
+                refName = field.split("ID=")[1];
+              }
+              if (field.indexOf("length=") == 0) {
+                refLength = field.split("length=")[1];
+              }
+
+            })
+            if (refName && refLength) {
+              refMap[refName] = +refLength;
+            }
+          }
+        })
+        resolve(refMap);
+      })
+
+    })
+  }
 
 
   exports.getStats = function(refs, options, callback) {
