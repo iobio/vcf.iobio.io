@@ -89,7 +89,7 @@ var colorListVarType = ["#2171b5", "#eff3ff", "#bdd7e7", "#6baed6", ];
 var iobioServer           = "nv-prod.iobio.io/";
 var dataSelect            = null;
 var genomeBuildHelper     = null;
-var genomeBuildServer     = "http://" + iobioServer + "genomebuild/";
+var genomeBuildServer     = "https://" + iobioServer + "genomebuild/";
 
 
 var flag = false;

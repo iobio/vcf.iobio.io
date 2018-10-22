@@ -5,9 +5,9 @@
 		<title>vcf.iobio.io help</title>
 
         <link href='assets/css/quicksand.css' rel='stylesheet' type='text/css'>
-		<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
         <link href="assets/css/iobio.css" rel="stylesheet" type='text/css'>
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
         <style>
             header {
             	font-family: Quicksand;
@@ -35,17 +35,17 @@
         		margin: 20px;
         		font-family: Open Sans;
         		width: 900px;
-        		font-weight: 300;  
+        		font-weight: 300;
         	}
-        	
+
         </style>
 	</head>
 
 <body>
 
-<header><a href="http://vcf.iobio.io">vcf<span style="color:rgb(200,200,200)">.iobio.io</span><span color>&nbsp;</a></header> 
+<header><a href="http://vcf.iobio.io">vcf<span style="color:rgb(200,200,200)">.iobio.io</span><span color>&nbsp;</a></header>
 
-<h1>The compressed and indexed VCF</h1>   
+<h1>The compressed and indexed VCF</h1>
 
 Compressing VCF files with BGZip and indexing it with Tabix is the standard way VCF files are stored, and is the format that vcf.iobio.io supports. The software to compress and index VCF files is called Tabix, developed by Heng Li at the Broad Institute.  The source code is available on SourceForge and can be obtained at: <a href="http://sourceforge.net/projects/samtools/files/tabix/">http://sourceforge.net/projects/samtools/files/tabix/</a>
 
@@ -84,7 +84,7 @@ Once you have successfully compiled Tabix (and bgzip), you can compress your vcf
 	$ /path/to/tabix/bgzip myvcf.vcf
 	$ /path/to/tabix/tabix -p vcf myvcf.vcf.gz
 </pre>
-These two commands will create two new files: the compressed vcf (.vcf.gz) and the index (.vcf.gz.tbi).  Now you are ready to run <a href="index.html">vcf.iobio</a>, selecting these two files when prompted. 
+These two commands will create two new files: the compressed vcf (.vcf.gz) and the index (.vcf.gz.tbi).  Now you are ready to run <a href="index.html">vcf.iobio</a>, selecting these two files when prompted.
 <p>
 The manual page for Tabix and BGZip can be found at <a href="http://samtools.sourceforge.net/tabix.shtml">http://samtools.sourceforge.net/tabix.shtml</a>
 
