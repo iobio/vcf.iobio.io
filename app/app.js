@@ -121,6 +121,14 @@ $(document).ready( function(){
 *
 */
 function init() {
+
+  var url_string = new URL(window.location.href);
+  var iobio_source_string = url_string.searchParams.get("iobio_source");
+
+  if(iobio_source_string === "mosaic.chpc.utah.edu"){
+    iobioServer = "mosaic.chpc.utah.edu/";
+  }
+
   d3.selectAll("svg").classed("hide", true);
   d3.selectAll(".svg-alt").classed("hide", true);
   d3.selectAll(".samplingLoader").classed("hide", false);
