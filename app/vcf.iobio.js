@@ -297,7 +297,9 @@ vcfiobio = function module() {
   exports.loadIndex = function(callbackData, callbackEnd, callbackError) {
     var me = this;
 
-    vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
+
+    vcfReader = new readBinaryVCF(tabixFile, vcfFile,
+    function(tbiR) {
       var tbiIdx = tbiR;
       refDensity.length = 0;
 
@@ -317,71 +319,57 @@ vcfiobio = function module() {
       }
 
 
-      var promises = [];
-      for (var i = 0; i < referenceNames.length; i++) {
-        var ref   = referenceNames[i];
+      me.promiseGetRefLengthsFromHeader()
+      .then(function(refMap) {
+        for (var i = 0; i < referenceNames.length; i++) {
+          var ref   = referenceNames[i];
 
-        var indexseq = tbiIdx.idxContent.indexseq[i];
-        var calcRefLength = indexseq.n_intv * size16kb;
+          var indexseq = tbiIdx.idxContent.indexseq[i];
+          var calcRefLength = indexseq.n_intv * size16kb;
 
-        var refLength = genomeBuildHelper.getReferenceLength(ref);
+          var refLength = genomeBuildHelper.getReferenceLength(ref);
 
 
-        var loadIndexForRef = function(ref, refIdx) {
-          // Use the linear index to load the estimated density data
-          var intervalPoints = [];
-          for (var x = 0; x < indexseq.n_intv; x++) {
-            var interval = indexseq.intervseq[x];
-            var fileOffset = interval.valueOf();
-            var fileOffsetPrev = x > 0 ? indexseq.intervseq[x - 1].valueOf() : 0;
-            var intervalPos = x * size16kb;
-            intervalPoints.push( [intervalPos, fileOffset - fileOffsetPrev] );
+          var loadIndexForRef = function(ref, refIdx, theRefLength) {
+            // Use the linear index to load the estimated density data
+            var intervalPoints = [];
+            for (var x = 0; x < indexseq.n_intv; x++) {
+              var interval = indexseq.intervseq[x];
+              var fileOffset = interval.valueOf();
+              var fileOffsetPrev = x > 0 ? indexseq.intervseq[x - 1].valueOf() : 0;
+              var intervalPos = x * size16kb;
+              intervalPoints.push( [intervalPos, fileOffset - fileOffsetPrev] );
+
+            }
+            if (calcRefLength < theRefLength) {
+              var lastPos = intervalPoints[intervalPoints.length-1][0];
+              intervalPoints.push([lastPos+1, 0]);
+              intervalPoints.push([theRefLength-1, 0]);
+            }
+
+            // Load the reference density data.  Exclude reference if 0 points.
+            refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints};
+            refData.push( {"name": ref, "value": theRefLength, "refLength": theRefLength, "idx": refIdx});
 
           }
-          if (calcRefLength < refLength) {
-            var lastPos = intervalPoints[intervalPoints.length-1][0];
-            intervalPoints.push([lastPos+1, 0]);
-            intervalPoints.push([refLength-1, 0]);
+
+          // If a build wasn't selected, just use the ref length calculated
+          if (refLength == null && genomeBuildHelper.currentBuild == null) {
+            if (refMap && refMap[ref]) {
+              refLength = refMap[ref];
+            } else {
+              refLength = calcRefLength;
+            }
+            loadIndexForRef(ref, i, refLength);
+          } else {
+            loadIndexForRef(ref, i, refLength);
           }
-
-          // Load the reference density data.  Exclude reference if 0 points.
-          refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints};
-          refData.push( {"name": ref, "value": refLength, "refLength": refLength, "idx": refIdx});
-
         }
 
-        // If a build wasn't selected, just use the ref length calculated
-        if (refLength == null && genomeBuildHelper.currentBuild == null) {
-          var p = new Promise(function(resolve1, reject1) {
-            let refIdx = i;
-            me.promiseGetRefLengthsFromHeader()
-            .then(function(refMap) {
-              if (refMap && refMap[ref]) {
-                refLength = refMap[ref];
-              } else {
-                refLength = calcRefLength;
-              }
-              loadIndexForRef(ref, refIdx);
-              resolve1();
-            })
-            .catch(function(error) {
-              reject1(error);
-            })
-          })
-          promises.push(p);
-        } else {
-          loadIndexForRef(ref, i);
-          promises.push(Promise.resolve());
-        }
-      }
-
-
-      Promise.all(promises)
-      .then(function() {
         // Call function from js-bv-sampling to obtain point data.
         estimateCoverageDepth(tbiIdx, function(estimates) {
 
-        for (var i = 0; i < referenceNames.length; i++) {
+          for (var i = 0; i < referenceNames.length; i++) {
 
 
             var refName   = referenceNames[i];
@@ -464,6 +452,9 @@ vcfiobio = function module() {
 
             //refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": + i});
             var refObject = refDensity[refName];
+            if (refObject == null) {
+              refObject = {};
+            }
             refObject.points = [];
 
             for (var x = 0; x < pointData.length; x++) {
@@ -490,10 +481,11 @@ vcfiobio = function module() {
           callbackEnd(refData, vcfFile.size);
         }
 
-      })
-      .catch(function(error) {
-        reject(error);
-      })
+      });
+
+
+
+
 
     });
 
