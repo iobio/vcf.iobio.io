@@ -100,7 +100,9 @@ var timings;
 var urlFunctionTime;
 var buildFlag = false; //Sets true when the build is selected in the file upload
 var sampleLoadFlag = false; //Sets true when the samples are selected in the file upload
-
+var demoBuildFlag = false;
+var demoSpeciesFlag = false;
+var demoFlag = true;
 
 /*
 *  Document initialization
@@ -407,12 +409,23 @@ function init() {
         var tbiUrl = decodeUrl(getParameterByName('tbi'));
 
         if (vcfUrl && genomeBuildHelper.getCurrentBuild() && genomeBuildHelper.getCurrentSpecies()) {
+          console.log("hola")
           onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);
 
         } else if (vcfUrl) {
-          $('#url-input').val(vcfUrl);
-          if (tbiUrl) {
-            $('#url-tbi-input').val(tbiUrl);
+          console.log(typeof species)
+          if(species === "Not specified" || species === "" || species === "null"){
+            $('#url-input').val("");
+            if (tbiUrl) {
+              $('#url-tbi-input').val("");
+            }
+            displayVcfUrlBox();
+          }
+          else {
+            $('#url-input').val(vcfUrl);
+            if (tbiUrl) {
+              $('#url-tbi-input').val(tbiUrl);
+            }
           }
           displayVcfUrlBox();
         }
@@ -451,7 +464,7 @@ function onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl){
         } else {
               $('#samples-filter-header #sample-names').addClass("hide");
         }
-        window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
+        window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName() + '&species=' + genomeBuildHelper.getCurrentSpeciesName());
         vcfiobio.setSamples(sampleNamesFromUrl);
 
         vcfiobio.getSampleNames(function(sampleNames){
@@ -493,7 +506,7 @@ function onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl){
       } else {
             $('#samples-filter-header #sample-names').addClass("hide");
       }
-      window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
+      window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + sampleNamesFromUrl.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName() + '&species=' + genomeBuildHelper.getCurrentSpeciesName());
       vcfiobio.setSamples(sampleNamesFromUrl);
       loadStats(chromosomeIndex);
     }
@@ -620,6 +633,7 @@ function emailProblem() {
 
 
   function tbiUrlFunction(){
+    demoFlag = false;
     if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 ){
       var tbiMyTime =  setTimeout(loadFromUrl, 3500);
       $("#sampleDataUrl").addClass("hide");
@@ -630,6 +644,7 @@ function emailProblem() {
 
   function clearUrlFunction(){
     //Clear the samples
+    demoFlag = false;
     var selectTheOptions = $("#vcf-sample-select").selectize();
 		var control = selectTheOptions[0].selectize;
 		control.clearOptions();
@@ -688,14 +703,35 @@ function displayVcfUrlBox() {
     $("#vcf-sample-select-box").addClass("hide");
     $("#all-sample-go-button").addClass("hide");
     $("#sample-go-button").addClass("hide");
-    $("#go-button-for-load").removeClass("hide");
+    // $("#go-button-for-load").removeClass("hide");
 
     vcfiobio.vcfURL = $('#url-input').val();
     vcfiobio.tbiURL = $('#url-tbi-input').val();
     dataSelect.setDefaultBuildFromData(); //builds data for species and genome build
     loadWithSample();
-}
 
+    $('#select-species')[0].selectize.on("change", function(){
+      if($('#select-species')[0].selectize.getValue().length>0){
+        demoSpeciesFlag = true;
+        checkToEnableDemoLoadButton();
+      }
+    })
+
+    $('#select-build')[0].selectize.on("change", function(){
+      if($('#select-build')[0].selectize.getValue().length>0){
+        demoBuildFlag = true;
+        checkToEnableDemoLoadButton();
+      }
+    })
+
+
+}
+function checkToEnableDemoLoadButton(){
+  if(demoBuildFlag && demoSpeciesFlag && demoFlag){
+    $("#go-button-for-load").removeClass("hide");
+    demoFlag = false;
+  }
+}
 function loadWithSample(){
   $("#select-build-box").removeClass("hide");
 }
@@ -880,7 +916,7 @@ function handleSelectedSamplesForFile(){
   } else {
         $('#samples-filter-header #sample-names').addClass("hide");
   }
-  window.history.pushState({'index.html' : 'bar'},null,'?build=' + genomeBuildHelper.getCurrentBuildName());
+  window.history.pushState({'index.html' : 'bar'},null,'?build=' + genomeBuildHelper.getCurrentBuildName() + '&species=' + genomeBuildHelper.getCurrentSpeciesName());
   vcfiobio.setSamples(samples);
 }
 
@@ -1042,7 +1078,7 @@ function handleSelectedSamples(){
         $('#samples-filter-header #sample-names').addClass("hide");
   }
   vcfiobio.setSamples(samples);
-  window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName());
+  window.history.pushState({'index.html' : 'bar'},null,"?vcf=" + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi=" + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples=" + samples.join(",") + '&build=' + genomeBuildHelper.getCurrentBuildName() + '&species=' + genomeBuildHelper.getCurrentSpeciesName());
 
 }
 
