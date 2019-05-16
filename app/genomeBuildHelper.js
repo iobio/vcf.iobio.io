@@ -6,8 +6,8 @@ function GenomeBuildHelper() {
 	this.speciesToBuilds = {};      // map species to its genome builds
 	this.buildNameToBuild = {};     //
 
-	this.DEFAULT_SPECIES = "";
-	this.DEFAULT_BUILD   = "";
+	this.DEFAULT_SPECIES = "Human";
+	this.DEFAULT_BUILD   = "GRCh37";
 
 	this.ALIAS_UCSC                            = "UCSC";
 	this.ALIAS_REFSEQ_ASSEMBLY_ACCESSION_RANGE = "REFSEQ ASSEMBLY ACCESSION RANGE";
@@ -93,7 +93,9 @@ GenomeBuildHelper.prototype.setCurrentSpecies = function(speciesName) {
 }
 
 GenomeBuildHelper.prototype.setCurrentBuild = function(buildName) {
+	console.log("setCurrentBuild", buildName)
 	this.currentBuild = this.buildNameToBuild[buildName];
+	console.log("this.currentBuild", this.currentBuild)
 }
 
 
@@ -113,6 +115,7 @@ GenomeBuildHelper.prototype.getCurrentBuild = function() {
 	return this.currentBuild ? this.currentBuild : null;
 }
 GenomeBuildHelper.prototype.getCurrentBuildName = function() {
+	console.log("dshgjdhs")
 	return this.currentBuild ? this.currentBuild.name : null;
 }
 
