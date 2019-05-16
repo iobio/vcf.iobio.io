@@ -400,7 +400,6 @@ function init() {
           genomeBuildHelper.setCurrentSpecies(species);
         }
         var build   = getParameterByName('build');
-        console.log("build", build)
         if (build && build.length > 0) {
           $('#current-build').text(build)
           genomeBuildHelper.setCurrentBuild(build);
@@ -410,11 +409,9 @@ function init() {
         var tbiUrl = decodeUrl(getParameterByName('tbi'));
 
         if (vcfUrl && genomeBuildHelper.getCurrentBuild() && genomeBuildHelper.getCurrentSpecies()) {
-          console.log("hola")
           onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);
 
         } else if (vcfUrl) {
-          console.log(species)
           if(species === "Not specified" || species === "" || species === "null" || build=== "Not specified" || build === "GRCh37" || build === "GRCh38" || build=== "mm10/GRCm38"){
             $('#url-input').val("");
             if (tbiUrl) {
@@ -620,15 +617,6 @@ function emailProblem() {
     var species_dropdownValue = $('#select-species').selectize();
     var selectize_species  = species_dropdownValue[0].selectize;
     selectize_species.setValue("Human");
-    // genomeBuildHelper.setCurrentBuild("null")
-
-    // var selectTheOptions = $("#select-build").selectize();
-    // var control = selectTheOptions[0].selectize;
-    // control.clearOptions();
-
-    setTimeout(function(){
-      console.log("genomeBuildHelper.getCurrentBuildName()", genomeBuildHelper.getCurrentBuildName());
-    }, 5000)
 
     //If flag is set and tbi url is entered first
     if(document.getElementById("url-input").value.length > 5 && document.getElementById("url-tbi-input").value.length > 5 && flag){
@@ -725,46 +713,17 @@ function displayVcfUrlBox() {
     vcfiobio.tbiURL = $('#url-tbi-input').val();
     dataSelect.setDefaultBuildFromData(); //builds data for species and genome build
     loadWithSample();
-    //
-    // var species_dropdownValue = $('#select-species').selectize();
-    // var selectize_species  = species_dropdownValue[0].selectize;
-    // selectize_species.setValue("Human");
-    //
-    // setTimeout(function(){
-    //   var build_dropdownValue = $('#select-build').selectize();
-    //   var selectize_build  = build_dropdownValue[0].selectize;
-    //   // console.log("selectize.options", selectize_build.options)
-    //   selectize_build.setValue("GRCh37");
-    //   $("#go-button-for-load").prop('disabled', false).removeClass("disabled");
-    //   demoFlag = false;
-    // }, 1000)
-
-
-
 
     $('#select-species')[0].selectize.on("change", function(){
       if($('#select-species')[0].selectize.getValue().length>0){
         demoSpeciesFlag = true;
-        console.log("$('#select-build')[0].selectize.getValue()", $('#select-build')[0].selectize.getValue());
-        // genomeBuildHelper.setCurrentBuild("not specified")
-        console.log("genomeBuildHelper.getCurrentBuildName()", genomeBuildHelper.getCurrentBuildName());
-        // window.history.pushState({'index.html' : 'bar'},null,'?build=null'+ '&species=' + genomeBuildHelper.getCurrentSpeciesName());
-
         checkToEnableDemoLoadButton();
       }
     })
-    //
-    // $('#select-build')[0].selectize.on("change", function(){
-    //   if($('#select-build')[0].selectize.getValue().length>0){
-    //     demoBuildFlag = true;
-    //     checkToEnableDemoLoadButton();
-    //   }
-    // })
-
 }
+
 function checkToEnableDemoLoadButton(){
   if(demoBuildFlag && demoSpeciesFlag && demoFlag){
-    // $("#go-button-for-load").removeClass("hide");
     $("#go-button-for-load").prop('disabled', false).removeClass("disabled");
     demoFlag = false;
   }
@@ -914,7 +873,6 @@ function loadFromFile() {
     }
     else {
       //If the file contains no samples.
-      console.log("here for file");
       var speciesFlagNoSamples = false;
       var buildFlagNoSamples = false;
 
@@ -1077,8 +1035,6 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
         }
         else {
           //If the url contains no samples.
-          // $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
-          console.log("here")
           var speciesFlagNoSamples = false;
           var buildFlagNoSamples = false;
 
@@ -1086,7 +1042,6 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
             $("#go-button-for-noSamples").prop('disabled', false);
           }
 
-          console.log("$('#select-species')[0].selectize.getValue()", $('#select-build')[0].selectize.getValue())
           $('#select-species')[0].selectize.on("change", function(){
             if($('#select-species')[0].selectize.getValue().length>0){
               if($('#select-species')[0].selectize.getValue() === "Not specified"){

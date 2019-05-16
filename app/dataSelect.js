@@ -89,16 +89,13 @@ DataSelect.prototype.disableLoadButton = function() {
 
 DataSelect.prototype.addBuildListener = function() {
 	var me = this;
-	console.log("changing!")
 	if ($('#select-build')[0].selectize) {
 	    $('#select-build')[0].selectize.on('change', function(value) {
 			if (!value.length) {
 				return;
 			}
 			genomeBuildHelper.setCurrentBuild(value);
-			updateUrl("build", value);
 			buildFlag = true;
-			console.log("value", value)
 			// $('#current-build').text(value);
 			me.validateBuildFromData(function(success, message) {
 				if (success) {
@@ -128,7 +125,6 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 
 			} else if (buildsInData.length == 1) {
 				var buildInfo = buildsInData[0];
-				console.log("printing from here")
 				me.removeBuildListener();
 				genomeBuildHelper.setCurrentSpecies(buildInfo.species.name);
 				genomeBuildHelper.setCurrentBuild(buildInfo.build.name);
@@ -153,10 +149,8 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 }
 
 DataSelect.prototype.validateBuildFromData = function(callback) {
-	console.log("checking and validating")
 	var me = this;
 	me.getBuildsFromData(function(buildsInData) {
-		console.log("buildsInData", buildsInData)
 		if (buildsInData.length == 0) {
 			callback(true);
 
@@ -175,7 +169,6 @@ DataSelect.prototype.validateBuildFromData = function(callback) {
 
 
 DataSelect.prototype.getBuildsFromData = function(callback) {
-	console.log("callback", callback)
 	var me = this;
 
 	me.getHeadersFromVcfs(function(vcfHeaderMap) {
