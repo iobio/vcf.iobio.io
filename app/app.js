@@ -414,8 +414,8 @@ function init() {
           onRefreshShowAnalysis(vcfUrl, tbiUrl, sampleNamesFromUrl && sampleNamesFromUrl.length >  0 ? sampleNamesFromUrl.split(",") : null);
 
         } else if (vcfUrl) {
-          console.log(typeof species)
-          if(species === "Not specified" || species === "" || species === "null"){
+          console.log(species)
+          if(species === "Not specified" || species === "" || species === "null" || build=== "Not specified" || build === "GRCh37" || build === "GRCh38" || build=== "mm10/GRCm38"){
             $('#url-input').val("");
             if (tbiUrl) {
               $('#url-tbi-input').val("");
@@ -914,11 +914,44 @@ function loadFromFile() {
     }
     else {
       //If the file contains no samples.
-      $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
+      console.log("here for file");
+      var speciesFlagNoSamples = false;
+      var buildFlagNoSamples = false;
+
+      if($('#select-build')[0].selectize.getValue() && $('#select-species')[0].selectize.getValue()){
+        $("#go-button-for-noSamples").prop('disabled', false);
+      }
+
+      $('#select-species')[0].selectize.on("change", function(){
+        if($('#select-species')[0].selectize.getValue().length>0){
+          if($('#select-species')[0].selectize.getValue() === "Not specified"){
+            window.history.pushState({'index.html' : 'bar'},null,'?build=not specified' + '&species=not specified');
+            genomeBuildHelper.setCurrentBuild("not specified")
+            speciesFlagNoSamples = true;
+            $("#go-button-for-noSamples").prop('disabled', false)
+          }
+          else{
+            speciesFlagNoSamples = true;
+            checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples);
+          }
+        }
+      });
+
+      $('#select-build')[0].selectize.on("change", function(){
+        if($('#select-build')[0].selectize.getValue().length>0){
+          buildFlagNoSamples = true;
+          checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples);
+        }
+      });
+
+      $("#go-button-for-noSamples").removeClass("hide");
+      // $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
       $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+      $("#select-species-box").removeClass("hide"); //Show the select species box
       $("#select-build-box").removeClass("hide"); //Show the select build box
 
       $("#go-button-for-noSamples").on("click", function(){
+        printBuildName();
         vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
         toggleDisplayProperties();
       })
@@ -928,6 +961,7 @@ function loadFromFile() {
 
 function handleSampleGoButtonForFile(){
   $('#sample-go-button').on('click', function() {
+    printBuildName();
       if (samplesSet===false) {
         samplesSet=true;
         toggleDisplayProperties();
@@ -1042,6 +1076,7 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
         handleSampleGoButtonClick(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
         }
         else {
+          //If the url contains no samples.
           // $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
           console.log("here")
           var speciesFlagNoSamples = false;
