@@ -703,7 +703,7 @@ function displayVcfUrlBox() {
     $("#vcf-sample-select-box").addClass("hide");
     $("#all-sample-go-button").addClass("hide");
     $("#sample-go-button").addClass("hide");
-    // $("#go-button-for-load").removeClass("hide");
+    $("#go-button-for-load").removeClass("hide");
 
     vcfiobio.vcfURL = $('#url-input').val();
     vcfiobio.tbiURL = $('#url-tbi-input').val();
@@ -724,11 +724,11 @@ function displayVcfUrlBox() {
       }
     })
 
-
 }
 function checkToEnableDemoLoadButton(){
   if(demoBuildFlag && demoSpeciesFlag && demoFlag){
-    $("#go-button-for-load").removeClass("hide");
+    // $("#go-button-for-load").removeClass("hide");
+    $("#go-button-for-load").prop('disabled', false).removeClass("disabled");
     demoFlag = false;
   }
 }
@@ -998,7 +998,32 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
         handleSampleGoButtonClick(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
         }
         else {
-          $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
+          // $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
+
+          var speciesFlagNoSamples = false;
+          var buildFlagNoSamples = false;
+
+          $('#select-species')[0].selectize.on("change", function(){
+            if($('#select-species')[0].selectize.getValue().length>0){
+              if($('#select-species')[0].selectize.getValue() === "Not specified"){
+                speciesFlagNoSamples = true;
+                $("#go-button-for-noSamples").prop('disabled', false)
+              }
+              else{
+                speciesFlagNoSamples = true;
+                checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples);
+              }
+            }
+          });
+
+          $('#select-build')[0].selectize.on("change", function(){
+            if($('#select-build')[0].selectize.getValue().length>0){
+              buildFlagNoSamples = true;
+              checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples);
+            }
+          });
+
+          $("#go-button-for-noSamples").removeClass("hide");
           $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
           $("#select-build-box").removeClass("hide"); //Show the select build box
           $("#go-button-for-load").addClass("hide"); //Hide the sample load button
@@ -1016,10 +1041,12 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
       $("file-go-button").addClass("hide");
       $("#url-input").val(url);
       $("#tbi-url-input").val(tbiUrl ? tbiUrl : '');
-
     }
     });
+}
 
+function checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples){
+  $("#go-button-for-noSamples").prop('disabled', false);
 }
 
 function enableSampleSelectDropDown(){
