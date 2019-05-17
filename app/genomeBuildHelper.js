@@ -4,7 +4,7 @@ function GenomeBuildHelper() {
 	this.speciesList = [];
 	this.speciesNameToSpecies = {}; // map species name to the species object
 	this.speciesToBuilds = {};      // map species to its genome builds
-	this.buildNameToBuild = {};     // 
+	this.buildNameToBuild = {};     //
 
 	this.DEFAULT_SPECIES = "Human";
 	this.DEFAULT_BUILD   = "GRCh37";
@@ -35,14 +35,14 @@ GenomeBuildHelper.prototype.promiseInit = function(options) {
 			type: "GET",
 			dataType: "jsonp",
 	        error: function( xhr, status, errorThrown ) {
-			        
+
 			        console.log( "Error: " + errorThrown );
 			        console.log( "Status: " + status );
 			        console.log( xhr );
 			        reject("An error occurred when loading genomebuild data: " + errorThrown);
 			},
 	        success: function(allSpecies) {
-	        	
+
 	        	me.init(allSpecies);
 
 	        	resolve();
@@ -74,9 +74,10 @@ GenomeBuildHelper.prototype.init = function(allSpecies) {
 				me.speciesToBuilds[species.name] = builds;
 			}
 			builds.push(genomeBuild);
-		
+
 		})
 	});
+	me.speciesList.push({name: "Not specified", value: "Not specified"});
 
 	// Default the species and build
 	if (me.currentSpecies == null) {
@@ -84,7 +85,7 @@ GenomeBuildHelper.prototype.init = function(allSpecies) {
 	}
 	if (me.currentBuild == null) {
 		me.currentBuild = me.buildNameToBuild[me.DEFAULT_BUILD];
-	}	
+	}
 }
 
 GenomeBuildHelper.prototype.setCurrentSpecies = function(speciesName) {
@@ -183,8 +184,8 @@ GenomeBuildHelper.prototype.getBuildResource = function(resourceType) {
 	row will be present in the returned array, representing the build that
 	is specified in all of the files:
 		[{species: the_species_object, build: the_build_object, from: [all bam and vcf files specified as proband,bam]}]
-	In cases where different builds have been specified, more than one row is 
-	returned: 
+	In cases where different builds have been specified, more than one row is
+	returned:
 		[{species: (Human), build: (build GRCh37), from: [{type:vcf, relationship: mother}, {type:bam, relationship: mother}]}]
 		[{species: (Human), build: (build GRCh38), from: [{type:vcf, relationship: proband},{type:bam, relationship: proband}]}]
 */
@@ -196,12 +197,12 @@ GenomeBuildHelper.prototype.getBuildsInHeaders = function(bamHeaderMap, vcfHeade
 		var header = bamHeaderMap[relationship];
 		var buildInfo = me.getBuildFromBamHeader(header);
 		me.parseBuildInfo(buildInfo, relationship, 'bam', theBuilds);
-	}			
+	}
 	for (relationship in vcfHeaderMap) {
 		var header = vcfHeaderMap[relationship];
 		var buildInfo = me.getBuildFromVcfHeader(header);
 		me.parseBuildInfo(buildInfo, relationship, 'vcf', theBuilds);
-	}			
+	}
 
 	return theBuilds;
 }
@@ -235,7 +236,7 @@ GenomeBuildHelper.prototype.getBuildFromBamHeader = function(header) {
 			    	buildInfo.build = assembly;
 			    }
 			 }
-		}	
+		}
 	}
 
 	return buildInfo;
@@ -319,7 +320,7 @@ GenomeBuildHelper.prototype.parseBuildInfo = function(buildInfo, relationship, t
 					theBuilds.push( {species: speciesBuild.species, build: speciesBuild.build, from: [{type: type, relationship: relationship}]});
 				}
 
-			}				
+			}
 		}
 
 	}
@@ -330,7 +331,7 @@ GenomeBuildHelper.prototype.parseBuildInfo = function(buildInfo, relationship, t
 /*
 	Given the species and build names in the file header, try to find the corresponding
 	species and genome build based on matching the header names to the names (name, binomialName, latin_name)
-	of the species and the names (name and aliases) of genome build. 
+	of the species and the names (name and aliases) of genome build.
 */
 GenomeBuildHelper.prototype.getProperSpeciesAndBuild = function(buildInfo) {
 	var me = this;
@@ -346,9 +347,9 @@ GenomeBuildHelper.prototype.getProperSpeciesAndBuild = function(buildInfo) {
 					var species = me.speciesNameToSpecies[speciesName];
 					if (species.name == buildInfo.species || species.binomialName == buildInfo.species || species.latin_name ==  buildInfo.species ) {
 						matchedSpecies = species;
-					} 					
+					}
 				}
-			} 
+			}
 		}
 
 		// For now, just default to Human if species can't be determined from file headers
@@ -390,10 +391,10 @@ GenomeBuildHelper.prototype.getProperSpeciesAndBuild = function(buildInfo) {
 									}
 								}
 							})
-						}																
+						}
 					}
 				})
-							
+
 			} else {
 				// If a build wasn't specified, try to match to a genome build based on reference lengths
 				matchedSpecies.genomeBuilds.forEach(function(build) {
@@ -439,7 +440,7 @@ GenomeBuildHelper.prototype.getProperSpeciesAndBuild = function(buildInfo) {
 }
 
 GenomeBuildHelper.prototype.formatIncompatibleBuildsMessage = function(buildsInData) {
-	var message = null;	
+	var message = null;
 	if (buildsInData && buildsInData.length > 1) {
 		message = "Incompatible builds in files.";
 		buildsInData.forEach(function(buildInfo) {
@@ -456,7 +457,5 @@ GenomeBuildHelper.prototype.formatIncompatibleBuildsMessage = function(buildsInD
 		});
 
 	}
-	return message;	
+	return message;
 }
-
-
