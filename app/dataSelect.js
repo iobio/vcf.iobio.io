@@ -95,9 +95,8 @@ DataSelect.prototype.addBuildListener = function() {
 				return;
 			}
 			genomeBuildHelper.setCurrentBuild(value);
-			updateUrl("build", value);
 			buildFlag = true;
-			$('#current-build').text(value);
+			// $('#current-build').text(value);
 			me.validateBuildFromData(function(success, message) {
 				if (success) {
 					$('#species-build-warning').addClass("hide");
@@ -126,13 +125,12 @@ DataSelect.prototype.setDefaultBuildFromData = function() {
 
 			} else if (buildsInData.length == 1) {
 				var buildInfo = buildsInData[0];
-
 				me.removeBuildListener();
 				genomeBuildHelper.setCurrentSpecies(buildInfo.species.name);
 				genomeBuildHelper.setCurrentBuild(buildInfo.build.name);
 				$('#select-species')[0].selectize.setValue(buildInfo.species.name);
 				$('#select-build')[0].selectize.setValue(buildInfo.build.name);
-				$('#current-build').text(buildInfo.build.name);
+				// $('#current-build').text(buildInfo.build.name);
 				updateUrl("build", buildInfo.build.name);
 				me.addBuildListener();
 
