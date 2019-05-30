@@ -5,7 +5,7 @@
 if [[ $1 == "prod" ]]; then
 
   echo "** Uploaded to prod s3 bucket **"
-  aws s3 cp ./  s3://static.iobio.io/prod/vcf.iobio.io/ --recursive
+  aws s3 cp ./  s3://static.iobio.io/prod/vcf.iobio.io/ --exclude '.git/*' --recursive
   echo "** Renew cloudfrount cache **"
   aws cloudfront create-invalidation --distribution-id E16OA00PL1U0YP --paths /\*
 
