@@ -104,6 +104,15 @@ var demoBuildFlag = false;
 var demoSpeciesFlag = false;
 var demoFlag = true;
 
+var mosaicToIobioSources = {
+    "https://mosaic.chpc.utah.edu":          {iobio: "mosaic.chpc.utah.edu/"},
+    "https://mosaic-dev.genetics.utah.edu":  {iobio: "mosaic.chpc.utah.edu/"},
+    "http://mosaic-dev.genetics.utah.edu":   {iobio: "mosaic.chpc.utah.edu/"},
+    "https://staging.frameshift.io":         {iobio: "nv-prod.iobio.io/"}
+};
+
+
+
 /*
 *  Document initialization
 */
@@ -125,11 +134,32 @@ $(document).ready( function(){
 function init() {
 
   var url_string = new URL(window.location.href);
+
   var iobio_source_string = url_string.searchParams.get("iobio_source");
+
+
+  // These are the url parameters passed when vcf.iobio is launched
+  // from Mosaic
+  var access_token = url_string.searchParams.get("access_token");
+  var token_type   = url_string.searchParams.get("token_type");
+  var sampleId     = url_string.searchParams.get("sample_id");
+  var projectId    = url_string.searchParams.get("project_id");
+  var source       = url_string.searchParams.get("source");
+  var build        = url_string.searchParams.get("build");
+  if (access_token && token_type) {
+    localStorage.setItem('hub-iobio-tkn', token_type + ' ' + access_token);
+    if (mosaicToIobioSources[source]) {
+      iobioServer = mosaicToIobioSources[source].iobio;
+    }
+  }
+
 
   if(iobio_source_string === "mosaic.chpc.utah.edu"){
     iobioServer = "mosaic.chpc.utah.edu/";
   }
+
+
+
 
   d3.selectAll("svg").classed("hide", true);
   d3.selectAll(".svg-alt").classed("hide", true);
@@ -137,21 +167,23 @@ function init() {
 
   vcfiobio = new vcfiobio();
   vcfiobio.setSamples([]);
+    $('#url-input').focusout(function() {
+      vcfiobio.vcfURL = $('#url-input').val();
+      vcfiobio.tbiURL = $('#url-tbi-input').val();
+        dataSelect.setDefaultBuildFromData();
+      });
+    $('#vcf-sample-select').selectize(
+      {
+        create: true,
+        maxItems: null,
+        valueField: 'value',
+          labelField: 'value',
+          searchField: ['value']
+      }
+    );
 
-  $('#url-input').focusout(function() {
-    vcfiobio.vcfURL = $('#url-input').val();
-    vcfiobio.tbiURL = $('#url-tbi-input').val();
-      dataSelect.setDefaultBuildFromData();
-    });
-  $('#vcf-sample-select').selectize(
-    {
-      create: true,
-      maxItems: null,
-      valueField: 'value',
-        labelField: 'value',
-        searchField: ['value']
-    }
-  );
+
+
 
   // Setup event handlers for File input
   document.getElementById('file').addEventListener('change', onFilesSelected, false);
@@ -433,7 +465,42 @@ function init() {
 
     $('#report-problem-button').on('click', emailProblem);
 
+
+  if (localStorage.getItem('hub-iobio-tkn') && localStorage.getItem('hub-iobio-tkn').length > 0
+      && sampleId && projectId && source) {
+    if (build && build.length > 0) {
+      genomeBuildHelper.setCurrentBuild(build);
+    }
+
+    self.mosaicSession = new MosaicSession();
+    self.mosaicSession.promiseInit(sampleId, source, projectId)
+    .then(modelInfo => {
+      vcfiobio.setSamples([]);
+      vcfiobio.vcfURL = modelInfo.vcf
+      vcfiobio.tbiURL = modelInfo.tbi
+      vcfiobio.samples = [sampleId]
+      toggleDisplayProperties()
+      vcfiobio.loadRemoteIndex(vcfiobio.vcfURL, vcfiobio.tbiURL, onReferencesLoading,
+      function() {
+        onReferencesLoaded();
+        window.history.pushState({'index.html' : 'bar'},null,"?vcf="
+          + encodeURIComponent(vcfiobio.getVcfUrl()) + "&tbi="
+          + encodeURIComponent(vcfiobio.getTbiURL()) + "&samples="
+          + sampleId + '&build='
+          + genomeBuildHelper.getCurrentBuildName()
+          + '&species=' + genomeBuildHelper.getCurrentSpeciesName());
+        loadStats(chromosomeIndex)
+
+      });
+    })
+    .catch(function(error) {
+      alert("Unable to get data source information from Mosaic");
+    })
+
+  }
+
 }
+
 
 var sampleNamesFromUrlArray = [];
 
