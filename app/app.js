@@ -843,10 +843,15 @@ function loadWithSample(){
 
 
 function printBuildName(){
+  var species = getParameterByName('species');
   setTimeout(function(){
     var build = getParameterByName('build');
-    if (build && build.length > 0) {
+    console.log("species", species)
+    if (build && build.length > 0 && species===!null) {
       $('#current-build').text(build);
+    }
+    else if(species===null){
+      $('#current-build').text("");
     }
   }, 1500)
 }
