@@ -843,10 +843,19 @@ function loadWithSample(){
 
 
 function printBuildName(){
-  var build   = getParameterByName('build');
-  if (build && build.length > 0) {
-    $('#current-build').text(build)
-  }
+  var species = getParameterByName('species');
+  setTimeout(function(){
+    var build = getParameterByName('build');
+    if (build.length > 0 && species!=="Not specified" && species!==null && species!=="not specified") {
+      $('#current-build').text(build);
+    }
+    else if(species===null){
+      $('#current-build').text("");
+    }
+    else {
+      $('#current-build').text("");
+    }
+  }, 1000)
 }
 
 function onFileButtonClicked() {
@@ -920,14 +929,37 @@ function loadFromFile() {
 
     // Enable and disable load button for samples
     $('#vcf-sample-select')[0].selectize.on("change", function(value){ //*
+      var species_value = $('#select-species')[0].selectize.getValue();
       sampleLoadFlag = true;
-      if (value && buildFlag) {
-        $("#sample-go-button").prop('disabled', false).removeClass("disabled");
+      if(species_value === "Not specified"){
+        if (value) {
+          $("#sample-go-button").prop('disabled', false).removeClass("disabled");
+        }
+        else if(value === null){
+          $("#sample-go-button").prop('disabled', true).addClass("disabled");
+        }
       }
-      else if(value === null){
-        $("#sample-go-button").prop('disabled', true).addClass("disabled");
+      else {
+        if (value && buildFlag) {
+          $("#sample-go-button").prop('disabled', false).removeClass("disabled");
+        }
+        else if(value === null){
+          $("#sample-go-button").prop('disabled', true).addClass("disabled");
+        }
       }
     });
+
+
+    //If the species dropdown is changed later, check if the species is "Not provided".
+    // if yes, enable load button without the need for samples
+    $('#select-species')[0].selectize.on("change", function(){
+      var species_value = $('#select-species')[0].selectize.getValue();
+      if(species_value==="Not specified" && sampleLoadFlag){
+        $("#sample-go-button").prop('disabled', false).removeClass("disabled");
+        window.history.pushState({'index.html' : 'bar'},null,'?build=not specified' + '&species=not specified');
+        genomeBuildHelper.setCurrentBuild("not specified")
+      }
+    })
 
     $('#vcf-sample-box').removeClass("hide");
     $('#sample-go-button').removeClass("hide");
@@ -1092,6 +1124,16 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
             $("#sample-go-button").prop('disabled', true).addClass("disabled");
           }
         });
+
+        //If the species dropdown is changed later, check if the species is "Not provided".
+        // if yes, enable load button without the need for samples
+        $('#select-species')[0].selectize.on("change", function(){
+          var species_value = $('#select-species')[0].selectize.getValue();
+          if(species_value==="Not specified"){
+            window.history.pushState({'index.html' : 'bar'},null,'?build=not specified' + '&species=not specified');
+            genomeBuildHelper.setCurrentBuild("not specified")
+          }
+        })
 
         $('#vcf-sample-box').removeClass("hide");
         $('#sample-go-button').removeClass("hide");
