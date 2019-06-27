@@ -846,7 +846,7 @@ function printBuildName(){
   var species = getParameterByName('species');
   setTimeout(function(){
     var build = getParameterByName('build');
-    if (build && build.length > 0 && species!==null && species!=="not specified") {
+    if (build.length > 0 && species!=="Not specified" && species!==null && species!=="not specified") {
       $('#current-build').text(build);
     }
     else if(species===null){
@@ -855,7 +855,7 @@ function printBuildName(){
     else {
       $('#current-build').text("");
     }
-  }, 1500)
+  }, 1000)
 }
 
 function onFileButtonClicked() {
