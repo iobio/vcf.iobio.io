@@ -55,6 +55,8 @@
 //
 vcfiobio = function module() {
 
+  var apiClient = new iobioApiClient.Client('backend.iobio.io', { secure: true });
+
   var debug =  false;
 
   var exports = {};
@@ -148,15 +150,10 @@ vcfiobio = function module() {
     var buffer = "";
     var recordCount = 0;
 
-    var args = ['-H', '"'+url+'"'];
-    if (theTbiUrl) {
-      args.push('"'+theTbiUrl+'"');
-    }
-    var cmd = new iobio.cmd(
-        tabix,
-        args,
-        {ssl: ssl}
-    );
+    var cmd = apiClient.streamCommand('variantHeader', {
+      url,
+      indexUrl: theTbiUrl,
+    });
 
     cmd.on('data', function(data) {
       if (data != undefined) {
@@ -510,17 +507,18 @@ vcfiobio = function module() {
     var buffer = "";
     var refName;
 
-    var args =  ['-i'];
+    var url;
     if (me.tbiURL) {
-      args.push('"'+me.tbiURL+'"');
+      url = me.tbiURL;
     } else {
-      args.push('"'+me.vcfURL + '.tbi' + '"');
+      url = me.vcfURL + '.tbi';
     }
-    var cmd = new iobio.cmd(
-        vcfReadDepther,
-        args,
-        {ssl: ssl}
-    );
+
+    var cmd = apiClient.streamCommand('vcfReadDepth', {
+      url,
+    });
+
+    cmd = new LineReader(cmd);
 
     cmd.on('data', function(data) {
 
@@ -835,15 +833,10 @@ vcfiobio = function module() {
 
         var buffer = "";
 
-        var args = ['-H', me.vcfURL];
-        if (me.tbiURL) {
-          args.push(me.tbiURL);
-        }
-        var cmd = new iobio.cmd(
-            tabix,
-            args,
-            {ssl: ssl}
-        );
+        var cmd = apiClient.streamCommand('variantHeader', {
+          url: me.vcfURL,
+          indexUrl: me.tbiURL,
+        });
 
         cmd.on('data', function(data) {
           if (data != undefined) {
@@ -1049,10 +1042,13 @@ vcfiobio = function module() {
       regionStr += " " + region.name + ":" + region.start + "-" + region.end
     });
 
+    var refNames = [];
+
     var contigStr = "";
     for (var j=0; j < refs.length; j++) {
       var ref      = refData[refs[j]];
       contigStr += "##contig=<ID=" + ref.name + ">\n";
+      refNames.push(ref.name);
     }
     var contigNameFile = new Blob([contigStr])
 
@@ -1072,9 +1068,13 @@ vcfiobio = function module() {
                         .pipe(vt, ["subset", "-s", sampleNameFile, '-'], {ssl: ssl})
                         .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'], {ssl: ssl} );
     } else {
-      cmd = new iobio.cmd(tabix, tabixArgs,  {ssl: ssl})
-                        .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'], {ssl: ssl})
-                        .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'], {ssl: ssl} );
+
+      cmd = apiClient.streamCommand('vcfStatsStream', {
+        url: me.vcfURL,
+        indexUrl: me.tbiURL,
+        regions,
+        refNames,
+      });
     }
 
 
@@ -1153,21 +1153,10 @@ vcfiobio = function module() {
   exports._getRemoteSampleNames = function(callback) {
     var me = this;
 
-
-    var args = ['-h', '"'+me.vcfURL+'"', '1:1-1'];
-    if (me.tbiURL) {
-      args.push('"'+me.tbiURL+'"');
-    }
-    var cmd = new iobio.cmd(
-        tabix,
-        args,
-        {ssl: ssl}
-    );
-
-
-
-    cmd.http();
-
+    var cmd = apiClient.streamCommand('variantHeader', {
+      url: me.vcfURL,
+      indexUrl: me.tbiURL,
+    });
 
     var headerData = "";
     // Use Results
@@ -1536,4 +1525,64 @@ vcfiobio = function module() {
   // Return this scope so that all subsequent calls
   // will be made on this scope.
   return exports;
+};
+
+
+function LineReader(cmd) {
+
+  let remainder = "";
+  let prev = "";
+
+  cmd.on('data', (data) => {
+
+    const lines = data.split('\n');
+
+    if (remainder.length > 0) {
+      lines[0] = remainder + lines[0];
+      remainder = "";
+    }
+
+    if (!lines[lines.length - 1].endsWith('\n')) {
+      remainder = lines.pop();
+    }
+
+    for (const line of lines) {
+      prev = line;
+      this.onData(line);
+    }
+  });
+
+  cmd.on('end', () => {
+    if (remainder.length > 0) {
+      this.onData(remainder);
+    }
+    this.onEnd();
+  });
+
+  cmd.on('error', (e) => {
+    this.onError(e);
+  });
+
+  this._cmd = cmd;
+}
+
+LineReader.prototype.run = function() {
+  this._cmd.run();
+};
+
+LineReader.prototype.on = function(evt, callback) {
+  switch (evt) {
+    case 'data':
+      this.onData = callback;
+      break;
+    case 'end':
+      this.onEnd = callback;
+      break;
+    case 'error':
+      this.onError = callback;
+      break;
+    default:
+      throw new Error("LineReader: Invalid event", evt);
+      break;
+  }
 };
