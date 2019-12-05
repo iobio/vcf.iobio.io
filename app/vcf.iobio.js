@@ -211,7 +211,9 @@ vcfiobio = function module() {
   }
 
   exports.openVcfFile = function(event, callback, errorCallback) {
-    sourceType = SOURCE_TYPE_FILE;
+    // No longer SOURCE_TYPE_FILE because we're using the local file proxy now.
+    //sourceType = SOURCE_TYPE_FILE;
+    sourceType = SOURCE_TYPE_URL;
 
     if (event.target.files.length != 2) {
        errorCallback('must select 2 files, both a .vcf.gz and .vcf.gz.tbi file');
@@ -236,7 +238,7 @@ vcfiobio = function module() {
       errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
     }
 
-
+    
     if (fileExt0 == 'vcf.gz' && fileExt1 == 'vcf.gz.tbi') {
       if (rootFileName0 != rootFileName1) {
         errorCallback('The index (.tbi) file must be named ' +  rootFileName0 + ".tbi");
@@ -255,8 +257,25 @@ vcfiobio = function module() {
       errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
     }
 
-    callback(vcfFile);
+    // host the files on the local file proxy (fibridge)
+    var proxyAddress = 'lf-proxy.iobio.io';
+    var port = 443;
+    var secure = true;
+    var protocol = 'https:';
 
+    fibridge.createHoster({ proxyAddress, port, secure }).then((hoster) => {
+      var vcfPath = '/' + vcfFile.name;
+      hoster.hostFile({ path: vcfPath, file: vcfFile });
+      var tabixPath = '/' + tabixFile.name;
+      hoster.hostFile({ path: tabixPath, file: tabixFile });
+
+      var portStr = hoster.getPortStr();
+      var baseUrl = `${protocol}//${proxyAddress}${portStr}`;
+      this.vcfURL = `${baseUrl}${hoster.getHostedPath(vcfPath)}`;
+      this.tbiURL = `${baseUrl}${hoster.getHostedPath(tabixPath)}`;
+
+      callback(vcfFile);
+    });
   }
 
 
@@ -1530,12 +1549,12 @@ vcfiobio = function module() {
 
 function LineReader(cmd) {
 
-  let remainder = "";
-  let prev = "";
+  var remainder = "";
+  var prev = "";
 
   cmd.on('data', (data) => {
 
-    const lines = data.split('\n');
+    var lines = data.split('\n');
 
     if (remainder.length > 0) {
       lines[0] = remainder + lines[0];
@@ -1546,7 +1565,7 @@ function LineReader(cmd) {
       remainder = lines.pop();
     }
 
-    for (const line of lines) {
+    for (var line of lines) {
       prev = line;
       this.onData(line);
     }

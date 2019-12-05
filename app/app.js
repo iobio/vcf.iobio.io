@@ -886,7 +886,8 @@ function loadFromUrl() {
 }
 
 
-function loadFromFile() {
+// TODO: This should be able to be combined with _loadVcfFromUrl.
+function loadFromLocalFiles() {
   $('.vcf-sample.loader').removeClass("hide");
 
   vcfiobio.getSampleNames(function(sampleNames) {
@@ -1286,7 +1287,7 @@ function onFilesSelected(event) {
     function(vcfFile) {
       d3.select("#vcf_file").text(vcfFile.name);
       dataSelect.setDefaultBuildFromData();
-      loadFromFile();
+      loadFromLocalFiles();
     },
     function(errorMessage) {
       displayFileError(errorMessage)
