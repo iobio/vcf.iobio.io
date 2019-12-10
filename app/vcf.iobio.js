@@ -274,7 +274,7 @@ vcfiobio = function module() {
       this.vcfURL = `${baseUrl}${hoster.getHostedPath(vcfPath)}`;
       this.tbiURL = `${baseUrl}${hoster.getHostedPath(tabixPath)}`;
 
-      callback(vcfFile);
+      callback(this.vcfURL, this.tbiURL);
     });
   }
 

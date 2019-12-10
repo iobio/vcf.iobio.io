@@ -886,137 +886,6 @@ function loadFromUrl() {
 }
 
 
-// TODO: This should be able to be combined with _loadVcfFromUrl.
-function loadFromLocalFiles() {
-  $('.vcf-sample.loader').removeClass("hide");
-
-  vcfiobio.getSampleNames(function(sampleNames) {
-    $('.vcf-sample.loader').addClass("hide");
-    //If the samples are present in the file
-    if (sampleNames.length > 1) {
-      enableSampleSelectDropDown();
-
-    sampleNames.forEach( function(sampleName) {
-      $('#vcf-sample-select')[0].selectize.addOption({value:sampleName});
-    });
-    if (sampleNamesFromUrl) {
-      $('#vcf-sample-select')[0].selectize.setValue(sampleNamesFromUrl.split(","));
-      sampleNamesFromUrl = "";
-    }
-
-    var x = $('#vcf-sample-select').selectize();
-    var selectize  = x[0].selectize;
-
-    //Selecting all samples
-    $("#all-sample-go-button").click(function(){
-      var z = selectize.setValue(Object.keys(selectize.options));
-      $("#all-sample-go-button").addClass("disabled")
-    })
-
-
-    if($('#select-build')[0].selectize.getValue().length>0){
-      buildFlag = true;
-    }
-
-    //Enable the load button only if build is selected and the samples are selected
-    $('#select-build')[0].selectize.on("change", function(){
-      if (buildFlag && sampleLoadFlag) {
-        $("#sample-go-button").prop('disabled', false).removeClass("disabled");
-      }
-      else {
-        $("#sample-go-button").prop('disabled', true).addClass("disabled");
-      }
-    })
-
-    // Enable and disable load button for samples
-    $('#vcf-sample-select')[0].selectize.on("change", function(value){ //*
-      var species_value = $('#select-species')[0].selectize.getValue();
-      sampleLoadFlag = true;
-      if(species_value === "Not specified"){
-        if (value) {
-          $("#sample-go-button").prop('disabled', false).removeClass("disabled");
-        }
-        else if(value === null){
-          $("#sample-go-button").prop('disabled', true).addClass("disabled");
-        }
-      }
-      else {
-        if (value && buildFlag) {
-          $("#sample-go-button").prop('disabled', false).removeClass("disabled");
-        }
-        else if(value === null){
-          $("#sample-go-button").prop('disabled', true).addClass("disabled");
-        }
-      }
-    });
-
-
-    //If the species dropdown is changed later, check if the species is "Not provided".
-    // if yes, enable load button without the need for samples
-    $('#select-species')[0].selectize.on("change", function(){
-      var species_value = $('#select-species')[0].selectize.getValue();
-      if(species_value==="Not specified" && sampleLoadFlag){
-        $("#sample-go-button").prop('disabled', false).removeClass("disabled");
-        window.history.pushState({'index.html' : 'bar'},null,'?build=not specified' + '&species=not specified');
-        genomeBuildHelper.setCurrentBuild("not specified")
-      }
-    })
-
-    $('#vcf-sample-box').removeClass("hide");
-    $('#sample-go-button').removeClass("hide");
-      $('#all-sample-go-button').removeClass("hide");
-
-    $('#sample-go-button').off('click');
-
-    //Clicking the load button
-    handleSampleGoButtonForFile();
-    }
-    else {
-      //If the file contains no samples.
-      var speciesFlagNoSamples = false;
-      var buildFlagNoSamples = false;
-
-      if($('#select-build')[0].selectize.getValue() && $('#select-species')[0].selectize.getValue()){
-        $("#go-button-for-noSamples").prop('disabled', false);
-      }
-
-      $('#select-species')[0].selectize.on("change", function(){
-        if($('#select-species')[0].selectize.getValue().length>0){
-          if($('#select-species')[0].selectize.getValue() === "Not specified"){
-            window.history.pushState({'index.html' : 'bar'},null,'?build=not specified' + '&species=not specified');
-            genomeBuildHelper.setCurrentBuild("not specified")
-            speciesFlagNoSamples = true;
-            $("#go-button-for-noSamples").prop('disabled', false)
-          }
-          else{
-            speciesFlagNoSamples = true;
-            checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples);
-          }
-        }
-      });
-
-      $('#select-build')[0].selectize.on("change", function(){
-        if($('#select-build')[0].selectize.getValue().length>0){
-          buildFlagNoSamples = true;
-          checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples);
-        }
-      });
-
-      $("#go-button-for-noSamples").removeClass("hide");
-      // $("#go-button-for-noSamples").prop('disabled', false).removeClass("hide");
-      $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
-      $("#select-species-box").removeClass("hide"); //Show the select species box
-      $("#select-build-box").removeClass("hide"); //Show the select build box
-
-      $("#go-button-for-noSamples").on("click", function(){
-        printBuildName();
-        vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
-        toggleDisplayProperties();
-      })
-    }
-  });
-}
-
 function handleSampleGoButtonForFile(){
   $('#sample-go-button').on('click', function() {
     printBuildName();
@@ -1176,6 +1045,7 @@ function _loadVcfFromUrl(url, tbiUrl, sampleNames) {
 
           $("#go-button-for-noSamples").removeClass("hide");
           $("#accessing-headers-gif").addClass("hide"); //Hide the loading gif
+          $("#select-species-box").removeClass("hide"); //Show the select species box
           $("#select-build-box").removeClass("hide"); //Show the select build box
           $("#go-button-for-load").addClass("hide"); //Hide the sample load button
           handleSampleGoButtonNoSamples(url, tbiUrl, onReferencesLoading, onReferencesLoaded);
@@ -1282,12 +1152,9 @@ function toggleDisplayProperties(){
 function onFilesSelected(event) {
   $("#file-alert").addClass("hide");
   $("#accessing-headers-gif").removeClass("hide");
-  $("#select-species-box").addClass("hide");
   vcfiobio.openVcfFile( event,
-    function(vcfFile) {
-      d3.select("#vcf_file").text(vcfFile.name);
-      dataSelect.setDefaultBuildFromData();
-      loadFromLocalFiles();
+    function(vcfUrl, tbiUrl) {
+      _loadVcfFromUrl(vcfUrl, tbiUrl);
     },
     function(errorMessage) {
       displayFileError(errorMessage)
