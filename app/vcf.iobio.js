@@ -55,7 +55,9 @@
 //
 vcfiobio = function module() {
 
-  var apiClient = new iobioApiClient.Client('backend.iobio.io', { secure: true });
+  // iobioServer is a global defined in app/app.js
+  var backendPath = iobioServer;
+  var apiClient = new iobioApiClient.Client(backendPath, { secure: true });
 
   var debug =  false;
 

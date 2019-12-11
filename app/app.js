@@ -86,10 +86,44 @@ var lookupNucleotide = {
 
 var colorListVarType = ["#2171b5", "#eff3ff", "#bdd7e7", "#6baed6", ];
 
-var iobioServer           = "nv-prod.iobio.io/";
+var iobioServer           = "backend.iobio.io";
 var dataSelect            = null;
 var genomeBuildHelper     = null;
-var genomeBuildServer     = "https://" + iobioServer + "genomebuild/";
+var genomeBuildServer     = "https://" + iobioServer + "/genomebuild/";
+
+
+// URL parameters
+//
+var mosaicToIobioSources = {
+    "https://mosaic.chpc.utah.edu":          {iobio: "mosaic.chpc.utah.edu/gru/api/v1"},
+    "https://mosaic-staging.chpc.utah.edu":  {iobio: "mosaic.chpc.utah.edu/gru/api/v1"},
+    "https://mosaic-dev.genetics.utah.edu":  {iobio: "mosaic.chpc.utah.edu/"},
+    "http://mosaic-dev.genetics.utah.edu":   {iobio: "mosaic.chpc.utah.edu/"},
+    "https://staging.frameshift.io":         {iobio: "backend.iobio.io"}
+};
+
+var url_string = new URL(window.location.href);
+var iobio_source_string = url_string.searchParams.get("iobio_source");
+if(iobio_source_string === "mosaic.chpc.utah.edu"){
+  iobioServer = "mosaic.chpc.utah.edu/gru/api/v1";
+  genomeBuildServer = "https://mosaic.chpc.utah.edu/gru/api/v1/genomebuild/";
+}
+
+// These are the url parameters passed when vcf.iobio is launched
+// from Mosaic
+var access_token = url_string.searchParams.get("access_token");
+var token_type   = url_string.searchParams.get("token_type");
+var sampleId     = url_string.searchParams.get("sample_id");
+var projectId    = url_string.searchParams.get("project_id");
+var source       = url_string.searchParams.get("source");
+var build        = url_string.searchParams.get("build");
+if (access_token && token_type) {
+  localStorage.setItem('hub-iobio-tkn', token_type + ' ' + access_token);
+  if (mosaicToIobioSources[source]) {
+    iobioServer = mosaicToIobioSources[source].iobio;
+    genomeBuildServer = "https://mosaic.chpc.utah.edu/gru/api/v1/genomebuild/";
+  }
+}
 
 
 var flag = false;
@@ -103,14 +137,6 @@ var sampleLoadFlag = false; //Sets true when the samples are selected in the fil
 var demoBuildFlag = false;
 var demoSpeciesFlag = false;
 var demoFlag = true;
-
-var mosaicToIobioSources = {
-    "https://mosaic.chpc.utah.edu":          {iobio: "mosaic.chpc.utah.edu/"},
-    "https://mosaic-dev.genetics.utah.edu":  {iobio: "mosaic.chpc.utah.edu/"},
-    "http://mosaic-dev.genetics.utah.edu":   {iobio: "mosaic.chpc.utah.edu/"},
-    "https://staging.frameshift.io":         {iobio: "nv-prod.iobio.io/"}
-};
-
 
 
 /*
@@ -132,34 +158,6 @@ $(document).ready( function(){
 *
 */
 function init() {
-
-  var url_string = new URL(window.location.href);
-
-  var iobio_source_string = url_string.searchParams.get("iobio_source");
-
-
-  // These are the url parameters passed when vcf.iobio is launched
-  // from Mosaic
-  var access_token = url_string.searchParams.get("access_token");
-  var token_type   = url_string.searchParams.get("token_type");
-  var sampleId     = url_string.searchParams.get("sample_id");
-  var projectId    = url_string.searchParams.get("project_id");
-  var source       = url_string.searchParams.get("source");
-  var build        = url_string.searchParams.get("build");
-  if (access_token && token_type) {
-    localStorage.setItem('hub-iobio-tkn', token_type + ' ' + access_token);
-    if (mosaicToIobioSources[source]) {
-      iobioServer = mosaicToIobioSources[source].iobio;
-    }
-  }
-
-
-  if(iobio_source_string === "mosaic.chpc.utah.edu"){
-    iobioServer = "mosaic.chpc.utah.edu/";
-  }
-
-
-
 
   d3.selectAll("svg").classed("hide", true);
   d3.selectAll(".svg-alt").classed("hide", true);
