@@ -21,10 +21,17 @@ var iobioApiClient = (function (exports) {
 
           //  break;
           case XHR_LOADING:
-            const newData = xhr.responseText.substr(xhr.seenBytes); 
-            this._onData(newData);
 
-            xhr.seenBytes = xhr.responseText.length; 
+            if (xhr.status === 200) {
+              const newData = xhr.responseText.substr(xhr.seenBytes); 
+              this._onData(newData);
+
+              xhr.seenBytes = xhr.responseText.length; 
+            }
+            else {
+              this._onError(xhr.responseText);
+            }
+
             break;
           case XHR_DONE:
 
