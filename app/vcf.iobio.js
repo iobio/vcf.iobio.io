@@ -42,6 +42,7 @@ vcfiobio = function module() {
   // iobioServer is a global defined in app/app.js
   var backendPath = iobioServer;
   var apiClient = new iobioApiClient.Client(backendPath, { secure: true });
+  //var apiClient = new iobioApiClient.Client('localhost:9001', { secure: false });
 
   var debug =  false;
 
@@ -714,11 +715,13 @@ vcfiobio = function module() {
     if (samples && samples.length > 0) {
       var sampleNameFile = new Blob([samples.join("\n")]);
 
-
-      cmd = new iobio.cmd(tabix, tabixArgs, {ssl: ssl})
-                        .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'], {ssl: ssl})
-                        .pipe(vt, ["subset", "-s", sampleNameFile, '-'], {ssl: ssl})
-                        .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'], {ssl: ssl} );
+      cmd = apiClient.streamCommand('vcfStatsStream', {
+        url: me.vcfURL,
+        indexUrl: me.tbiURL,
+        regions,
+        refNames,
+        sampleNames: samples,
+      });
     } else {
 
       cmd = apiClient.streamCommand('vcfStatsStream', {
