@@ -636,6 +636,11 @@ vcfiobio = function module() {
             callback(headerStr);
           }
         });
+
+        cmd.on('error', function(err) {
+          console.log(err);
+        });
+
         cmd.run();
 
       }
