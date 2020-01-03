@@ -883,47 +883,6 @@ function loadFromUrl() {
     _loadVcfFromUrl(url, tbiUrl);
 }
 
-
-function handleSampleGoButtonForFile(){
-  $('#sample-go-button').on('click', function() {
-    printBuildName();
-      if (samplesSet===false) {
-        samplesSet=true;
-        toggleDisplayProperties();
-
-      vcfiobio.loadIndex(onReferencesLoading, onReferencesLoaded, displayFileError);
-
-      $("#vcf-sample-select-box").detach().appendTo('#filterSampelDiv').css("text-align", "center");
-      $("#sample-go-button").detach().appendTo('#sample-go-button-inModal');
-      handleSelectedSamplesForFile();
-
-      }
-    else if(samplesSet){
-      handleSelectedSamplesForFile();
-      loadStats(chromosomeIndex);
-
-    }
-  });
-}
-
-
-function handleSelectedSamplesForFile(){
-  var samples =  $('#vcf-sample-select')[0].selectize.items;
-  if (samples.length > 0) {
-        $('#samples-filter-header #sample-names').removeClass("hide");
-        if (samples.length > 6) {
-      $('#samples-filter-header #sample-names').text(samples.length + " samples filtered");
-        } else {
-      $('#samples-filter-header #sample-names').text(samples.join(" "));
-        }
-  } else {
-        $('#samples-filter-header #sample-names').addClass("hide");
-  }
-  window.history.pushState({'index.html' : 'bar'},null,'?build=' + genomeBuildHelper.getCurrentBuildName() + '&species=' + genomeBuildHelper.getCurrentSpeciesName());
-  vcfiobio.setSamples(samples);
-}
-
-
 function updateUrl(paramName, value) {
   var params = {};
   // turn params into hash
