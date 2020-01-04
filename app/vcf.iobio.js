@@ -80,16 +80,17 @@ vcfiobio = function module() {
 
   var errorMessageMap =  {
     "tabix Could not load .tbi": {
+        // TODO: this tbi error mapping is probably wrong.
         regExp: /tabix\sError:\s.*:\sstderr\s-\sCould not load .tbi.*/,
         message:  "Unable to load the index (.tbi) file, which has to exist in same directory and be given the same name as the .vcf.gz with the file extension of .vcf.gz.tbi.  "
     },
      "tabix [E::hts_open]": {
-        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open\]\sfail\sto\sopen\sfile/,
-        message: "Unable to access the file.  "
+        regExp:  /Error:\s\[E::hts_open\]/,
+        message: "Unable to access the file. Please double check the URL."
      },
      "tabix [E::hts_open_format]": {
-        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open_format\]\sfail\sto\sopen\sfile/,
-        message: "Unable to access the file. "
+        regExp:  /Error:\s\[E::hts_open_format\]/,
+        message: "Unable to access the file. Please double check the URL."
      }
   }
 
