@@ -19,13 +19,11 @@
 //
 //  The files can be hosted remotely, specified by a URL, or reside on the client, accesssed as a local
 //  file on the file system. When the files are on a remote server, vcfiobio communicates with iobio services
-//  to obtain the metrics data.  When the files are accessed locally, a client-side javascript library
-//  is used to a) read the tabix file to obtain the reference names/lengths and the variant density data
-//  and b) parse the vcf records from sampled regions.  This mini vcf file is then streamed to iobio services
-//  to obtain the vcf metrics.
+//  to obtain the metrics data.  When the files are accessed locally, the data is first stream through
+//  our fibridge local file proxy server, which mamkes it accessible as a URL which the normal backend
+//  can access.
 //
 //  The follow example code illustrates the method calls to make
-//  when the vcf file is served remotely (a URL is entered)
 //
 //  var vcfiobio = vcfiobio();
 //  vcfiobio.loadRemoteIndex(vcfUrl, function(data) {
@@ -39,21 +37,12 @@
 //     // Render the vcf stats here....
 //  });
 //
-//
-//  When the vcf file resides on the local file system, call
-//  openVcfFile() and then call loadIndex() instead
-//  of loadRemoteIndex().
-//
-//  var vcfiobio = vcfiobio();
-//  vcfiobio.openVcfFile( event, function(vcfFile) {
-//    vcfiobio.loadIndex( function(data) {
-//     .... same as above ......
-//    });
-//  });
-//  ...  same as above
-//
-//
 vcfiobio = function module() {
+
+  // iobioServer is a global defined in app/app.js
+  var backendPath = iobioServer;
+  var apiClient = new iobioApiClient.Client(backendPath, { secure: true });
+  //var apiClient = new iobioApiClient.Client('localhost:9001', { secure: false });
 
   var debug =  false;
 
@@ -72,7 +61,6 @@ vcfiobio = function module() {
 
   var vcfstatsAlive          = iobioServer + "vcfstatsalive/";
   var tabix                  = iobioServer + "od_tabix/";
-  var vcfReadDepther         = iobioServer + "vcfdepther/"
   var vt                     = iobioServer + "vt/";
   var bcftools               = iobioServer + "bcftools/";
 
@@ -81,7 +69,6 @@ vcfiobio = function module() {
   var vcfReader;
   var vcfFile;
   var tabixFile;
-  var size16kb = Math.pow(2, 14);
   var refData = [];
   var refDensity = [];
   var refName = "";
@@ -93,16 +80,17 @@ vcfiobio = function module() {
 
   var errorMessageMap =  {
     "tabix Could not load .tbi": {
+        // TODO: this tbi error mapping is probably wrong.
         regExp: /tabix\sError:\s.*:\sstderr\s-\sCould not load .tbi.*/,
         message:  "Unable to load the index (.tbi) file, which has to exist in same directory and be given the same name as the .vcf.gz with the file extension of .vcf.gz.tbi.  "
     },
      "tabix [E::hts_open]": {
-        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open\]\sfail\sto\sopen\sfile/,
-        message: "Unable to access the file.  "
+        regExp:  /Error:\s\[E::hts_open\]/,
+        message: "Unable to access the file. Please double check the URL."
      },
      "tabix [E::hts_open_format]": {
-        regExp:  /tabix\sError:\s.*:\sstderr\s-\s\[E::hts_open_format\]\sfail\sto\sopen\sfile/,
-        message: "Unable to access the file. "
+        regExp:  /Error:\s\[E::hts_open_format\]/,
+        message: "Unable to access the file. Please double check the URL."
      }
   }
 
@@ -148,15 +136,10 @@ vcfiobio = function module() {
     var buffer = "";
     var recordCount = 0;
 
-    var args = ['-H', '"'+url+'"'];
-    if (theTbiUrl) {
-      args.push('"'+theTbiUrl+'"');
-    }
-    var cmd = new iobio.cmd(
-        tabix,
-        args,
-        {ssl: ssl}
-    );
+    var cmd = apiClient.streamCommand('variantHeader', {
+      url,
+      indexUrl: theTbiUrl,
+    });
 
     cmd.on('data', function(data) {
       if (data != undefined) {
@@ -214,7 +197,9 @@ vcfiobio = function module() {
   }
 
   exports.openVcfFile = function(event, callback, errorCallback) {
-    sourceType = SOURCE_TYPE_FILE;
+    // No longer SOURCE_TYPE_FILE because we're using the local file proxy now.
+    //sourceType = SOURCE_TYPE_FILE;
+    sourceType = SOURCE_TYPE_URL;
 
     if (event.target.files.length != 2) {
        errorCallback('must select 2 files, both a .vcf.gz and .vcf.gz.tbi file');
@@ -239,7 +224,7 @@ vcfiobio = function module() {
       errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
     }
 
-
+    
     if (fileExt0 == 'vcf.gz' && fileExt1 == 'vcf.gz.tbi') {
       if (rootFileName0 != rootFileName1) {
         errorCallback('The index (.tbi) file must be named ' +  rootFileName0 + ".tbi");
@@ -258,8 +243,25 @@ vcfiobio = function module() {
       errorCallback('You must select BOTH  a compressed vcf file (.vcf.gz) and an index (.tbi)  file');
     }
 
-    callback(vcfFile);
+    // host the files on the local file proxy (fibridge)
+    var proxyAddress = 'lf-proxy.iobio.io';
+    var port = 443;
+    var secure = true;
+    var protocol = 'https:';
 
+    fibridge.createHoster({ proxyAddress, port, secure }).then((hoster) => {
+      var vcfPath = '/' + vcfFile.name;
+      hoster.hostFile({ path: vcfPath, file: vcfFile });
+      var tabixPath = '/' + tabixFile.name;
+      hoster.hostFile({ path: tabixPath, file: tabixFile });
+
+      var portStr = hoster.getPortStr();
+      var baseUrl = `${protocol}//${proxyAddress}${portStr}`;
+      this.vcfURL = `${baseUrl}${hoster.getHostedPath(vcfPath)}`;
+      this.tbiURL = `${baseUrl}${hoster.getHostedPath(tabixPath)}`;
+
+      callback(this.vcfURL, this.tbiURL);
+    });
   }
 
 
@@ -294,204 +296,6 @@ vcfiobio = function module() {
     return samples;
   }
 
-  exports.loadIndex = function(callbackData, callbackEnd, callbackError) {
-    var me = this;
-
-
-    vcfReader = new readBinaryVCF(tabixFile, vcfFile,
-    function(tbiR) {
-      var tbiIdx = tbiR;
-      refDensity.length = 0;
-
-      if (tbiIdx.idxContent.head.n_ref == 0) {
-        var errorMsg = "Invalid index file.  The number of references is set to zero.  Try recompressing the vcf with bgzip and regenerating the index with tabix."
-        if (callbackError) {
-          callbackError(errorMsg);
-        }
-        console.log(errorMsg);
-        return;
-      }
-
-      var referenceNames = [];
-      for (var i = 0; i < tbiIdx.idxContent.head.n_ref; i++) {
-        var ref   = tbiIdx.idxContent.head.names[i];
-        referenceNames.push(ref);
-      }
-
-
-      me.promiseGetRefLengthsFromHeader()
-      .then(function(refMap) {
-        for (var i = 0; i < referenceNames.length; i++) {
-          var ref   = referenceNames[i];
-
-          var indexseq = tbiIdx.idxContent.indexseq[i];
-          var calcRefLength = indexseq.n_intv * size16kb;
-
-          var refLength = genomeBuildHelper.getReferenceLength(ref);
-
-
-          var loadIndexForRef = function(ref, refIdx, theRefLength) {
-            // Use the linear index to load the estimated density data
-            var intervalPoints = [];
-            for (var x = 0; x < indexseq.n_intv; x++) {
-              var interval = indexseq.intervseq[x];
-              var fileOffset = interval.valueOf();
-              var fileOffsetPrev = x > 0 ? indexseq.intervseq[x - 1].valueOf() : 0;
-              var intervalPos = x * size16kb;
-              intervalPoints.push( [intervalPos, fileOffset - fileOffsetPrev] );
-
-            }
-            if (calcRefLength < theRefLength) {
-              var lastPos = intervalPoints[intervalPoints.length-1][0];
-              intervalPoints.push([lastPos+1, 0]);
-              intervalPoints.push([theRefLength-1, 0]);
-            }
-
-            // Load the reference density data.  Exclude reference if 0 points.
-            refDensity[ref] = {"idx": i, "intervalPoints": intervalPoints};
-            refData.push( {"name": ref, "value": theRefLength, "refLength": theRefLength, "idx": refIdx});
-
-          }
-
-          // If a build wasn't selected, just use the ref length calculated
-          if (refLength == null && genomeBuildHelper.currentBuild == null) {
-            if (refMap && refMap[ref]) {
-              refLength = refMap[ref];
-            } else {
-              refLength = calcRefLength;
-            }
-            loadIndexForRef(ref, i, refLength);
-          } else {
-            loadIndexForRef(ref, i, refLength);
-          }
-        }
-
-        // Call function from js-bv-sampling to obtain point data.
-        estimateCoverageDepth(tbiIdx, function(estimates) {
-
-          for (var i = 0; i < referenceNames.length; i++) {
-
-
-            var refName   = referenceNames[i];
-            var pointData = estimates[i];
-            var refDataLength  =  refData[i].refLength;
-
-
-
-
-            // Sort by position of read; otherwise, we get a wonky
-            // line chart for read depth.  (When a URL is provided,
-            // bamtools returns a sorted array.  We need this same
-            // behavior when the BAM file is loaded from a file
-            // on the client.
-            pointData.push({pos: 0, depth: 0});
-            pointData = pointData.sort(function(a,b) {
-                var x = +a.pos;
-                var y = +b.pos;
-                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-            });
-
-            // Make sure to zero fill to the end of the reference
-            var calcRefLength = pointData[pointData.length - 1].pos + size16kb;
-            var refLength = genomeBuildHelper.getReferenceLength(refName);
-            if (refLength == null) {
-              refLength = calcRefLength;
-            }
-            if (calcRefLength < refLength) {
-              pointData.push({pos: refLength-1, depth: 0});
-            } else if (calcRefLength > refLength) {
-              // Remove any points that go past the reference length
-              var idxToTruncate = 0;
-              for( var idx = 0; idx < pointData.length; idx++) {
-                if (pointData[idx].pos > refLength) {
-                  if (idxToTruncate == 0) {
-                    idxToTruncate = idx;
-                  }
-                }
-              }
-              if (idxToTruncate > 0) {
-                pointData = pointData.slice(0, idxToTruncate);
-                pointData.push({pos: refLength - 1, depth: 0});
-              }
-            }
-
-
-
-            // If we have sparse data, keep track of these regions
-            if (pointData.length < 100) {
-              refData[i].sparsePointData = pointData;
-            }
-
-            // Zero fill any 16kb points not in array
-            var zeroPointData = [];
-            for (var x = 1; x < pointData.length; x++) {
-                var posPrev = pointData[x-1].pos;
-                var pos     = pointData[x].pos;
-                var posDiff = pos - posPrev;
-                if (posDiff > size16kb) {
-                    var intervalCount = posDiff / size16kb;
-                    for (var y = 0; y < intervalCount; y++) {
-                      zeroPointData.push({pos: posPrev + (y*size16kb), depth: 0});
-                    }
-                }
-            }
-
-            //pointData.push({pos: refDataLength, depth: 0});
-
-            if (zeroPointData.length > 0) {
-              pointData = pointData.concat(zeroPointData);
-              pointData = pointData.sort(function(a,b) {
-                var x = +a.pos;
-                var y = +b.pos;
-                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-              });
-
-            }
-
-
-
-            //refData.push({"name": refName, "value": +refLength, "refLength": +refLength, "idx": + i});
-            var refObject = refDensity[refName];
-            if (refObject == null) {
-              refObject = {};
-            }
-            refObject.points = [];
-
-            for (var x = 0; x < pointData.length; x++) {
-              var point = [pointData[x].pos, pointData[x].depth];
-              refObject.points.push(point);
-            }
-            // Sort ref data so that refs are ordered numerically
-            refData = me.sortRefData(refData);
-
-            if (callbackData) {
-              callbackData(refData);
-            }
-
-
-          }
-
-        });
-
-        // Sort ref data so that refs are ordered numerically
-        refData = me.sortRefData(refData);
-        me.vcfFileSize = vcfFile.size;
-
-        if (callbackEnd) {
-          callbackEnd(refData, vcfFile.size);
-        }
-
-      });
-
-
-
-
-
-    });
-
-  }
-
-
   exports.stripChr = function(ref) {
     if (ref.indexOf("chr") == 0) {
       return ref.split("chr")[1];
@@ -499,7 +303,6 @@ vcfiobio = function module() {
       return ref;
     }
   }
-
 
   exports.loadRemoteIndex = function(theVcfUrl, theTbiUrl, callbackData, callbackEnd) {
     var me = this;
@@ -510,17 +313,18 @@ vcfiobio = function module() {
     var buffer = "";
     var refName;
 
-    var args =  ['-i'];
+    var url;
     if (me.tbiURL) {
-      args.push('"'+me.tbiURL+'"');
+      url = me.tbiURL;
     } else {
-      args.push('"'+me.vcfURL + '.tbi' + '"');
+      url = me.vcfURL + '.tbi';
     }
-    var cmd = new iobio.cmd(
-        vcfReadDepther,
-        args,
-        {ssl: ssl}
-    );
+
+    var cmd = apiClient.streamCommand('vcfReadDepth', {
+      url,
+    });
+
+    cmd = new LineReader(cmd);
 
     cmd.on('data', function(data) {
 
@@ -677,28 +481,6 @@ vcfiobio = function module() {
       });
   }
 
-  exports.sortRefData = function(refData) {
-    var me = this;
-    return refData.sort(function(refa,refb) {
-          var x = me.stripChr(refa.name);
-          var y = me.stripChr(refb.name);
-          if (me.isNumeric(x) && me.isNumeric(y)) {
-            return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
-          } else {
-             if (!me.isNumeric(x) && !me.isNumeric(y)) {
-                return ((+x < +y) ? -1 : ((+x > +y) ? 1 : 0));
-             } else if (!me.isNumeric(x)) {
-                return 1;
-             } else {
-                return -1;
-             }
-          }
-
-      });
-  }
-
-
-
   exports.isNumeric = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }
@@ -830,20 +612,14 @@ vcfiobio = function module() {
   exports.getHeader = function(callback) {
     var me = this;
     var headerStr = "";
-    if (sourceType.toLowerCase() == SOURCE_TYPE_URL.toLowerCase() && me.vcfURL != null) {
-
+    if (me.vcfURL != null) {
 
         var buffer = "";
 
-        var args = ['-H', me.vcfURL];
-        if (me.tbiURL) {
-          args.push(me.tbiURL);
-        }
-        var cmd = new iobio.cmd(
-            tabix,
-            args,
-            {ssl: ssl}
-        );
+        var cmd = apiClient.streamCommand('variantHeader', {
+          url: me.vcfURL,
+          indexUrl: me.tbiURL,
+        });
 
         cmd.on('data', function(data) {
           if (data != undefined) {
@@ -861,15 +637,15 @@ vcfiobio = function module() {
             callback(headerStr);
           }
         });
+
+        cmd.on('error', function(err) {
+          console.log(err);
+        });
+
         cmd.run();
 
-      } else if (vcfFile) {
-          var vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
-            vcfReader.getHeader( function(theHeader) {
-              callback(theHeader);
-            });
-          });
-      } else {
+      }
+      else {
         callback(null);
       }
 
@@ -909,131 +685,7 @@ vcfiobio = function module() {
 
 
   exports.getStats = function(refs, options, callback) {
-    if (sourceType == SOURCE_TYPE_URL) {
-      this._getRemoteStats(refs, options, callback);
-    } else {
-      this._getLocalStats(refs, options, callback);
-    }
-
-  }
-
-  // We we are dealing with a local VCF, we will create a mini-vcf of all of the sampled regions.
-  // This mini-vcf will be streamed to vcfstatsAliveServer.
-  exports._getLocalStats = function(refs, options, callback ) {
-    var me = this;
-    this._getRegions(refs, options);
-
-    var contigStr = "";
-    for (var j=0; j < refs.length; j++) {
-      var ref      = refData[refs[j]];
-      contigStr += "##contig=<ID=" + ref.name + ">\n";
-    }
-    var contigNameFile = new Blob([contigStr])
-
-    // options to write stream of vcf records from local file to cmd
-    var writeStream = function(stream) {
-
-        vcfReader.getHeader( function(header) {
-           stream.write(header + "\n");
-        });
-
-        if (regions.length <= regionIndex) {
-          console.log("no regions to process. regionIndex=" + regionIndex + " regions.length=" + regions.length);
-        } else {
-          var regionObject = regions[regionIndex];
-          if (regionObject == null) {
-            console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
-          }
-        }
-
-        var streamNextRegion = function(records) {
-          // Stream the vcf records we just parsed for a region in the vcf, one records at a time
-          if (records) {
-            for (var r = 0; r < records.length; r++) {
-              stream.write(records[r] + "\n");
-            }
-          } else {
-            // This is an error condition.  If vcfRecords can't return any
-            // records, we will hit this point in the code.
-            // Just log it for now and move on to the next region.
-            console.log("WARNING:  unable to create vcf records for region  " + regionIndex);
-          }
-
-          // Now that we have streamed the vcf records for a region, continue on
-          // to the next region to stream
-          regionIndex++;
-          if (regionIndex > regions.length) {
-            return;
-          } else if (regionIndex == regions.length) {
-            // We have streamed all of the regions so now we will end the stream.
-            stream.end();
-            return;
-          } else {
-            var regionObject = regions[regionIndex];
-            if (regionObject == null) {
-              console.log("encountered null region at index " + regionIndex + " for regions with length " + regions.length);
-            }
-            // There are more regions to obtain vcf records for, so call getVcfRecords now
-            // that regionIndex has been incremented.
-            vcfReader.getRecords(regions[regionIndex].name,
-              regions[regionIndex].start,
-              regions[regionIndex].end,
-              streamNextRegion);
-          }
-        }
-
-
-        // Stream vcf records for each region in a serial fashion.  (Once vcf records for a region
-        // have been streamed, continue on to the next region to stream its vcf records).
-        vcfReader.getRecords(
-            regions[regionIndex].name,
-            regions[regionIndex].start,
-            regions[regionIndex].end,
-            streamNextRegion);
-      };
-
-
-    var cmd = new iobio.cmd(bcftools, ['annotate', '-h', contigNameFile, writeStream, '-'],{ssl: ssl});
-
-    if (samples && samples.length > 0) {
-      var sampleNameFile = new Blob([samples.join("\n")])
-      cmd = cmd.pipe(vt, ["subset", "-s", sampleNameFile, '-'],  {ssl: ssl});
-    }
-    cmd = cmd.pipe(vcfstatsAlive, ['-u', '1000'],  {ssl: ssl});
-
-
-    var buffer = "";
-    // parse stats
-    cmd.on('data', function(results) {
-         results.split(';').forEach(function(data) {
-           if (data == undefined) {
-              return;
-           }
-           var success = true;
-           try {
-             var obj = JSON.parse(buffer + data);
-           } catch(e) {
-             success = false;
-             buffer += data;
-           }
-           if(success) {
-             buffer = "";
-             callback(obj);
-           }
-        });
-    });
-
-    cmd.on('end', function() {
-
-    });
-
-    cmd.on('error', function(error) {
-      console.log("error while annotating vcf records " + error);
-    });
-
-
-    cmd.run();
-
+    this._getRemoteStats(refs, options, callback);
   }
 
   exports._getRemoteStats = function(refs, options, callback) {
@@ -1049,10 +701,13 @@ vcfiobio = function module() {
       regionStr += " " + region.name + ":" + region.start + "-" + region.end
     });
 
+    var refNames = [];
+
     var contigStr = "";
     for (var j=0; j < refs.length; j++) {
       var ref      = refData[refs[j]];
       contigStr += "##contig=<ID=" + ref.name + ">\n";
+      refNames.push(ref.name);
     }
     var contigNameFile = new Blob([contigStr])
 
@@ -1066,15 +721,21 @@ vcfiobio = function module() {
     if (samples && samples.length > 0) {
       var sampleNameFile = new Blob([samples.join("\n")]);
 
-
-      cmd = new iobio.cmd(tabix, tabixArgs, {ssl: ssl})
-                        .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'], {ssl: ssl})
-                        .pipe(vt, ["subset", "-s", sampleNameFile, '-'], {ssl: ssl})
-                        .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'], {ssl: ssl} );
+      cmd = apiClient.streamCommand('vcfStatsStream', {
+        url: me.vcfURL,
+        indexUrl: me.tbiURL,
+        regions,
+        refNames,
+        sampleNames: samples,
+      });
     } else {
-      cmd = new iobio.cmd(tabix, tabixArgs,  {ssl: ssl})
-                        .pipe(bcftools, ['annotate', '-h', contigNameFile, '-'], {ssl: ssl})
-                        .pipe( vcfstatsAlive, ['-u', '1000', '-Q', '1000'], {ssl: ssl} );
+
+      cmd = apiClient.streamCommand('vcfStatsStream', {
+        url: me.vcfURL,
+        indexUrl: me.tbiURL,
+        regions,
+        refNames,
+      });
     }
 
 
@@ -1116,58 +777,17 @@ vcfiobio = function module() {
 
     // NEW
   exports.getSampleNames = function(callback) {
-    if (sourceType == SOURCE_TYPE_URL) {
-      this._getRemoteSampleNames(callback);
-    } else {
-      this._getLocalSampleNames(callback);
-    }
-  }
-
-  // NEW
-  exports._getLocalSampleNames = function(callback) {
-    var me = this;
-
-    var vcfReader = new readBinaryVCF(tabixFile, vcfFile, function(tbiR) {
-      var sampleNames = [];
-      sampleNames.length = 0;
-
-      var headerRecords = [];
-      vcfReader.getHeader( function(headerStr) {
-         headerRecords = headerStr.split("\n");
-         headerRecords.forEach(function(headerRec) {
-            if (headerRec.indexOf("#CHROM") == 0) {
-              var headerFields = headerRec.split("\t");
-              sampleNames = headerFields.slice(9);
-              callback(sampleNames);
-            }
-         });
-
-      });
-   });
-
-
-
+    this._getRemoteSampleNames(callback);
   }
 
   // NEW
   exports._getRemoteSampleNames = function(callback) {
     var me = this;
 
-
-    var args = ['-h', '"'+me.vcfURL+'"', '1:1-1'];
-    if (me.tbiURL) {
-      args.push('"'+me.tbiURL+'"');
-    }
-    var cmd = new iobio.cmd(
-        tabix,
-        args,
-        {ssl: ssl}
-    );
-
-
-
-    cmd.http();
-
+    var cmd = apiClient.streamCommand('variantHeader', {
+      url: me.vcfURL,
+      indexUrl: me.tbiURL,
+    });
 
     var headerData = "";
     // Use Results
@@ -1536,4 +1156,64 @@ vcfiobio = function module() {
   // Return this scope so that all subsequent calls
   // will be made on this scope.
   return exports;
+};
+
+
+function LineReader(cmd) {
+
+  var remainder = "";
+  var prev = "";
+
+  cmd.on('data', (data) => {
+
+    var lines = data.split('\n');
+
+    if (remainder.length > 0) {
+      lines[0] = remainder + lines[0];
+      remainder = "";
+    }
+
+    if (!lines[lines.length - 1].endsWith('\n')) {
+      remainder = lines.pop();
+    }
+
+    for (var line of lines) {
+      prev = line;
+      this.onData(line);
+    }
+  });
+
+  cmd.on('end', () => {
+    if (remainder.length > 0) {
+      this.onData(remainder);
+    }
+    this.onEnd();
+  });
+
+  cmd.on('error', (e) => {
+    this.onError(e);
+  });
+
+  this._cmd = cmd;
+}
+
+LineReader.prototype.run = function() {
+  this._cmd.run();
+};
+
+LineReader.prototype.on = function(evt, callback) {
+  switch (evt) {
+    case 'data':
+      this.onData = callback;
+      break;
+    case 'end':
+      this.onEnd = callback;
+      break;
+    case 'error':
+      this.onError = callback;
+      break;
+    default:
+      throw new Error("LineReader: Invalid event", evt);
+      break;
+  }
 };
