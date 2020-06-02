@@ -1,6 +1,6 @@
 class MosaicSession {
   constructor() {
-    this.apiVersion =  '/apiv1';
+    this.apiVersion =  '/api/v1';
   }
 
   promiseInit(sampleId, source, projectId ) {
