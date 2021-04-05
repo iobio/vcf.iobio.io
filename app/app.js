@@ -1027,6 +1027,12 @@ function checkBuildSpeciesNoSampleData(buildFlagNoSamples, speciesFlagNoSamples)
   if(buildFlagNoSamples && speciesFlagNoSamples){
     $("#go-button-for-noSamples").prop('disabled', false);
   }
+  else if(buildFlagNoSamples && $('#select-species')[0].selectize.getValue().length > 0){
+    $("#go-button-for-noSamples").prop('disabled', false);
+  }
+  else if(speciesFlagNoSamples && $('#select-species')[0].selectize.getValue().length > 0){
+    $("#go-button-for-noSamples").prop('disabled', false);
+  }
   else {
     $("#go-button-for-noSamples").prop('disabled', true);
   }
