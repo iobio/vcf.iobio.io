@@ -117,6 +117,7 @@ var sampleId     = url_string.searchParams.get("sample_id");
 var projectId    = url_string.searchParams.get("project_id");
 var source       = url_string.searchParams.get("source");
 var build        = url_string.searchParams.get("build");
+var experimentId = url_string.searchParams.get("experiment_id");
 if (access_token && token_type) {
   localStorage.setItem('hub-iobio-tkn', token_type + ' ' + access_token);
   if (mosaicToIobioSources[source]) {
@@ -471,7 +472,7 @@ function init() {
     }
 
     self.mosaicSession = new MosaicSession();
-    self.mosaicSession.promiseInit(sampleId, source, projectId)
+    self.mosaicSession.promiseInit(sampleId, source, projectId, experimentId)
     .then(modelInfo => {
       vcfiobio.setSamples([]);
       vcfiobio.vcfURL = modelInfo.vcf
