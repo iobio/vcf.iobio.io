@@ -3,7 +3,7 @@ class MosaicSession {
     this.apiVersion =  '/api/v1';
   }
 
-  promiseInit(sampleId, source, projectId ) {
+  promiseInit(sampleId, source, projectId, experimentId ) {
     let self = this;
     self.api = source + self.apiVersion;
 
@@ -16,7 +16,7 @@ class MosaicSession {
 
         let theSample = sample;
 
-        self.promiseGetFileMapForSample(projectId, sample).then(data => {
+        self.promiseGetFileMapForSample(projectId, sample, experimentId).then(data => {
           theSample.files = data.fileMap;
         })
         .then( () => {
@@ -105,7 +105,7 @@ class MosaicSession {
   }
 
 
-  promiseGetFileMapForSample(project_id, sample) {
+  promiseGetFileMapForSample(project_id, sample, experimentId) {
     let self = this;
     return new Promise((resolve,reject) => {
       var promises = [];
@@ -113,7 +113,16 @@ class MosaicSession {
       var currentSample = sample;
       self.promiseGetFilesForSample(project_id, currentSample.id)
       .then(files => {
-        files.forEach(file => {
+        var filteredFiles = files.filter(file => {
+          if(experimentId){
+            return file.experiment_ids.includes(Number(experimentId))
+          }
+          else {
+            return file
+          }
+        })
+                
+        filteredFiles.forEach(file => {
           var p = self.promiseGetSignedUrlForFile(project_id, currentSample.id, file)
           .then(signed => {
             fileMap[file.type] = signed.url;
