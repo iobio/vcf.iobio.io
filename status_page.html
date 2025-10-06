@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Alert</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚠️</text></svg>" type="image/svg+xml">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; border-radius: 5px;}
+        
+        body {
+            font-family: system-ui, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 600px;
+            background: white;
+            border: 1px solid #ddd;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .icon { font-size: 3rem; margin-bottom: 1rem; }
+        h1 { margin-bottom: 1rem; }
+        .message { margin-bottom: 2rem; color: #666; }
+        
+        .details {
+            background: #f9f9f9;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: left;
+            border: 1px solid #eee;
+        }
+        
+        .detail-item { margin-bottom: 0.5rem; }
+        .detail-label { font-weight: bold; margin-right: 0.5rem; }
+        
+        .link-button {
+            display: inline-block;
+            padding: 0.75rem 1rem;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            margin: 0.25rem;
+        }
+        
+        .link-button.github { background: #333; }
+        .link-button.github:hover { background: #5c5c5c; }
+        
+        .alternatives { margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem; }
+        .alternative-item { margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #eee; }
+        .alternative-item a { color: #007bff; text-decoration: none; }
+        .alternative-item a:hover {color: #026ad8; text-decoration: underline;}
+        .alternative-description { font-size: 0.9rem; color: #666; }
+        
+        .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #eee; color: #666; font-size: 0.9rem; }
+        
+        /* Status colors */
+        .deprecated #statusMessage { background: #ffe5e5; color: #d63384; padding: 0.5rem; }
+        .maintenance #statusMessage { background: #fff3cd; color: #856404; padding: 0.5rem; }
+        
+        @media (max-width: 640px) {
+            .container { padding: 1rem; }
+            h1 { font-size: 1.5rem; }
+            .icon { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container deprecated">
+        <div class="icon">⚠️</div>
+        
+        <h1>vcf.iobio</h1>
+        
+        <p class="message" id="statusMessage">
+            This application has been deprecated.
+        </p>
+        
+        <div class="details">
+            <div class="detail-item">
+                <span class="detail-label">End of Life:</span>
+                <span class="detail-value">October 6, 2025</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">No longer maintained</span>
+            </div>
+        </div>
+        
+        <div class="links">
+            <a href="https://github.com/iobio/vcf.iobio.io" class="link-button github" target="_blank" rel="noopener">
+                View GitHub - <i class="thin">historical purposes</i>
+            </a>
+            
+            <div class="alternatives">
+                <h3>One or more of our current apps may have what you need ⬇️</h3>
+                <br>
+                <div class="alternatives-list">
+                    <div class="alternative-item">
+                        <a href="https://gene.iobio.io/" target="_blank" rel="noopener">Gene.iobio</a>
+                        <p class="alternative-description">View SNPs & indels and their associations in a fast and intuitive web application.</p>
+                    </div>
+                    <div class="alternative-item">
+                        <a href="https://bam.iobio.io/" target="_blank" rel="noopener">BAM.iobio</a>
+                        <p class="alternative-description">Quickly review bam files in your browser without any downloads or installations.</p>
+                    </div>
+                    <div class="alternative-item">
+                        <a href="https://mosaic-staging.chpc.utah.edu/sv.iobio/frontend/" target="_blank" rel="noopener">SV.iobio</a>
+                        <p class="alternative-description">View structural variants and their associations in an easy-to-use interface.</p>
+                    </div>
+                    <div class="alternative-item">
+                        <a href="https://simpheny.iobio.chpc.utah.edu/" target="_blank" rel="noopener">SimPheny.iobio</a>
+                        <p class="alternative-description">Use phenotypic information to prioritize genes based on similarity to diagnosed cases.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>Thank you for your patience and understanding.</p>
+        </footer>
+    </div>
+</body>
+</html>
