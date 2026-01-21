@@ -24,7 +24,7 @@
     "socket.io-client": "1.0.6",
     "socket.io-adapter": "0.2.0",
     "has-binary-data": "0.1.1",
-    "debug": "0.7.4"
+    "debug": "4.1.1"
   },
   "devDependencies": {
     "mocha": "1.16.2",
